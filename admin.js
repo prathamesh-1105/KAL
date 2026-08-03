@@ -267,8 +267,8 @@ function bindSettingsForm() {
       email: document.getElementById('setEmail').value,
       instagram: document.getElementById('setInstagram').value
     }));
-    localStorage.setItem('kb_admin_pass', document.getElementById('setAdminPass').value);
-    const adminUserEl = document.getElementById('setAdminUser');
+    localStorage.setItem('kb_admin_pass', document.getElementById('adm_p_fld').value);
+    const adminUserEl = document.getElementById('adm_u_fld');
     if (adminUserEl) localStorage.setItem('kb_admin_user', adminUserEl.value || 'admin');
     alert('Contact & security settings saved!');
   });
@@ -288,13 +288,13 @@ function bindTeamCredentialsForm() {
   document.getElementById('submitTeamCredentialsBtn')?.addEventListener('click', (e) => {
     e.preventDefault();
     const members = safeGetJSON('kb_team_members', '[]');
-    if(!document.getElementById('teamMemberName').value || !document.getElementById('teamMemberLogin').value || !document.getElementById('teamMemberPass').value) { alert('Please fill in all required fields.'); return; }
+    if(!document.getElementById('teamMemberName').value || !document.getElementById('tm_l_fld').value || !document.getElementById('tm_p_fld').value) { alert('Please fill in all required fields.'); return; }
     const formId = document.getElementById('teamMemberFormId').value;
     const memberData = {
       id: formId || 'mem-' + Math.floor(1000 + Math.random() * 9000),
       name: document.getElementById('teamMemberName').value,
-      login: document.getElementById('teamMemberLogin').value,
-      password: document.getElementById('teamMemberPass').value,
+      login: document.getElementById('tm_l_fld').value,
+      password: document.getElementById('tm_p_fld').value,
       role: document.getElementById('teamMemberRole').value || 'Team Member'
     };
 
@@ -317,7 +317,7 @@ function bindTeamCredentialsForm() {
 }
 
 function resetTeamMemberForm() {
-  document.getElementById('teamMemberName').value='';document.getElementById('teamMemberLogin').value='';document.getElementById('teamMemberPass').value='';document.getElementById('teamMemberRole').value='';
+  document.getElementById('teamMemberName').value='';document.getElementById('tm_l_fld').value='';document.getElementById('tm_p_fld').value='';document.getElementById('teamMemberRole').value='';
   document.getElementById('teamMemberFormId').value = '';
 }
 
@@ -507,8 +507,8 @@ function loadSystemSettingsForm() {
   if (document.getElementById('setPhone')) document.getElementById('setPhone').value = contact.phone || '';
   if (document.getElementById('setEmail')) document.getElementById('setEmail').value = contact.email || '';
   if (document.getElementById('setInstagram')) document.getElementById('setInstagram').value = contact.instagram || '';
-  if (document.getElementById('setAdminPass')) document.getElementById('setAdminPass').value = localStorage.getItem('kb_admin_pass') || 'admin123';
-  if (document.getElementById('setAdminUser')) document.getElementById('setAdminUser').value = localStorage.getItem('kb_admin_user') || 'admin';
+  if (document.getElementById('adm_p_fld')) document.getElementById('adm_p_fld').value = localStorage.getItem('kb_admin_pass') || 'admin123';
+  if (document.getElementById('adm_u_fld')) document.getElementById('adm_u_fld').value = localStorage.getItem('kb_admin_user') || 'admin';
   if (document.getElementById('setStatShows')) document.getElementById('setStatShows').value = stats.showsCount || 42;
   if (document.getElementById('setStatArtists')) document.getElementById('setStatArtists').value = stats.artistsCount || 28;
   if (document.getElementById('setVenues')) document.getElementById('setVenues').value = venues.join(', ');
@@ -586,8 +586,8 @@ window.editTeamMember = function (id) {
   if (!member) return;
   document.getElementById('teamMemberFormId').value = member.id;
   document.getElementById('teamMemberName').value = member.name;
-  document.getElementById('teamMemberLogin').value = member.login;
-  document.getElementById('teamMemberPass').value = member.password;
+  document.getElementById('tm_l_fld').value = member.login;
+  document.getElementById('tm_p_fld').value = member.password;
   document.getElementById('teamMemberRole').value = member.role || '';
 };
 
@@ -712,5 +712,6 @@ function initDatabases() {
     localStorage.setItem('kb_venues', JSON.stringify(['Ravindra Natya Mandir, Dadar', 'Shivaji Mandir, Dadar', 'Dadar Matunga Cultural Centre']));
   }
 }
+
 
 

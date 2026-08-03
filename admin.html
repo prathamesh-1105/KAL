@@ -149,7 +149,7 @@
           </div>
           <div>
             <label class="block text-[10px] uppercase tracking-wider text-gray-400 font-bold">Password</label>
-            <input type="password" id="adminPassword" required placeholder="••••••••" class="w-full bg-[#151515] border border-white border-opacity-10 text-white rounded-lg p-3 text-sm focus:outline-none focus:border-gold-500 text-center transition">
+            <input type="text" id="adminPassword" required placeholder="••••••••" class="w-full bg-[#151515] border border-white border-opacity-10 text-white rounded-lg p-3 text-sm focus:outline-none focus:border-gold-500 text-center transition">
           </div>
         </div>
         <p class="text-[10px] text-red-500 hidden text-center" id="loginError">Incorrect username or password. Please try again.</p>
@@ -345,11 +345,11 @@
               <h5 class="font-bold text-white uppercase border-b border-white border-opacity-5 pb-2">Admin Security Key</h5>
               <div>
                 <label class="block text-gray-400 mb-1">Admin Username</label>
-                <input type="text" id="setAdminUser" required placeholder="admin" class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
+                <input type="text" id="adm_u_fld" autocomplete="off" required placeholder="admin" class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
               </div>
               <div>
                 <label class="block text-gray-400 mb-1">Change Admin Password</label>
-                <input type="text" id="setAdminPass" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
+                <input type="text" id="adm_p_fld" autocomplete="new-password" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
               </div>
 
               <h5 class="font-bold text-white uppercase border-b border-white border-opacity-5 pb-2 pt-4">Team Member Credentials</h5>
@@ -361,11 +361,11 @@
                 </div>
                 <div>
                   <label class="block text-gray-400 mb-1">Member ID / Username</label>
-                  <input type="text" id="teamMemberLogin" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
+                  <input type="text" id="tm_l_fld" autocomplete="off" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
                 </div>
                 <div>
                   <label class="block text-gray-400 mb-1">Password</label>
-                  <input type="text" id="teamMemberPass" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
+                  <input type="text" id="tm_p_fld" autocomplete="new-password" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
                 </div>
                 <div>
                   <label class="block text-gray-400 mb-1">Role / Department</label>
@@ -669,4 +669,5 @@
   <script src="admin.js?v=3"></script>
 </body>
 </html>
+
 
