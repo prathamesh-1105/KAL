@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Show Template - Kalabhoomi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0B0B0B;
+            color: #F5F5F5;
+            padding: 20px;
+        }
+        .template-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .code {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+        .highlight { color: #D4AF37; }
+        .input { background: rgba(212, 175, 55, 0.2); padding: 2px 4px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center; color: #D4AF37;">🎭 Show Template Generator</h1>
+    
+    <div class="template-box">
+        <h2>📝 How to Add New Show:</h2>
+        
+        <h3>Step 1: Fill Show Details</h3>
+        <div class="code">
+Show Name: <span class="input">[Swami din]</span><br>
+Show Date: <span class="input">[Date, e.g., July 20, 2025]</span><br>
+Show Time: <span class="input">[Time, e.g., 7:00 PM]</span><br>
+Venue: <span class="input">[Mahim]</span><br>
+Price Range: <span class="input">[e.g., ₹500 - ₹2000]</span><br>
+Category: <span class="input">[Theatre/Music/Dance]</span><br>
+Description: <span class="input">[Brief show description]</span><br>
+Image URL: <span class="input">[Your show image URL]</span><br>
+Google Form Link: <span class="input">[https://docs.google.com/forms/d/e/1FAIpQLSceBUCECU6jMdWM9OTfic2eFUc0IvGT-pgLmz1xsm8dF1ZqIg/viewform?usp=publish-editor]</span>
+        </div>
+        
+        <h3>Step 2: Copy This HTML Code</h3>
+        <div class="code">
+&lt;!-- Show Card --&gt;<br>
+&lt;div class="card"&gt;<br>
+&nbsp; &lt;img src="<span class="highlight">YOUR_IMAGE_URL</span>" alt="<span class="highlight">SHOW_NAME</span>" class="card-img"&gt;<br>
+&nbsp; &lt;div class="p-4"&gt;<br>
+&nbsp; &nbsp; &lt;div class="flex justify-between items-center mb-3"&gt;<br>
+&nbsp; &nbsp; &nbsp; &lt;span class="text-xs bg-accent px-2 py-1 rounded"&gt;<span class="highlight">CATEGORY</span>&lt;/span&gt;<br>
+&nbsp; &nbsp; &nbsp; &lt;span class="text-xs"&gt;&lt;i class="far fa-calendar-alt mr-1"&gt;&lt;/i&gt; <span class="highlight">DATE</span>&lt;/span&gt;<br>
+&nbsp; &nbsp; &lt;/div&gt;<br>
+&nbsp; &nbsp; &lt;h3 class="text-xl font-bold mb-2"&gt;<span class="highlight">SHOW_NAME</span>&lt;/h3&gt;<br>
+&nbsp; &nbsp; &lt;p class="mb-4 text-sm line-clamp-2"&gt;<span class="highlight">DESCRIPTION</span>&lt;/p&gt;<br>
+&nbsp; &nbsp; &lt;div class="flex justify-between items-center"&gt;<br>
+&nbsp; &nbsp; &nbsp; &lt;span class="font-bold"&gt;<span class="highlight">PRICE_RANGE</span>&lt;/span&gt;<br>
+&nbsp; &nbsp; &nbsp; &lt;a href="<span class="highlight">GOOGLE_FORM_LINK</span>" target="_blank" class="cta-btn text-sm"&gt;Book Now&lt;/a&gt;<br>
+&nbsp; &nbsp; &lt;/div&gt;<br>
+&nbsp; &lt;/div&gt;<br>
+&lt;/div&gt;
+        </div>
+        
+        <h3>Step 3: Add to Website</h3>
+        <p>1. Open <span class="highlight">index.html</span></p>
+        <p>2. Find the Shows & Events section (around line 580)</p>
+        <p>3. Paste your code after the existing show cards</p>
+        <p>4. Save the file</p>
+        
+        <h3>Step 4: Create Google Form</h3>
+        <div class="code">
+Required Fields:<br>
+• Name (Short answer)<br>
+• Email (Short answer)<br>
+• Phone (Short answer)<br>
+• Show Name (Short answer - pre-filled)<br>
+• Seat Category (Multiple choice: Regular/Premium/VIP)<br>
+• Number of Tickets (Short answer)<br>
+• QR Code (Image - upload your payment QR)<br>
+• Payment Screenshot (File upload)
+        </div>
+    </div>
+    
+    <div class="template-box">
+        <h2>🎯 Quick Example:</h2>
+        <div class="code">
+&lt;div class="card"&gt;<br>
+&nbsp; &lt;img src="https://picsum.photos/400/200" alt="Mahanatya" class="card-img"&gt;<br>
+&nbsp; &lt;div class="p-4"&gt;<br>
+&nbsp; &nbsp; &lt;div class="flex justify-between items-center mb-3"&gt;<br>
+&nbsp; &nbsp; &nbsp; &lt;span class="text-xs bg-accent px-2 py-1 rounded"&gt;Theatre&lt;/span&gt;<br>
+&nbsp; &nbsp; &nbsp; &lt;span class="text-xs"&gt;&lt;i class="far fa-calendar-alt mr-1"&gt;&lt;/i&gt; July 20, 2025&lt;/span&gt;<br>
+&nbsp; &nbsp; &lt;/div&gt;<br>
+&nbsp; &nbsp; &lt;h3 class="text-xl font-bold mb-2"&gt;Mahanatya&lt;/h3&gt;<br>
+&nbsp; &nbsp; &lt;p class="mb-4 text-sm line-clamp-2"&gt;A powerful drama about social justice&lt;/p&gt;<br>
+&nbsp; &nbsp; &lt;div class="flex justify-between items-center"&gt;<br>
+&nbsp; &nbsp; &nbsp; &lt;span class="font-bold"&gt;₹600 - ₹2500&lt;/span&gt;<br>
+&nbsp; &nbsp; &nbsp; &lt;a href="https://forms.gle/mahanatya-form" target="_blank" class="cta-btn text-sm"&gt;Book Now&lt;/a&gt;<br>
+&nbsp; &nbsp; &lt;/div&gt;<br>
+&nbsp; &lt;/div&gt;<br>
+&lt;/div&gt;
+        </div>
+    </div>
+    
+    <div class="template-box">
+        <h2>💡 Pro Tips:</h2>
+        <ul>
+            <li>Always use <span class="highlight">target="_blank"</span> for Google Form links</li>
+            <li>Keep show descriptions short (2-3 lines max)</li>
+            <li>Use good quality images (400x200 pixels)</li>
+            <li>Test your Google Form before linking</li>
+            <li>Keep consistent date format (e.g., "July 20, 2025")</li>
+        </ul>
+    </div>
+</body>
+</html>

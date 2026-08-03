@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kalabhoomi - Admin Console</title>
+  <link rel="icon" href="/assets/logo.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Tiro+Devanagari+Marathi&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            gold: {
+              50: '#fefdf3',
+              100: '#fdfbeb',
+              200: '#faf3cb',
+              300: '#f6e49e',
+              400: '#edd166',
+              500: '#d4af37', // Brand Gold
+              600: '#b88c27',
+              700: '#946a1d',
+              800: '#75511b',
+              900: '#61421a',
+            },
+            crimson: {
+              50: '#fef3f3',
+              100: '#fde5e5',
+              200: '#fbc5c5',
+              300: '#f69696',
+              400: '#ee5a5a',
+              500: '#8b0000', // Brand Crimson
+              600: '#770000',
+              700: '#5e0000',
+              800: '#4a0000',
+              900: '#380000',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --primary: #080808;
+      --secondary: #121212;
+      --accent: #8b0000;
+      --highlight: #d4af37;
+      --gold-gradient: linear-gradient(135deg, #f5d061 0%, #d4af37 50%, #aa7c11 100%);
+      --crimson-gradient: linear-gradient(135deg, #8b0000 0%, #5e0000 100%);
+      --glow: 0 0 15px rgba(212, 175, 55, 0.25);
+    }
+    
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: var(--primary);
+      background-image: radial-gradient(circle at 50% 20%, rgba(139, 0, 0, 0.08) 0%, transparent 60%),
+                        radial-gradient(circle at 10% 80%, rgba(212, 175, 55, 0.04) 0%, transparent 50%);
+      background-attachment: fixed;
+      color: #f5f5f5;
+      overflow-x: hidden;
+    }
+    
+    h1, h2, h3, h4, .marathi-font {
+      font-family: 'Tiro Devanagari Marathi', serif;
+    }
+
+    /* Glassmorphism card styling */
+    .glass-card {
+      background: rgba(18, 18, 18, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(212, 175, 55, 0.15);
+    }
+
+    .cta-btn {
+      background: var(--gold-gradient);
+      color: #000;
+      transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+      box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+    }
+    .cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--glow), 0 8px 25px rgba(212, 175, 55, 0.4);
+      filter: brightness(1.1);
+    }
+
+    .outline-btn {
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      color: #d4af37;
+      background: transparent;
+      transition: all 0.3s ease;
+    }
+    .outline-btn:hover {
+      background: rgba(212, 175, 55, 0.1);
+      border-color: #d4af37;
+    }
+
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #080808;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #d4af37;
+      border-radius: 3px;
+    }
+
+    .admin-tab-btn.active {
+      color: #d4af37;
+      border-bottom: 2px solid #d4af37;
+      background: rgba(212, 175, 55, 0.05);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+  <!-- Main Container -->
+  <main class="flex-grow flex items-center justify-center p-4 py-12">
+    
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" class="w-full max-w-md glass-card rounded-2xl p-8 space-y-6 shadow-2xl relative">
+      <div class="flex justify-center">
+        <div class="h-16 w-16 rounded-full bg-crimson-950 flex items-center justify-center border border-gold-500 shadow-lg">
+          <i class="fas fa-user-shield text-3xl text-gold-500"></i>
+        </div>
+      </div>
+      <div class="text-center space-y-2">
+        <h2 class="text-2xl font-bold text-gold-500 uppercase tracking-wider">Login Portal</h2>
+        <p class="text-xs text-gray-400">Admin and team members — enter your ID and password to sign in.</p>
+      </div>
+      
+      <form id="loginForm" class="space-y-4">
+        <div class="space-y-3">
+          <div>
+            <label class="block text-[10px] uppercase tracking-wider text-gray-400 font-bold">Username</label>
+            <input type="text" id="adminUsername" required placeholder="Enter username" class="w-full bg-[#151515] border border-white border-opacity-10 text-white rounded-lg p-3 text-sm focus:outline-none focus:border-gold-500 text-center transition">
+          </div>
+          <div>
+            <label class="block text-[10px] uppercase tracking-wider text-gray-400 font-bold">Password</label>
+            <input type="password" id="adminPassword" required placeholder="••••••••" class="w-full bg-[#151515] border border-white border-opacity-10 text-white rounded-lg p-3 text-sm focus:outline-none focus:border-gold-500 text-center transition">
+          </div>
+        </div>
+        <p class="text-[10px] text-red-500 hidden text-center" id="loginError">Incorrect username or password. Please try again.</p>
+        <button type="submit" class="w-full cta-btn py-3 rounded-lg text-xs font-bold uppercase tracking-wider">Log In</button>
+      </form>
+
+      <div class="text-center pt-2">
+        <a href="/" class="text-xs text-gray-500 hover:text-gold-500 transition duration-300">
+          <i class="fas fa-arrow-left mr-2"></i>Back to Homepage
+        </a>
+      </div>
+    </div>
+    
+    <!-- MEMBER DASHBOARD (Copied from member.html) -->
+    <div id="memberDashboard" class="w-full max-w-4xl glass-card rounded-2xl shadow-2xl hidden flex-col">
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-zinc-900 to-black p-6 border-b border-gold-500 flex justify-between items-center">
+        <div>
+          <h3 class="text-xl font-bold text-white" id="welcomeMessage">Welcome, Member!</h3>
+          <p class="text-xs text-gold-500 font-bold uppercase tracking-widest" id="memberRole">Your Role</p>
+        </div>
+        <button class="bg-red-950 hover:bg-red-800 text-red-200 transition px-4 py-2 rounded text-xs font-bold uppercase flex items-center gap-2" id="memberLogoutBtn">
+          <i class="fas fa-sign-out-alt"></i> Log Out
+        </button>
+      </div>
+      <!-- Content -->
+      <div class="p-6 md:p-8 space-y-6">
+        <h4 class="text-lg font-bold text-gold-500 uppercase tracking-wide">My Attendance Record</h4>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left border border-white/5">
+            <thead class="bg-black text-gold-500 uppercase tracking-wider font-bold text-xs">
+              <tr>
+                <th class="p-3">Date</th>
+                <th class="p-3">Status</th>
+                <th class="p-3">Notes</th>
+              </tr>
+            </thead>
+            <tbody id="attendanceTableBodyForMember" class="divide-y divide-white/5 text-gray-300">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN CONSOLE DASHBOARD PANEL -->
+    <div id="adminConsole" class="w-full max-w-6xl glass-card rounded-2xl shadow-2xl overflow-hidden hidden flex flex-col">
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-crimson-950 to-black p-6 border-b border-gold-500 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="flex items-center gap-3">
+          <div class="h-12 w-12 rounded-full overflow-hidden border border-gold-500/30 flex items-center justify-center bg-black">
+            <img src="/assets/logo.png" alt="Logo" class="h-10 w-10 object-contain" onerror="this.src='https://placehold.co/100x100?text=K'">
+          </div>
+          <div>
+            <h3 class="text-xl font-black text-white uppercase tracking-wider">Kalabhoomi Admin Terminal</h3>
+            <p class="text-[10px] text-gold-500 font-bold uppercase tracking-widest leading-none mt-1">Status: Authenticated Session</p>
+          </div>
+        </div>
+        
+        <div class="flex gap-3">
+          <a href="/" class="outline-btn px-4 py-2 rounded text-xs font-bold uppercase flex items-center gap-2">
+            <i class="fas fa-home"></i> View Site
+          </a>
+          <button class="bg-red-950 hover:bg-red-800 text-red-200 transition px-4 py-2 rounded text-xs font-bold uppercase flex items-center gap-2" id="logoutBtn">
+            <i class="fas fa-sign-out-alt"></i> Log Out
+          </button>
+        </div>
+      </div>
+      
+      <!-- Nav Tabs -->
+      <div class="flex bg-black border-b border-white border-opacity-5 overflow-x-auto">
+        <button class="admin-tab-btn active px-6 py-4 text-xs font-bold uppercase tracking-wider border-r border-white border-opacity-5 hover:text-gold-500 transition whitespace-nowrap" data-tab="tabShows">
+          <i class="fas fa-calendar-alt mr-2"></i>Shows Manager
+        </button>
+        <button class="admin-tab-btn px-6 py-4 text-xs font-bold uppercase tracking-wider border-r border-white border-opacity-5 hover:text-gold-500 transition whitespace-nowrap" data-tab="tabBookings">
+          <i class="fas fa-ticket-alt mr-2"></i>Bookings Registry
+        </button>
+        <button class="admin-tab-btn px-6 py-4 text-xs font-bold uppercase tracking-wider border-r border-white border-opacity-5 hover:text-gold-500 transition whitespace-nowrap" data-tab="tabSettings">
+          <i class="fas fa-sliders-h mr-2"></i>System Settings
+        </button>
+        <button class="admin-tab-btn px-6 py-4 text-xs font-bold uppercase tracking-wider border-r border-white border-opacity-5 hover:text-gold-500 transition whitespace-nowrap" data-tab="tabGallery">
+          <i class="fas fa-images mr-2"></i>Gallery Manager
+        </button>
+        <button class="admin-tab-btn px-6 py-4 text-xs font-bold uppercase tracking-wider border-r border-white border-opacity-5 hover:text-gold-500 transition whitespace-nowrap" data-tab="tabAttendance">
+          <i class="fas fa-user-check mr-2"></i>Attendance
+        </button>
+        <button class="admin-tab-btn px-6 py-4 text-xs font-bold uppercase tracking-wider border-r border-white border-opacity-5 hover:text-gold-500 transition whitespace-nowrap" data-tab="tabFaq">
+          <i class="fas fa-question-circle mr-2"></i>FAQ Manager
+        </button>
+        <button class="admin-tab-btn px-6 py-4 text-xs font-bold uppercase tracking-wider hover:text-gold-500 transition whitespace-nowrap" data-tab="tabContent">
+          <i class="fas fa-edit mr-2"></i>Site Content
+        </button>
+      </div>
+      
+      <!-- Panel Content -->
+      <div class="p-6 md:p-8 space-y-6">
+        
+        <!-- Tab 1: Shows Manager -->
+        <div class="admin-tab-content space-y-6" id="tabShows">
+          <div class="flex justify-between items-center">
+            <h4 class="text-lg font-bold text-gold-500 uppercase tracking-wide">Scheduled Drama/Event Shows</h4>
+            <button class="cta-btn px-4 py-2 rounded text-xs font-bold uppercase flex items-center gap-1" id="createShowBtn">
+              <i class="fas fa-plus"></i> Add New Show
+            </button>
+          </div>
+          
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs text-left border border-white border-opacity-5">
+              <thead class="bg-black text-gold-500 uppercase tracking-wider font-bold">
+                <tr>
+                  <th class="p-3">Title</th>
+                  <th class="p-3">Date</th>
+                  <th class="p-3">Venue</th>
+                  <th class="p-3">VIP/Prem/Reg (₹)</th>
+                  <th class="p-3">Status</th>
+                  <th class="p-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="showsTableBody" class="divide-y divide-white divide-opacity-5 text-gray-300">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <!-- Tab 2: Bookings Registry -->
+        <div class="admin-tab-content space-y-6 hidden" id="tabBookings">
+          <div class="flex justify-between items-center">
+            <h4 class="text-lg font-bold text-gold-500 uppercase tracking-wide">Customer Seating Bookings</h4>
+            <button class="bg-red-950 text-red-400 border border-red-800/30 px-3 py-1.5 rounded text-xs font-bold uppercase hover:bg-red-900 transition flex items-center gap-1" id="clearBookingsBtn">
+              <i class="fas fa-trash-alt"></i> Reset Seating Map
+            </button>
+          </div>
+          
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs text-left border border-white border-opacity-5">
+              <thead class="bg-black text-gold-500 uppercase tracking-wider font-bold">
+                <tr>
+                  <th class="p-3">Ticket ID</th>
+                  <th class="p-3">Customer</th>
+                  <th class="p-3">Phone</th>
+                  <th class="p-3">Event</th>
+                  <th class="p-3">Seats</th>
+                  <th class="p-3">Total Paid</th>
+                  <th class="p-3">Status</th>
+                  <th class="p-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="bookingsTableBody" class="divide-y divide-white divide-opacity-5 text-gray-300">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <!-- Tab 3: System Settings & Stats -->
+        <div class="admin-tab-content space-y-6 hidden" id="tabSettings">
+          <h4 class="text-lg font-bold text-gold-500 uppercase tracking-wide">Contact Details & Site Stats</h4>
+          <form id="settingsForm" class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+            <div class="space-y-4">
+              <h5 class="font-bold text-white uppercase border-b border-white border-opacity-5 pb-2">Global Contact Fields</h5>
+              <div>
+                <label class="block text-gray-400 mb-1">Office Address (EN)</label>
+                <input type="text" id="setAddrEn" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
+              </div>
+              <div>
+                <label class="block text-gray-400 mb-1">Office Address (MR)</label>
+                <input type="text" id="setAddrMr" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
+              </div>
+              <div>
+                <label class="block text-gray-400 mb-1">Support Phone</label>
+                <input type="text" id="setPhone" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
+              </div>
+              <div>
+                <label class="block text-gray-400 mb-1">Support Email</label>
+                <input type="email" id="setEmail" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
+              </div>
+              <div>
+                <label class="block text-gray-400 mb-1">Instagram Account Link</label>
+                <input type="url" id="setInstagram" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
+              </div>
+              <div class="pt-4">
+                 <button type="submit" class="w-full cta-btn py-3.5 rounded-lg font-bold uppercase">
+                  Save Contact & Security
+                </button>
+              </div>
+            </div>
+            
+            <div class="space-y-4">
+              <h5 class="font-bold text-white uppercase border-b border-white border-opacity-5 pb-2">Admin Security Key</h5>
+              <div>
+                <label class="block text-gray-400 mb-1">Admin Username</label>
+                <input type="text" id="setAdminUser" required placeholder="admin" class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
+              </div>
+              <div>
+                <label class="block text-gray-400 mb-1">Change Admin Password</label>
+                <input type="text" id="setAdminPass" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
+              </div>
+
+              <h5 class="font-bold text-white uppercase border-b border-white border-opacity-5 pb-2 pt-4">Team Member Credentials</h5>
+              <form id="teamCredentialsForm" class="space-y-3">
+                <input type="hidden" id="teamMemberFormId">
+                <div>
+                  <label class="block text-gray-400 mb-1">Member Name</label>
+                  <input type="text" id="teamMemberName" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
+                </div>
+                <div>
+                  <label class="block text-gray-400 mb-1">Member ID / Username</label>
+                  <input type="text" id="teamMemberLogin" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
+                </div>
+                <div>
+                  <label class="block text-gray-400 mb-1">Password</label>
+                  <input type="text" id="teamMemberPass" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
+                </div>
+                <div>
+                  <label class="block text-gray-400 mb-1">Role / Department</label>
+                  <input type="text" id="teamMemberRole" placeholder="e.g. Stage Crew" class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
+                </div>
+                <div class="flex gap-3">
+                  <button type="submit" class="flex-1 cta-btn py-3 rounded-lg font-bold uppercase">Save Credentials</button>
+                  <button type="button" id="resetTeamMemberFormBtn" class="outline-btn px-4 py-3 rounded-lg font-bold uppercase">Reset</button>
+                </div>
+              </form>
+
+              <div class="overflow-x-auto mt-3">
+                <table class="w-full text-xs text-left border border-white border-opacity-5">
+                  <thead class="bg-black text-gold-500 uppercase tracking-wider font-bold">
+                    <tr>
+                      <th class="p-3">Name</th>
+                      <th class="p-3">ID</th>
+                      <th class="p-3">Password</th>
+                      <th class="p-3">Role</th>
+                      <th class="p-3 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="teamMembersTableBody" class="divide-y divide-white divide-opacity-5 text-gray-300">
+                    <!-- Populated dynamically -->
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="pt-6">
+                <h5 class="font-bold text-white uppercase border-b border-white border-opacity-5 pb-2">Site Configuration</h5>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+                  <div>
+                    <label class="block text-gray-400 mb-1">Total Shows (Stat)</label>
+                    <input type="number" id="setStatShows" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
+                  </div>
+                  <div>
+                    <label class="block text-gray-400 mb-1">Active Artists (Stat)</label>
+                    <input type="number" id="setStatArtists" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
+                  </div>
+                </div>
+                <div class="pt-4">
+                  <label class="block text-gray-400 mb-1">Manage Venues (Comma-separated)</label>
+                  <textarea id="setVenues" rows="3" placeholder="e.g. Ravindra Natya Mandir, Dadar Matunga Cultural Centre" class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500"></textarea>
+                </div>
+                <div class="pt-4">
+                  <h5 class="font-bold text-white uppercase border-b border-white border-opacity-5 pb-2">Payment & Ticketing</h5>
+                  <p class="text-gray-400 text-[11px] mt-2">To enable real payments and WhatsApp tickets, backend development is required. Integrate a service like Razorpay for payments and Twilio for WhatsApp.</p>
+                  <div class="mt-3 space-y-3">
+                     <input type="text" placeholder="Enter Razorpay API Key (for future use)" class="w-full bg-[#1c1c1c] border border-dashed border-white/10 text-white rounded p-3 focus:outline-none focus:border-gold-500 placeholder:text-gray-600">
+                     <input type="text" placeholder="Enter Twilio/WhatsApp API Key (for future use)" class="w-full bg-[#1c1c1c] border border-dashed border-white/10 text-white rounded p-3 focus:outline-none focus:border-gold-500 placeholder:text-gray-600">
+                  </div>
+                </div>
+                 <button type="button" id="saveSiteConfigBtn" class="w-full cta-btn py-3.5 rounded-lg font-bold uppercase mt-6">
+                  Save Site Configurations
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- Tab 4: Gallery Manager -->
+        <div class="admin-tab-content space-y-6 hidden" id="tabGallery">
+          <div class="flex justify-between items-center">
+            <h4 class="text-lg font-bold text-gold-500 uppercase tracking-wide">Manage Gallery Media</h4>
+            <button class="cta-btn px-4 py-2 rounded text-xs font-bold uppercase flex items-center gap-1" id="createGalleryBtn">
+              <i class="fas fa-plus"></i> Add Media Item
+            </button>
+          </div>
+          
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs text-left border border-white border-opacity-5">
+              <thead class="bg-black text-gold-500 uppercase tracking-wider font-bold">
+                <tr>
+                  <th class="p-3">Preview</th>
+                  <th class="p-3">Title</th>
+                  <th class="p-3">Category</th>
+                  <th class="p-3">Media URL / Path</th>
+                  <th class="p-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="galleryTableBody" class="divide-y divide-white divide-opacity-5 text-gray-300">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tab 5: Attendance Manager -->
+        <div class="admin-tab-content space-y-6 hidden" id="tabAttendance">
+          <h4 class="text-lg font-bold text-gold-500 uppercase tracking-wide">Mark Team Attendance</h4>
+          <div class="glass-card p-4 rounded-lg grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <div>
+              <label class="block text-gray-400 mb-1 text-xs">Select Date</label>
+              <input type="date" id="attendanceDate" class="w-full bg-[#1c1c1c] border border-white/10 text-white rounded p-2.5 focus:outline-none focus:border-gold-500">
+            </div>
+            <div>
+              <label class="block text-gray-400 mb-1 text-xs">Select Member</label>
+              <select id="attendanceMember" class="w-full bg-[#1c1c1c] border border-white/10 text-white rounded p-2.5 focus:outline-none focus:border-gold-500"></select>
+            </div>
+            <div>
+              <label class="block text-gray-400 mb-1 text-xs">Mark Status</label>
+              <select id="attendanceStatus" class="w-full bg-[#1c1c1c] border border-white/10 text-white rounded p-2.5 focus:outline-none focus:border-gold-500">
+                <option value="Present">Present</option>
+                <option value="Absent">Absent</option>
+              </select>
+            </div>
+            <button id="saveAttendanceBtn" class="cta-btn py-2.5 rounded text-xs font-bold uppercase">Save Record</button>
+          </div>
+          <div>
+            <h5 class="text-md font-bold text-gold-500/80 uppercase tracking-wide mt-4">Recent Records</h5>
+            <div id="recentAttendance" class="mt-2 space-y-1 text-xs font-mono"></div>
+          </div>
+        </div>
+
+        <!-- Tab 6: FAQ Manager -->
+        <div class="admin-tab-content space-y-6 hidden" id="tabFaq">
+          <div class="flex justify-between items-center">
+            <h4 class="text-lg font-bold text-gold-500 uppercase tracking-wide">Manage FAQ Items</h4>
+            <button class="cta-btn px-4 py-2 rounded text-xs font-bold uppercase flex items-center gap-1" id="createFaqBtn">
+              <i class="fas fa-plus"></i> Add FAQ
+            </button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs text-left border border-white border-opacity-5">
+              <thead class="bg-black text-gold-500 uppercase tracking-wider font-bold">
+                <tr>
+                  <th class="p-3">#</th>
+                  <th class="p-3">Question (EN)</th>
+                  <th class="p-3">Answer (EN)</th>
+                  <th class="p-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="faqTableBody" class="divide-y divide-white divide-opacity-5 text-gray-300"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tab 7: Site Content Editor -->
+        <div class="admin-tab-content space-y-6 hidden" id="tabContent">
+          <h4 class="text-lg font-bold text-gold-500 uppercase tracking-wide">Edit Website Content</h4>
+          <p class="text-xs text-gray-400">Changes apply to the public homepage after refresh.</p>
+          <form id="siteContentForm" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div><label class="block text-gray-400 mb-1">Hero Title (EN)</label><input type="text" id="contentHeroTitleEn" class="w-full bg-[#1c1c1c] border border-white/10 text-white rounded p-3 focus:outline-none focus:border-gold-500"></div>
+            <div><label class="block text-gray-400 mb-1">Hero Title (MR)</label><input type="text" id="contentHeroTitleMr" class="w-full bg-[#1c1c1c] border border-white/10 text-white rounded p-3 focus:outline-none focus:border-gold-500"></div>
+            <div><label class="block text-gray-400 mb-1">Hero Tagline (EN)</label><input type="text" id="contentHeroTaglineEn" class="w-full bg-[#1c1c1c] border border-white/10 text-white rounded p-3 focus:outline-none focus:border-gold-500"></div>
+            <div><label class="block text-gray-400 mb-1">Hero Tagline (MR)</label><input type="text" id="contentHeroTaglineMr" class="w-full bg-[#1c1c1c] border border-white/10 text-white rounded p-3 focus:outline-none focus:border-gold-500"></div>
+            <div><label class="block text-gray-400 mb-1">Shows Subtitle (EN)</label><input type="text" id="contentShowsSubEn" class="w-full bg-[#1c1c1c] border border-white/10 text-white rounded p-3 focus:outline-none focus:border-gold-500"></div>
+            <div><label class="block text-gray-400 mb-1">Shows Subtitle (MR)</label><input type="text" id="contentShowsSubMr" class="w-full bg-[#1c1c1c] border border-white/10 text-white rounded p-3 focus:outline-none focus:border-gold-500"></div>
+            <div><label class="block text-gray-400 mb-1">Gallery Subtitle (EN)</label><input type="text" id="contentGallerySubEn" class="w-full bg-[#1c1c1c] border border-white/10 text-white rounded p-3 focus:outline-none focus:border-gold-500"></div>
+            <div><label class="block text-gray-400 mb-1">Gallery Subtitle (MR)</label><input type="text" id="contentGallerySubMr" class="w-full bg-[#1c1c1c] border border-white/10 text-white rounded p-3 focus:outline-none focus:border-gold-500"></div>
+            <div><label class="block text-gray-400 mb-1">Booking Subtitle (EN)</label><input type="text" id="contentBookingSubEn" class="w-full bg-[#1c1c1c] border border-white/10 text-white rounded p-3 focus:outline-none focus:border-gold-500"></div>
+            <div><label class="block text-gray-400 mb-1">Booking Subtitle (MR)</label><input type="text" id="contentBookingSubMr" class="w-full bg-[#1c1c1c] border border-white/10 text-white rounded p-3 focus:outline-none focus:border-gold-500"></div>
+            <div><label class="block text-gray-400 mb-1">Contact Subtitle (EN)</label><input type="text" id="contentContactSubEn" class="w-full bg-[#1c1c1c] border border-white/10 text-white rounded p-3 focus:outline-none focus:border-gold-500"></div>
+            <div><label class="block text-gray-400 mb-1">Contact Subtitle (MR)</label><input type="text" id="contentContactSubMr" class="w-full bg-[#1c1c1c] border border-white/10 text-white rounded p-3 focus:outline-none focus:border-gold-500"></div>
+            <div class="md:col-span-2"><label class="block text-gray-400 mb-1">Footer About (EN)</label><textarea id="contentFooterAboutEn" rows="2" class="w-full bg-[#1c1c1c] border border-white/10 text-white rounded p-3 focus:outline-none focus:border-gold-500"></textarea></div>
+            <div class="md:col-span-2"><label class="block text-gray-400 mb-1">Footer About (MR)</label><textarea id="contentFooterAboutMr" rows="2" class="w-full bg-[#1c1c1c] border border-white/10 text-white rounded p-3 focus:outline-none focus:border-gold-500"></textarea></div>
+            <div class="md:col-span-2"><button type="submit" class="w-full cta-btn py-3.5 rounded-lg font-bold uppercase">Save Site Content</button></div>
+          </form>
+        </div>
+        
+      </div>
+    </div>
+    
+  </main>
+
+  <!-- 1. Create/Edit Event Show Modal -->
+  <div class="fixed inset-0 z-[7000] hidden items-center justify-center bg-black bg-opacity-90 p-4 overflow-y-auto" id="showFormModal">
+    <div class="bg-[#121212] border-2 border-gold-500 rounded-2xl p-6 max-w-lg w-full space-y-6 shadow-2xl relative">
+      <span class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl cursor-pointer" id="closeShowFormModal">&times;</span>
+      <h3 class="text-lg font-bold text-gold-500 uppercase tracking-wider" id="showFormTitle">Add New Scheduled Show</h3>
+      
+      <form id="showForm" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+        <input type="hidden" id="formShowId">
+        
+        <div class="md:col-span-2">
+          <label class="block text-gray-400 mb-1">Event Title (English)</label>
+          <input type="text" id="formTitleEn" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-2.5 focus:outline-none focus:border-gold-500">
+        </div>
+        
+        <div class="md:col-span-2">
+          <label class="block text-gray-400 mb-1">Event Title (Marathi)</label>
+          <input type="text" id="formTitleMr" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-2.5 focus:outline-none focus:border-gold-500">
+        </div>
+        
+        <div>
+          <label class="block text-gray-400 mb-1">Date & Time</label>
+          <input type="datetime-local" id="formDate" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-2.5 focus:outline-none focus:border-gold-500">
+        </div>
+        
+        <div>
+          <label class="block text-gray-400 mb-1">Select Venue</label>
+          <select id="formVenueEn" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-2.5 focus:outline-none focus:border-gold-500"></select>
+        </div>
+        
+        <div>
+          <label class="block text-gray-400 mb-1">VIP Ticket Price (₹)</label>
+          <input type="number" id="formPriceVip" required min="0" class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-2.5 focus:outline-none focus:border-gold-500">
+        </div>
+        
+        <div>
+          <label class="block text-gray-400 mb-1">Premium Ticket Price (₹)</label>
+          <input type="number" id="formPricePrem" required min="0" class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-2.5 focus:outline-none focus:border-gold-500">
+        </div>
+        
+        <div>
+          <label class="block text-gray-400 mb-1">Regular Ticket Price (₹)</label>
+          <input type="number" id="formPriceReg" required min="0" class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-2.5 focus:outline-none focus:border-gold-500">
+        </div>
+        
+        <div>
+          <label class="block text-gray-400 mb-1">Status</label>
+          <select id="formStatus" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-2.5 focus:outline-none focus:border-gold-500">
+            <option value="featured">Featured (Active Booking)</option>
+            <option value="upcoming">Upcoming</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+        
+        <div class="md:col-span-2">
+          <label class="block text-gray-400 mb-1">Description (English)</label>
+          <textarea id="formDescEn" rows="3" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-2.5 focus:outline-none focus:border-gold-500"></textarea>
+        </div>
+        
+        <div class="md:col-span-2">
+          <label class="block text-gray-400 mb-1">Description (Marathi)</label>
+          <textarea id="formDescMr" rows="3" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-2.5 focus:outline-none focus:border-gold-500"></textarea>
+        </div>
+        
+        <div class="md:col-span-2 pt-2 flex justify-end gap-3">
+          <button type="button" class="outline-btn px-4 py-2 rounded text-xs font-bold uppercase" id="cancelShowForm">Cancel</button>
+          <button type="submit" class="cta-btn px-6 py-2 rounded text-xs font-bold uppercase">Save Show</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. Create/Edit Gallery Item Modal -->
+  <div class="fixed inset-0 z-[7000] hidden items-center justify-center bg-black bg-opacity-90 p-4 overflow-y-auto" id="galleryFormModal">
+    <div class="bg-[#121212] border-2 border-gold-500 rounded-2xl p-6 max-w-md w-full space-y-6 shadow-2xl relative">
+      <span class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl cursor-pointer" id="closeGalleryFormModal">&times;</span>
+      <h3 class="text-lg font-bold text-gold-500 uppercase tracking-wider" id="galleryFormTitle">Add Gallery Item</h3>
+      
+      <form id="galleryForm" class="space-y-4 text-xs">
+        <input type="hidden" id="formGalleryId">
+        
+        <div>
+          <label class="block text-gray-400 mb-1">Media Title</label>
+          <input type="text" id="formGalTitle" required placeholder="e.g. Backstage Rehearsal" class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-2.5 focus:outline-none focus:border-gold-500">
+        </div>
+        
+        <div>
+          <label class="block text-gray-400 mb-1">Category</label>
+          <select id="formGalCategory" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-2.5 focus:outline-none focus:border-gold-500">
+            <option value="drama">Drama</option>
+            <option value="music">Music</option>
+            <option value="scenes">Scenes</option>
+          </select>
+        </div>
+        
+        <div>
+          <label class="block text-gray-400 mb-1">Media URL / Path (Image or Video)</label>
+          <input type="text" id="formGalUrl" required placeholder="e.g. assets/gallery/image_1.jpg" class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-2.5 focus:outline-none focus:border-gold-500">
+          <p class="text-[9px] text-gray-500 mt-1">Provide relative local paths like "assets/gallery/image.jpg" or full URLs.</p>
+        </div>
+        
+        <div>
+          <label class="block text-gray-400 mb-1">Video Thumbnail URL (Optional, for .mp4 only)</label>
+          <input type="text" id="formGalThumbnail" placeholder="e.g. assets/gallery/video_thumb.jpg" class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-2.5 focus:outline-none focus:border-gold-500">
+        </div>
+        
+        <div class="pt-2 flex justify-end gap-3">
+          <button type="button" class="outline-btn px-4 py-2 rounded text-xs font-bold uppercase" id="cancelGalleryForm">Cancel</button>
+          <button type="submit" class="cta-btn px-6 py-2 rounded text-xs font-bold uppercase">Save Media</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. Create/Edit FAQ Modal -->
+  <div class="fixed inset-0 z-[7000] hidden items-center justify-center bg-black bg-opacity-90 p-4 overflow-y-auto" id="faqFormModal">
+    <div class="bg-[#121212] border-2 border-gold-500 rounded-2xl p-6 max-w-lg w-full space-y-6 shadow-2xl relative">
+      <span class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl cursor-pointer" id="closeFaqFormModal">&times;</span>
+      <h3 class="text-lg font-bold text-gold-500 uppercase tracking-wider" id="faqFormTitle">Add FAQ Item</h3>
+      <form id="faqForm" class="space-y-4 text-xs">
+        <input type="hidden" id="formFaqId">
+        <div><label class="block text-gray-400 mb-1">Question (English)</label><input type="text" id="formFaqQEn" required class="w-full bg-[#1c1c1c] border border-white/10 text-white rounded p-2.5 focus:outline-none focus:border-gold-500"></div>
+        <div><label class="block text-gray-400 mb-1">Answer (English)</label><textarea id="formFaqAEn" rows="3" required class="w-full bg-[#1c1c1c] border border-white/10 text-white rounded p-2.5 focus:outline-none focus:border-gold-500"></textarea></div>
+        <div><label class="block text-gray-400 mb-1">Question (Marathi)</label><input type="text" id="formFaqQMr" required class="w-full bg-[#1c1c1c] border border-white/10 text-white rounded p-2.5 focus:outline-none focus:border-gold-500"></div>
+        <div><label class="block text-gray-400 mb-1">Answer (Marathi)</label><textarea id="formFaqAMr" rows="3" required class="w-full bg-[#1c1c1c] border border-white/10 text-white rounded p-2.5 focus:outline-none focus:border-gold-500"></textarea></div>
+        <div class="flex justify-end gap-3 pt-2">
+          <button type="button" class="outline-btn px-4 py-2 rounded text-xs font-bold uppercase" id="cancelFaqForm">Cancel</button>
+          <button type="submit" class="cta-btn px-6 py-2 rounded text-xs font-bold uppercase">Save FAQ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="p-6 text-center text-[10px] text-gray-500 uppercase tracking-widest border-t border-white border-opacity-5">
+    &copy; Kalabhoomi Entertainment Mandal. Admin Terminal.
+  </footer>
+
+  <script src="/admin.js"></script>
+</body>
+</html>

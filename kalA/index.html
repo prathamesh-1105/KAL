@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kalabhoomi Entertainment Mandal</title>
+  <link rel="icon" href="assets/logo.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/framer-motion@10.12.16/dist/framer-motion.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+  <style id="app-style">
+    @font-face {
+      font-family: 'Marathi';
+      src: url('https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Marathi&display=swap');
+    }
+    
+    :root {
+      --primary: #0B0B0B;
+      --accent: #8B0000;
+      --highlight: #D4AF37;
+      --light-text: #F5F5F5;
+      --dark-overlay: rgba(0, 0, 0, 0.7);
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--primary);
+      color: var(--light-text);
+      overflow-x: hidden;
+    }
+    
+    h1, h2, h3, .marathi-font {
+      font-family: 'Tiro Devanagari Marathi', serif;
+    }
+    
+    .hero-section {
+      height: 100vh;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .hero-content {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 3;
+      background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.4) 100%);
+    }
+    
+    .video-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      overflow: hidden;
+    }
+    
+    .video-container video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.8) contrast(1.1);
+      transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+      opacity: 1;
+    }
+
+    .hero-video-fallback {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      text-align: center;
+      background: radial-gradient(circle at center, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.85) 70%);
+      color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .video-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, 
+        rgba(0, 0, 0, 0.2) 0%, 
+        rgba(139, 0, 0, 0.1) 50%, 
+        rgba(11, 11, 11, 0.3) 100%);
+      z-index: 2;
+      transition: all 1.5s ease;
+    }
+    
+    .cta-btn {
+      background-color: var(--accent);
+      color: var(--light-text);
+      padding: 12px 24px;
+      border-radius: 4px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+    
+    .cta-btn:hover {
+      background-color: transparent;
+      border-color: var(--accent);
+      transform: translateY(-3px);
+    }
+    
+    .navigation {
+      position: sticky;
+      top: 0;
+      background-color: rgba(11, 11, 11, 0.95);
+      z-index: 1000;
+      padding: 1rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(5px);
+    }
+    
+    .nav-link {
+      color: var(--light-text);
+      transition: all 0.3s ease;
+      position: relative;
+      padding: 0.5rem 1rem;
+    }
+    
+    .nav-link:hover {
+      color: var(--highlight);
+    }
+    
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background-color: var(--highlight);
+      transition: all 0.3s ease;
+      transform: translateX(-50%);
+    }
+    
+    .nav-link:hover::after {
+      width: 80%;
+    }
+    
+    .section {
+      min-height: 100vh;
+      padding: 5rem 1rem;
+    }
+    
+    .section-title {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 2.5rem;
+    }
+    
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      width: 60%;
+      height: 3px;
+      background-color: var(--accent);
+    }
+    
+    .card {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      border-color: rgba(212, 175, 55, 0.3);
+    }
+    
+    .card-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+    
+    .spotlight {
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 70%);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    to {
+      margin: 3px;
+      border-radius: 5px 5px 0 0;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .seat.available {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    .seat.selected {
+      background-color: var(--highlight);
+    }
+    
+    .seat.reserved {
+      background-color: var(--accent);
+      cursor: not-allowed;
+    }
+    
+    .seat:hover:not(.reserved) {
+      transform: scale(1.1);
+    }
+    
+    .fade-in {
+      animation: fadeIn 1s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .loader {
+      width: 48px;
+      height: 48px;
+      border: 5px solid var(--highlight);
+      border-bottom-color: transparent;
+      border-radius: 50%;
+      display: inline-block;
+      box-sizing: border-box;
+      animation: rotation 1s linear infinite;
+    }
+
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      padding: 6px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+    }
+
+    .hero-logo {
+      width: 84px;
+      height: 84px;
+      object-fit: contain;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      padding: 10px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
+    }
+
+    body.light-theme .brand-logo,
+    body.light-theme .hero-logo {
+      background: rgba(255, 255, 255, 0.98);
+      border: 1px solid rgba(11, 11, 11, 0.18);
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
+    }
+    
+    @keyframes rotation {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+    
+    /* Learning Hub Styles */
+    .progress-bar {
+      height: 8px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .progress {
+      height: 100%;
+      background-color: var(--highlight);
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+    
+    .filter-btn {
+      padding: 8px 16px;
+      background-color: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      color: var(--light-text);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .filter-btn.active {
+      background-color: var(--accent);
+      border-color: var(--accent);
+    }
+    
+    .filter-btn:hover:not(.active) {
+      border-color: var(--highlight);
+      color: var(--highlight);
+    }
+    
+    /* Theater Seat Map */
+    .theatre-screen {
+      height: 10px;
+      background-color: var(--highlight);
+      width: 80%;
+      margin: 0 auto 40px;
+      border-radius: 50%;
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.7);
+    }
+    
+    .legend {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin: 0 10px;
+    }
+    
+    .legend-color {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      margin-right: 8px;
+    }
+    
+    /* Gallery */
+    .gallery-item {
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+    }
+    
+    .gallery-item img {
+      transition: transform 0.5s ease;
+    }
+    
+    .gallery-item:hover img {
+      transform: scale(1.05);
+    }
+    
+    .gallery-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .gallery-item:hover .gallery-overlay {
+      opacity: 1;
+    }
+    
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal-content {
+      max-width: 90%;
+      max-height: 90%;
+    }
+    
+    .close-modal {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: white;
+      font-size: 30px;
+      cursor: pointer;
+    }
+    
+    /* Form Styles */
+    .form-input {
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--light-text);
+      padding: 12px 16px;
+      border-radius: 4px;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+    
+    .form-input:focus {
+      border-color: var(--highlight);
+      box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.3);
+      outline: none;
+    }
+    
+    .form-input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+    
+    /* Responsive styles */
+    @media (max-width: 768px) {
+      .hero-section h1 {
+        font-size: 2.5rem;
+      }
+
+      .hero-logo {
+        width: 68px;
+        height: 68px;
+        padding: 8px;
+      }
+      
+      .section {
+        padding: 3rem 1rem;
+      }
+      
+      .nav-menu {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        width: 100%;
+        background-color: rgba(11, 11, 11, 0.95);
+        padding: 1rem;
+      }
+      
+      .nav-menu.show {
+        display: flex;
+      }
+      
+      .mobile-menu-btn {
+        display: block;
+      }
+    }
+    
+    @media (min-width: 769px) {
+      .mobile-menu-btn {
+        display: none;
+      }
+      
+      .nav-menu {
+        display: flex;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Hero Section -->
+  <section class="hero-section" id="home">
+    <div class="video-container">
+      <video
+        id="heroVideo"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="auto"
+      >
+        <source src="assets/hero.mp4" type="video/mp4">
+      </video>
+      <div class="hero-video-fallback" id="heroVideoFallback" style="display:none;">
+        <div>
+          <div class="text-xl md:text-2xl font-bold mb-2">Hero video not found</div>
+          <div class="text-sm md:text-base opacity-90">
+            Check that <span class="font-semibold">assets/hero.mp4</span> exists, then reload.
+          </div>
+        </div>
+      </div>
+      <div class="video-overlay"></div>
+    </div>
+    
+    <div class="hero-content text-center">
+      <div class="mb-4 fade-in">
+        <img src="assets/logo.png" alt="Kalabhoomi logo" class="hero-logo inline-block">
+      </div>
+      <h1 class="text-5xl md:text-7xl font-bold mb-6 fade-in">Kalabhoomi Entertainment Mandal</h1>
+      <p class="text-2xl md:text-3xl mb-8 fade-in marathi-font">कला हीच आमची ओळख</p>
+      <button class="cta-btn fade-in" onclick="document.getElementById('shows').scrollIntoView({behavior: 'smooth'})" data-translate="explore_shows">Explore Shows</button>
+    </div>
+  </section>
+  
+  <!-- Navigation -->
+  <nav class="navigation">
+    <div class="container mx-auto flex justify-between items-center">
+      <a href="#home" class="flex items-center gap-3 text-xl font-bold marathi-font">
+        <img src="assets/logo.png" alt="Kalabhoomi logo" class="brand-logo" loading="eager">
+        <span><span class="gold-text">Kala</span>bhoomi</span>
+      </a>
+      
+      <button class="mobile-menu-btn">
+        <i class="fas fa-bars"></i>
+      </button>
+      
+      <div class="nav-menu">
+        <a href="#home" class="nav-link" data-translate="nav_home">Home</a>
+        <a href="#shows" class="nav-link" data-translate="nav_shows">Shows</a>
+        <a href="#booking" class="nav-link" data-translate="nav_bookings">Bookings</a>
+        <a href="#contact" class="nav-link" data-translate="nav_contact">Contact</a>
+      </div>
+      
+      <div class="flex items-center gap-4">
+        <button class="theme-toggle">
+          <i class="fas fa-sun"></i>
+        </button>
+        <button class="lang-toggle">
+          <i class="fas fa-language"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <script>
+    (() => {
+      const getAdminLoginUrl = () => window.location.protocol === 'file:' ? '../admin.html' : '/login';
+      const openAdminLoginTab = () => {
+        const loginWindow = window.open(getAdminLoginUrl(), '_blank');
+        if (loginWindow) {
+          loginWindow.opener = null;
+        } else {
+          window.location.href = getAdminLoginUrl();
+        }
+      };
+
+      document.addEventListener('keydown', (e) => {
+        const isAdminShortcut = e.ctrlKey && e.shiftKey && (e.key || '').toLowerCase() === 'z';
+        if (isAdminShortcut && !e.repeat) {
+          e.preventDefault();
+          e.stopPropagation();
+          openAdminLoginTab();
+        }
+      }, true);
+
+      let logoTapCount = 0;
+      let logoTapTimer;
+      document.addEventListener('click', (e) => {
+        const logo = e.target.closest('.brand-logo, .hero-logo');
+        const brandLink = e.target.closest('a[href="#home"]');
+        const isBrandLogoClick = logo || (brandLink && brandLink.querySelector('.brand-logo, .hero-logo'));
+
+        if (!isBrandLogoClick) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+        logoTapCount += 1;
+        clearTimeout(logoTapTimer);
+
+        if (logoTapCount >= 5) {
+          logoTapCount = 0;
+          openAdminLoginTab();
+        } else {
+          logoTapTimer = setTimeout(() => { logoTapCount = 0; }, 1200);
+        }
+      }, true);
+    })();
+  </script>
+  
+  <!-- Featured Shows Section -->
+  <section class="section" id="featured">
+    <div class="container mx-auto">
+      <h2 class="section-title text-3xl md:text-4xl font-bold" data-translate="current_show">Current Show</h2>
+      
+      <div class="text-center py-16">
+        <div class="max-w-2xl mx-auto">
+          <div class="bg-black bg-opacity-50 p-8 rounded-lg">
+            <i class="fas fa-theater-masks text-6xl text-highlight mb-6"></i>
+            <h3 class="text-2xl font-bold mb-4" data-translate="no_shows_scheduled">No Shows Currently Scheduled</h3>
+            <p class="text-gray-300 mb-6" data-translate="preparing_performance">We're preparing our next amazing performance. Check back soon for updates!</p>
+            <p class="text-sm text-gray-400" data-translate="follow_instagram_updates">Follow us on Instagram for the latest updates on upcoming shows.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Shows & Events Section -->
+  <section class="section" id="shows">
+    <div class="container mx-auto">
+      <h2 class="section-title text-3xl md:text-4xl font-bold" data-translate="shows_events">Shows & Events</h2>
+      
+      <div class="text-center py-16">
+        <div class="max-w-2xl mx-auto">
+          <div class="bg-black bg-opacity-50 p-8 rounded-lg">
+            <i class="fas fa-calendar-alt text-6xl text-highlight mb-6"></i>
+            <h3 class="text-2xl font-bold mb-4" data-translate="upcoming_shows">Upcoming Shows</h3>
+            <p class="text-gray-300 mb-6" data-translate="working_production">We're working on our next production. Stay tuned for exciting performances!</p>
+            <p class="text-sm text-gray-400 mb-6" data-translate="follow_instagram_announcements">For show announcements and updates, follow us on Instagram.</p>
+            <a href="https://www.instagram.com/kalabhoomi_official?igsh=MTdreTZvazN1dzF6dA==" target="_blank" class="cta-btn">
+              <i class="fab fa-instagram mr-2"></i>
+              <span data-translate="follow_instagram">Follow on Instagram</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Booking Section -->
+  <section class="section bg-gray-900" id="booking">
+    <div class="container mx-auto">
+      <h2 class="section-title text-3xl md:text-4xl font-bold" data-translate="book_tickets">Book Tickets</h2>
+      
+      <div class="max-w-2xl mx-auto">
+        <div class="bg-black bg-opacity-50 p-8 rounded-lg text-center">
+          <h3 class="text-2xl font-bold mb-4" data-translate="simple_booking">Simple Booking Process</h3>
+          <p class="mb-6 text-gray-300" data-translate="booking_steps">Follow these easy steps to book your tickets:</p>
+          
+          <!-- Step 1 -->
+          <div class="mb-8">
+            <div class="flex items-center mb-4">
+              <div class="w-8 h-8 bg-highlight rounded-full flex items-center justify-center font-bold mr-4">1</div>
+              <h4 class="text-xl font-bold" data-translate="step1_title">Click Book Tickets Button</h4>
+            </div>
+            <p class="text-gray-400 mb-4" data-translate="step1_desc">You'll be redirected to our booking form</p>
+          </div>
+          
+          <!-- Step 2 -->
+          <div class="mb-8">
+            <div class="flex items-center mb-4">
+              <div class="w-8 h-8 bg-highlight rounded-full flex items-center justify-center font-bold mr-4">2</div>
+              <h4 class="text-xl font-bold" data-translate="step2_title">Fill Your Information</h4>
+            </div>
+            <p class="text-gray-400 mb-4" data-translate="step2_desc">Enter your details in the Google Form</p>
+          </div>
+          
+          <!-- Step 3 -->
+          <div class="mb-8">
+            <div class="flex items-center mb-4">
+              <div class="w-8 h-8 bg-highlight rounded-full flex items-center justify-center font-bold mr-4">3</div>
+              <h4 class="text-xl font-bold" data-translate="step3_title">Choose Seats & Pay</h4>
+            </div>
+            <p class="text-gray-400 mb-4" data-translate="step3_desc">Select your seats and scan QR code to pay</p>
+          </div>
+          
+          <!-- Step 4 -->
+          <div class="mb-8">
+            <div class="flex items-center mb-4">
+              <div class="w-8 h-8 bg-highlight rounded-full flex items-center justify-center font-bold mr-4">4</div>
+              <h4 class="text-xl font-bold" data-translate="step4_title">Upload Payment Screenshot</h4>
+            </div>
+            <p class="text-gray-400 mb-4" data-translate="step4_desc">Upload your payment confirmation</p>
+          </div>
+          
+          <!-- CTA Button -->
+          <div class="text-center">
+            <a href="https://forms.gle/your-form-id" target="_blank" class="cta-btn text-lg px-8 py-4">
+              <i class="fas fa-ticket-alt mr-2"></i>
+              <span data-translate="book_tickets_now">Book Tickets Now</span>
+            </a>
+            <p class="text-sm text-gray-400 mt-4" data-translate="opens_new_tab">
+              <i class="fas fa-external-link-alt mr-2"></i>
+              Opens in new tab
+            </p>
+          </div>
+        </div>
+        
+        <!-- Show Info Template -->
+        <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="bg-black bg-opacity-30 p-6 rounded-lg">
+            <h4 class="font-bold mb-4 text-highlight">Current Show</h4>
+            <h3 class="text-xl font-bold mb-2">Show Name Here</h3>
+            <p class="text-sm text-gray-400 mb-2">Brief description of the show</p>
+            <div class="space-y-2 text-sm">
+              <p><i class="far fa-calendar-alt mr-2"></i> Date | Time</p>
+              <p><i class="fas fa-map-marker-alt mr-2"></i> Venue, Location</p>
+              <p><i class="fas fa-rupee-sign mr-2"></i> Price Range</p>
+            </div>
+          </div>
+          
+          <div class="bg-black bg-opacity-30 p-6 rounded-lg">
+            <h4 class="font-bold mb-4 text-highlight">Seat Categories</h4>
+            <div class="space-y-3 text-sm">
+              <div class="flex justify-between">
+                <span>Regular Seats</span>
+                <span class="font-bold">₹Price</span>
+              </div>
+              <div class="flex justify-between">
+                <span>Premium Seats</span>
+                <span class="font-bold">₹Price</span>
+              </div>
+              <div class="flex justify-between">
+                <span>VIP Seats</span>
+                <span class="font-bold">₹Price</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Contact Section -->
+  <section class="section bg-gray-900" id="contact">
+    <div class="container mx-auto">
+      <h2 class="section-title text-3xl md:text-4xl font-bold" data-translate="contact_us">Contact Us</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div>
+          <h3 class="text-2xl font-bold mb-4" data-translate="get_in_touch">Get in Touch</h3>
+          
+          <form>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label class="block text-sm font-bold mb-2" data-translate="your_name">Name</label>
+                <input type="text" class="form-input" data-placeholder="your_name" placeholder="Your name">
+              </div>
+              <div>
+                <label class="block text-sm font-bold mb-2" data-translate="your_email">Email</label>
+                <input type="email" class="form-input" data-placeholder="your_email" placeholder="Your email">
+              </div>
+            </div>
+            
+            <div class="mb-4">
+              <label class="block text-sm font-bold mb-2" data-translate="subject">Subject</label>
+              <input type="text" class="form-input" data-placeholder="subject" placeholder="Subject">
+            </div>
+            
+            <div class="mb-6">
+              <label class="block text-sm font-bold mb-2" data-translate="message">Message</label>
+              <textarea class="form-input" rows="4" data-placeholder="message" placeholder="Your message..."></textarea>
+            </div>
+            
+            <button type="submit" class="cta-btn w-full" data-translate="send_message">Send Message</button>
+          </form>
+          
+          <div class="mt-8">
+            <h3 class="text-xl font-bold mb-4" data-translate="contact_info">Contact Information</h3>
+            
+            <div class="space-y-4">
+              <div class="flex items-start">
+                <i class="fas fa-map-marker-alt mt-1 mr-3 text-highlight"></i>
+                <p data-translate="address">123 Theatre Lane, Dadar West, Mumbai, Maharashtra 400028, India</p>
+              </div>
+              
+              <div class="flex items-center">
+                <i class="fas fa-phone-alt mr-3 text-highlight"></i>
+                <p data-translate="phone">+91 98765 43210</p>
+              </div>
+              
+              <div class="flex items-center">
+                <i class="fas fa-envelope mr-3 text-highlight"></i>
+                <p data-translate="email">info@kalabhoomi.com</p>
+              </div>
+              
+              <div class="flex items-center">
+                <i class="fab fa-instagram mr-3 text-highlight"></i>
+                <p data-translate="instagram_handle">@kalabhoomi_official</p>
+              </div>
+            </div>
+            <div class="mt-6 flex gap-4">
+              <a href="javascript:void(0)" class="w-10 h-10 rounded-full bg-accent flex items-center justify-center">
+                <i class="fab fa-facebook-f"></i>
+              </a>
+              <a href="https://www.instagram.com/kalabhoomi_official?igsh=MTdreTZvazN1dzF6dA==" target="_blank" class="w-10 h-10 rounded-full bg-accent flex items-center justify-center">
+                <i class="fab fa-instagram"></i>
+              </a>
+              <a href="javascript:void(0)" class="w-10 h-10 rounded-full bg-accent flex items-center justify-center">
+                <i class="fab fa-youtube"></i>
+              </a>
+              <a href="javascript:void(0)" class="w-10 h-10 rounded-full bg-accent flex items-center justify-center">
+                <i class="fab fa-whatsapp"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3771.9378782360155!2d72.83565151484851!3d19.02194058711916!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7cedb0ea09f45%3A0xc1f64bd63925f0d6!2sDadar%2C%20Mumbai%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1621345678901!5m2!1sen!2sin" width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy" class="rounded-lg mb-8"></iframe>
+          
+          <div class="bg-black bg-opacity-50 p-6 rounded-lg">
+            <h3 class="text-xl font-bold mb-4" data-translate="faq">Frequently Asked Questions</h3>
+            
+            <div class="space-y-4">
+              <div>
+                <button class="flex justify-between items-center w-full text-left font-bold py-2">
+                  <span data-translate="faq1_q">How do I book tickets?</span>
+                  <i class="fas fa-plus"></i>
+                </button>
+                <div class="text-sm mt-2" data-translate="faq1_a">You can book tickets through our website by visiting the Shows section, selecting your preferred show, and following the booking process. Alternatively, you can also call our box office.</div>
+              </div>
+              
+              <div class="border-t border-white border-opacity-10 pt-4">
+                <button class="flex justify-between items-center w-full text-left font-bold py-2">
+                  <span data-translate="faq2_q">Is there parking available?</span>
+                  <i class="fas fa-plus"></i>
+                </button>
+                <div class="hidden text-sm mt-2" data-translate="faq2_a">Yes, we have limited parking available at our venue. We recommend using public transport during peak show times.</div>
+              </div>
+              
+              <div class="border-t border-white border-opacity-10 pt-4">
+                <button class="flex justify-between items-center w-full text-left font-bold py-2">
+                  <span data-translate="faq3_q">Can I get a refund on my tickets?</span>
+                  <i class="fas fa-plus"></i>
+                </button>
+                <div class="hidden text-sm mt-2" data-translate="faq3_a">Refunds are available up to 48 hours before the show. After that, you can transfer your ticket to someone else but refunds are not possible.</div>
+              </div>
+              
+              <div class="border-t border-white border-opacity-10 pt-4">
+                <button class="flex justify-between items-center w-full text-left font-bold py-2">
+                  <span data-translate="faq4_q">How can I join as an artist?</span>
+                  <i class="fas fa-plus"></i>
+                </button>
+                <div class="hidden text-sm mt-2" data-translate="faq4_a">Visit our Artist Registration section to submit your application. We review all applications and invite selected candidates for auditions.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Footer -->
+  <footer class="bg-black py-10">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+        <div>
+          <div class="flex items-center gap-3 mb-4">
+            <img src="assets/logo.png" alt="Kalabhoomi logo" class="brand-logo" loading="lazy">
+            <h3 class="text-xl font-bold">Kalabhoomi</h3>
+          </div>
+          <p class="text-sm mb-4" data-translate="footer_about">Kalabhoomi Entertainment Mandal is dedicated to preserving and promoting Marathi theatre, Natya Sangeet, and cultural arts.</p>
+          <div class="flex gap-4">
+            <a href="javascript:void(0)" class="text-white hover:text-highlight"><i class="fab fa-facebook-f"></i></a>
+            <a href="javascript:void(0)" class="text-white hover:text-highlight"><i class="fab fa-instagram"></i></a>
+            <a href="javascript:void(0)" class="text-white hover:text-highlight"><i class="fab fa-youtube"></i></a>
+            <a href="javascript:void(0)" class="text-white hover:text-highlight"><i class="fab fa-twitter"></i></a>
+          </div>
+        </div>
+        
+        <div>
+          <h3 class="text-xl font-bold mb-4" data-translate="footer_quick_links">Quick Links</h3>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#home" class="hover:text-highlight" data-translate="nav_home">Home</a></li>
+            <li><a href="#shows" class="hover:text-highlight" data-translate="shows_events">Shows & Events</a></li>
+            <li><a href="#booking" class="hover:text-highlight" data-translate="book_tickets">Book Tickets</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="text-xl font-bold mb-4" data-translate="footer_support">Support</h3>
+          <ul class="space-y-2 text-sm">
+            <li><a href="javascript:void(0)" class="hover:text-highlight">FAQ</a></li>
+            <li><a href="#contact" class="hover:text-highlight" data-translate="contact_us">Contact Us</a></li>
+            <li><a href="javascript:void(0)" class="hover:text-highlight">Privacy Policy</a></li>
+            <li><a href="javascript:void(0)" class="hover:text-highlight">Terms & Conditions</a></li>
+            <li><a href="javascript:void(0)" class="hover:text-highlight">Refund Policy</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="text-xl font-bold mb-4" data-translate="footer_newsletter">Newsletter</h3>
+          <p class="text-sm mb-4" data-translate="footer_newsletter_desc">Subscribe to receive updates about upcoming shows, workshops, and more.</p>
+          <form>
+            <div class="flex">
+              <input type="email" data-placeholder="your_email" placeholder="Your email" class="form-input rounded-r-none">
+              <button type="submit" class="bg-accent px-4 rounded-r flex items-center justify-center">
+                <i class="fas fa-paper-plane"></i>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      
+      <div class="border-t border-white border-opacity-10 pt-8 text-center">
+        <p class="text-sm" data-translate="footer_copyright">&copy; 2025 Kalabhoomi Entertainment Mandal. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+  
+  <!-- Modal for Gallery -->
+  <div class="modal" id="galleryModal">
+    <span class="close-modal">&times;</span>
+    <img class="modal-content" id="modalImage">
+  </div>
+  
+  <div class="spotlight" id="spotlight"></div>
+  
+  <script id="app-script">
+    // Translation system
+    const translations = {
+      en: {
+        nav_home: "Home",
+        nav_shows: "Shows",
+        nav_bookings: "Bookings",
+        nav_contact: "Contact",
+        hero_tagline: "कला हीच आमची ओळख",
+        explore_shows: "Explore Shows",
+        current_show: "Current Show",
+        no_shows_scheduled: "No Shows Currently Scheduled",
+        preparing_performance: "We're preparing our next amazing performance. Check back soon for updates!",
+        follow_instagram_updates: "Follow us on Instagram for the latest updates on upcoming shows.",
+        shows_events: "Shows & Events",
+        upcoming_shows: "Upcoming Shows",
+        working_production: "We're working on our next production. Stay tuned for exciting performances!",
+        follow_instagram_announcements: "For show announcements and updates, follow us on Instagram.",
+        follow_instagram: "Follow on Instagram",
+        book_tickets: "Book Tickets",
+        simple_booking: "Simple Booking Process",
+        booking_steps: "Follow these easy steps to book your tickets:",
+        step1_title: "Click Book Tickets Button",
+        step1_desc: "You'll be redirected to our booking form",
+        step2_title: "Fill Your Information",
+        step2_desc: "Enter your details in the Google Form",
+        step3_title: "Choose Seats & Pay",
+        step3_desc: "Select your seats and scan QR code to pay",
+        step4_title: "Upload Payment Screenshot",
+        step4_desc: "Upload your payment confirmation",
+        book_tickets_now: "Book Tickets Now",
+        opens_new_tab: "Opens in new tab",
+        contact_us: "Contact Us",
+        get_in_touch: "Get in Touch",
+        your_name: "Your name",
+        your_email: "Your email",
+        subject: "Subject",
+        message: "Your message...",
+        send_message: "Send Message",
+        contact_info: "Contact Information",
+        address: "123 Theatre Lane, Dadar West, Mumbai, Maharashtra 400028, India",
+        phone: "+91 98765 43210",
+        email: "info@kalabhoomi.com",
+        instagram_handle: "@kalabhoomi_official",
+        faq: "Frequently Asked Questions",
+        faq1_q: "How do I book tickets?",
+        faq1_a: "You can book tickets through our website by visiting the Shows section, selecting your preferred show, and following the booking process. Alternatively, you can also call our box office.",
+        faq2_q: "Is there parking available?",
+        faq2_a: "Yes, we have limited parking available at our venue. We recommend using public transport during peak show times.",
+        faq3_q: "Can I get a refund on my tickets?",
+        faq3_a: "Refunds are available up to 48 hours before the show. After that, you can transfer your ticket to someone else but refunds are not possible.",
+        faq4_q: "How can I join as an artist?",
+        faq4_a: "Visit our Artist Registration section to submit your application. We review all applications and invite selected candidates for auditions.",
+        footer_about: "Kalabhoomi Entertainment Mandal is dedicated to preserving and promoting Marathi theatre, Natya Sangeet, and cultural arts.",
+        footer_quick_links: "Quick Links",
+        footer_support: "Support",
+        footer_newsletter: "Newsletter",
+        footer_newsletter_desc: "Subscribe to receive updates about upcoming shows, workshops, and more.",
+        footer_copyright: " 2025 Kalabhoomi Entertainment Mandal. All rights reserved."
+      },
+      mr: {
+        nav_home: "होम",
+        nav_shows: "कार्यक्रम",
+        nav_bookings: "बुकिंग",
+        nav_contact: "संपर्क",
+        hero_tagline: "Art is our identity",
+        explore_shows: "कार्यक्रम पाहा",
+        current_show: "सध्याचा कार्यक्रम",
+        no_shows_scheduled: "सध्या कोणतेही कार्यक्रम नियोजित नाहीत",
+        preparing_performance: "आमखाली आगामी अभिन्न कार्यक्रमाची तयारी सुरू आहे. लवकरच अपडेट्ससाठी तपासा!",
+        follow_instagram_updates: "आगामी कार्यक्रमांवर अद्ययावत माहितीसाठी आमच्या इन्स्टाग्रॅमवर फॉलो करा.",
+        shows_events: "कार्यक्रम आणि कार्यक्रम",
+        upcoming_shows: "आगामी कार्यक्रम",
+        working_production: "आमखाली आपला पुढील कार्यक्रम तयार होत आहे. उत्साहवर्धक कार्यक्रमांसाठी थांबा!",
+        follow_instagram_announcements: "कार्यक्रमांची घोषणा आणि अपडेट्ससाठी, आमच्या इन्स्टाग्रॅमवर फॉलो करा.",
+        follow_instagram: "इन्स्टाग्रॅमवर फॉलो करा",
+        book_tickets: "तिकीटे बुक करा",
+        simple_booking: "सोपी बुकिंग प्रक्रिया",
+        booking_steps: "आपली तिकीटे बुक करण्यासाठी या सोप्या पायऱ्या अनुसरण करा:",
+        step1_title: "बुक तिकीटे बटणावर क्लिक करा",
+        step1_desc: "आपल्याला आमच्या बुकिंग फॉर्मवर पुनर्निर्देशित केले जाईल",
+        step2_title: "आपली माहिती भरा",
+        step2_desc: "गुगल फॉर्ममध्ये आपले तपशील भरा",
+        step3_title: "जागा निवडा आणि भरा",
+        step3_desc: "आपली जागा निवडा आणि पेमेंटसाठी QR कोड स्कॅन करा",
+        step4_title: "पेमेंट स्क्रीनशॉट अपलोड करा",
+        step4_desc: "आपले पेमेंट पुष्टीकरण अपलोड करा",
+        book_tickets_now: "आता तिकीटे बुक करा",
+        opens_new_tab: "नवीन टॅबमध्ये उघडते",
+        contact_us: "आमच्याशी संपर्क साधा",
+        get_in_touch: "संपर्कात रहा",
+        your_name: "आपले नाव",
+        your_email: "आपला ईमेल",
+        subject: "विषय",
+        message: "आपला संदेश...",
+        send_message: "संदेश पाठवा",
+        contact_info: "संपर्क माहिती",
+        address: "१२३ थिएटर लेन, दादर पश्चिम, मुंबई, महाराष्ट्र ४०००२८, भारत",
+        phone: "+९१ ९८७६५ ४३२१०",
+        email: "info@kalabhoomi.com",
+        instagram_handle: "@kalabhoomi_official",
+        faq: "वारंवार विचारले जाणारे प्रश्न",
+        faq1_q: "मी तिकीटे कशी बुक करू शकतो?",
+        faq1_a: "आपण आमच्या वेबसाइटवरून तिकीटे बुक करू शकता, कार्यक्रम विभागात जाऊन आपल्या आवडत्या कार्यक्रमाची निवड करून बुकिंग प्रक्रिया पूर्ण करा. पर्यायी, आपण आमच्या बॉक्स ऑफिसला कॉल करू शकता.",
+        faq2_q: "पार्किंग सुविधा उपलब्ध आहे का?",
+        faq2_a: "होय, आमच्या व्हेन्यूवर मर्यादित पार्किंग सुविधा उपलब्ध आहे. वर्दळीच्या वेळी सार्वजनिक वाहतूक वापरण्याची शिफारस केली जाते.",
+        faq3_q: "मला तिकीटांचे परतावा मिळू शकतो का?",
+        faq3_a: "कार्यक्रमाच्या ४८ तासांपूर्वी परतावा उपलब्ध आहे. त्यानंतर, आपण आपले तिकीट इतर कोणालाही हस्तांतरित करू शकता परंतु परतावा शक्य नाही.",
+        faq4_q: "मी कलाकार म्हणून कसा सामील होऊ शकतो?",
+        faq4_a: "कलाकार नोंदणी विभागात भेट देऊन आपले अर्ज सादर करा. आम सर्व अर्जांचे पुनरावलोकन करून निवडलेल्या उमेदवारांना ऑडिशनसाठी आमंत्रित करतो.",
+        footer_about: "कलाभूमी एंटरटेनमेंट मंडळ मराठी रंगभूमी, नाट्यसंगीत आणि सांस्कृतिक कलांचे जतन आणि प्रचार करण्यासाठी समर्पित आहे.",
+        footer_quick_links: "जलद लिंक्स",
+        footer_support: "समर्थन",
+        footer_newsletter: "न्यूझलेटर",
+        footer_newsletter_desc: "आगामी कार्यक्रम, कार्यशाळा आणि अधिक माहितीसाठी सदस्यत्व घ्या.",
+        footer_copyright: " २०२५ कलाभूमी एंटरटेनमेंट मंडळ. सर्व हक्क सुरक्षित."
+      }
+    };
+
+    let currentLang = localStorage.getItem('language') || 'en';
+
+    function updateLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('language', lang);
+      
+      // Update all elements with translation keys
+      document.querySelectorAll('[data-translate]').forEach(element => {
+        const key = element.getAttribute('data-translate');
+        if (translations[lang][key]) {
+          element.textContent = translations[lang][key];
+        }
+      });
+      
+      // Update placeholders
+      document.querySelectorAll('[data-placeholder]').forEach(element => {
+        const key = element.getAttribute('data-placeholder');
+        if (translations[lang][key]) {
+          element.placeholder = translations[lang][key];
+        }
+      });
+      
+      // Update HTML lang attribute
+      document.documentElement.lang = lang;
+      
+      // Update language toggle button
+      const langToggle = document.querySelector('.lang-toggle');
+      if (langToggle) {
+        langToggle.innerHTML = lang === 'en' ? '<i class="fas fa-language"></i>' : '<i class="fas fa-globe"></i>';
+      }
+    }
+
+    // Language toggle functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize language
+      updateLanguage(currentLang);
+
+      const openAdminLogin = () => {
+        const loginUrl = window.location.protocol === 'file:' ? '../admin.html' : '/login';
+        window.open(loginUrl, '_blank', 'noopener');
+      };
+
+      document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'z') {
+          e.preventDefault();
+          openAdminLogin();
+        }
+      });
+
+      let logoTapCount = 0;
+      let logoTapTimer;
+      document.querySelectorAll('.brand-logo, .hero-logo').forEach((logo) => {
+        logo.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          logoTapCount++;
+          clearTimeout(logoTapTimer);
+
+          if (logoTapCount >= 5) {
+            logoTapCount = 0;
+            openAdminLogin();
+          } else {
+            logoTapTimer = setTimeout(() => { logoTapCount = 0; }, 900);
+          }
+        });
+      });
+      
+      // Language toggle button
+      const langToggle = document.querySelector('.lang-toggle');
+      if (langToggle) {
+        langToggle.addEventListener('click', function() {
+          const newLang = currentLang === 'en' ? 'mr' : 'en';
+          updateLanguage(newLang);
+        });
+      }
+      
+      // Initialize GSAP ScrollTrigger for hero section
+      gsap.registerPlugin(ScrollTrigger);
+
+      // Ensure local hero video plays (mobile-safe: muted + playsinline)
+      const video = document.getElementById('heroVideo');
+      const fallback = document.getElementById('heroVideoFallback');
+      if (video) {
+        const tryPlay = () => video.play().catch(() => {});
+        tryPlay();
+
+        // Some mobile browsers require a user gesture
+        const resumeOnGesture = () => {
+          tryPlay();
+          window.removeEventListener('touchstart', resumeOnGesture);
+          window.removeEventListener('click', resumeOnGesture);
+        };
+        window.addEventListener('touchstart', resumeOnGesture, { passive: true });
+        window.addEventListener('click', resumeOnGesture, { passive: true });
+
+        video.addEventListener('error', () => {
+          if (fallback) fallback.style.display = 'flex';
+        });
+        video.addEventListener('loadeddata', () => {
+          if (fallback) fallback.style.display = 'none';
+        });
+      }
+      
+      // Enhanced video animation on scroll
+      gsap.to('.video-container video', {
+        scrollTrigger: {
+          trigger: '.hero-section',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 2,
+          pin: false,
+          anticipatePin: 1
+        },
+        scale: 0.6,
+        y: -150,
+        opacity: 0.3,
+        filter: 'brightness(0.4) blur(2px)',
+        ease: 'power2.inOut'
+      });
+      
+      // Video overlay animation
+      gsap.to('.video-overlay', {
+        scrollTrigger: {
+          trigger: '.hero-section',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 2
+        },
+        opacity: 0.9,
+        background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(139, 0, 0, 0.7) 50%, rgba(11, 11, 11, 0.95) 100%)'
+      });
+      
+      // Hero content fade out
+      gsap.to('.hero-content', {
+        scrollTrigger: {
+          trigger: '.hero-section',
+          start: '50% top',
+          end: 'bottom top',
+          scrub: 2
+        },
+        opacity: 0,
+        y: -50,
+        scale: 0.9
+      });
+      
+      // Spotlight effect
+      const spotlight = document.getElementById('spotlight');
+      document.addEventListener('mousemove', function(e) {
+        if (window.innerWidth > 768) {
+          spotlight.style.opacity = '0.7';
+          spotlight.style.left = e.pageX + 'px';
+          spotlight.style.top = e.pageY + 'px';
+        }
+      });
+      
+      document.addEventListener('mouseout', function() {
+        spotlight.style.opacity = '0';
+      });
+      
+      // Seat selection functionality
+      const seats = document.querySelectorAll('.seat.available');
+      seats.forEach(seat => {
+        seat.addEventListener('click', function() {
+          this.classList.toggle('selected');
+        });
+      });
+      
+      // Filter buttons
+      const filterBtns = document.querySelectorAll('.filter-btn');
+      filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const parent = this.parentNode;
+          parent.querySelector('.active').classList.remove('active');
+          this.classList.add('active');
+        });
+      });
+      
+      // Gallery modal
+      const galleryItems = document.querySelectorAll('.gallery-item');
+      const modal = document.getElementById('galleryModal');
+      const modalImg = document.getElementById('modalImage');
+      const closeModal = document.querySelector('.close-modal');
+      
+      galleryItems.forEach(item => {
+        item.addEventListener('click', function() {
+          modal.style.display = 'flex';
+          modalImg.src = this.querySelector('img').src;
+        });
+      });
+      
+      closeModal.addEventListener('click', function() {
+        modal.style.display = 'none';
+      });
+      
+      // FAQ toggle
+      const faqButtons = document.querySelectorAll('.contact .bg-black button');
+      faqButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const content = this.nextElementSibling;
+          content.classList.toggle('hidden');
+          
+          const icon = this.querySelector('i');
+          if (content.classList.contains('hidden')) {
+            icon.classList.remove('fa-minus');
+            icon.classList.add('fa-plus');
+          } else {
+            icon.classList.remove('fa-plus');
+            icon.classList.add('fa-minus');
+          }
+        });
+      });
+      
+      // Mobile menu
+      const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+      const navMenu = document.querySelector('.nav-menu');
+      
+      if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', function() {
+          navMenu.classList.toggle('show');
+        });
+      }
+      
+      // Smooth scroll for navigation links
+      const navLinks = document.querySelectorAll('.nav-link');
+      navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          const targetId = this.getAttribute('href');
+          const targetSection = document.querySelector(targetId);
+          
+          window.scrollTo({
+            top: targetSection.offsetTop - 80,
+            behavior: 'smooth'
+          });
+          
+          if (navMenu.classList.contains('show')) {
+            navMenu.classList.remove('show');
+          }
+        });
+      });
+      
+      // Theme toggle (light/dark) 
+      const themeToggle = document.querySelector('.theme-toggle');
+      themeToggle.addEventListener('click', function() {
+        const icon = this.querySelector('i');
+        const body = document.body;
+        
+        if (body.classList.contains('light-theme')) {
+          body.classList.remove('light-theme');
+          icon.classList.remove('fa-moon');
+          icon.classList.add('fa-sun');
+        } else {
+          body.classList.add('light-theme');
+          icon.classList.remove('fa-sun');
+          icon.classList.add('fa-moon');
+        }
+      });
+      
+      // Language toggle functionality is handled above in the initialization
+      
+      // Initialize GSAP ScrollTrigger for hero section
+      gsap.registerPlugin(ScrollTrigger);
+    });
+  </script>
+</body>
+</html>

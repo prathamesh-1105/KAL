@@ -1,0 +1,9 @@
+Put your video file here:
+
+  assets/hero.mp4
+
+Optional poster image:
+
+  assets/hero-poster.jpg
+
+Tip: Use an H.264 MP4 for best mobile compatibility.

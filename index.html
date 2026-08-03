@@ -1,0 +1,1796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kalabhoomi Entertainment Mandal</title>
+  <link rel="icon" href="assets/logo.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Tiro+Devanagari+Marathi&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            gold: {
+              50: '#fefdf3',
+              100: '#fdfbeb',
+              200: '#faf3cb',
+              300: '#f6e49e',
+              400: '#edd166',
+              500: '#d4af37', // Brand Gold
+              600: '#b88c27',
+              700: '#946a1d',
+              800: '#75511b',
+              900: '#61421a',
+            },
+            crimson: {
+              50: '#fef3f3',
+              100: '#fde5e5',
+              200: '#fbc5c5',
+              300: '#f69696',
+              400: '#ee5a5a',
+              500: '#8b0000', // Brand Crimson
+              600: '#770000',
+              700: '#5e0000',
+              800: '#4a0000',
+              900: '#380000',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style id="app-style">
+    :root {
+      --primary: #080808;
+      --secondary: #121212;
+      --accent: #8b0000;
+      --accent-rgb: 139, 0, 0;
+      --highlight: #d4af37;
+      --highlight-rgb: 212, 175, 55;
+      --light-text: #f5f5f5;
+      --muted-text: #a3a3a3;
+      --card-bg: rgba(18, 18, 18, 0.7);
+      --card-border: rgba(212, 175, 55, 0.15);
+      --gold-gradient: linear-gradient(135deg, #f5d061 0%, #d4af37 50%, #aa7c11 100%);
+      --crimson-gradient: linear-gradient(135deg, #8b0000 0%, #5e0000 100%);
+      --glow: 0 0 15px rgba(212, 175, 55, 0.25);
+    }
+    
+    body.light-theme {
+      --primary: #fcfbf7;
+      --secondary: #f3f0e6;
+      --accent: #7a0000;
+      --accent-rgb: 122, 0, 0;
+      --highlight: #b08d2b;
+      --highlight-rgb: 176, 141, 43;
+      --light-text: #1a1a1a;
+      --muted-text: #5e5a52;
+      --card-bg: rgba(255, 255, 255, 0.85);
+      --card-border: rgba(122, 0, 0, 0.15);
+      --gold-gradient: linear-gradient(135deg, #b08d2b 0%, #94711c 50%, #6e4e0c 100%);
+      --crimson-gradient: linear-gradient(135deg, #7a0000 0%, #4a0000 100%);
+      --glow: 0 0 15px rgba(122, 0, 0, 0.15);
+      background-image: radial-gradient(circle at 50% 20%, rgba(122, 0, 0, 0.04) 0%, transparent 60%),
+                        radial-gradient(circle at 10% 80%, rgba(176, 141, 43, 0.03) 0%, transparent 50%);
+    }
+    
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: var(--primary);
+      background-image: radial-gradient(circle at 50% 20%, rgba(139, 0, 0, 0.08) 0%, transparent 60%),
+                        radial-gradient(circle at 10% 80%, rgba(212, 175, 55, 0.04) 0%, transparent 50%);
+      background-attachment: fixed;
+      color: var(--light-text);
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+      transition: background-color 0.5s ease, color 0.5s ease;
+    }
+    
+    h1, h2, h3, .marathi-font {
+      font-family: 'Tiro Devanagari Marathi', serif;
+    }
+    
+    /* Scrollbar Style */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--primary);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--accent);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--highlight);
+    }
+    
+    /* Spotlights & Backdrops */
+    .spotlight {
+      position: absolute;
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0) 70%);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .traditional-divider {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 3rem auto;
+      width: 80%;
+    }
+    .traditional-divider::before, .traditional-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--highlight), transparent);
+    }
+    .traditional-divider i {
+      color: var(--highlight);
+      padding: 0 1.5rem;
+      font-size: 1.5rem;
+      filter: drop-shadow(0 0 5px rgba(212,175,55,0.5));
+    }
+    
+    .cta-btn {
+      background: var(--gold-gradient);
+      color: #121212 !important;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 15px rgba(212, 175, 55, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .cta-btn:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 8px 25px rgba(212, 175, 55, 0.45);
+      filter: brightness(1.1);
+    }
+    
+    .outline-btn {
+      background: transparent;
+      color: var(--light-text);
+      border: 2px solid var(--highlight);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+    }
+    .outline-btn:hover {
+      background: var(--highlight);
+      color: #121212;
+      box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+      transform: translateY(-2px);
+    }
+    
+    .glass-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      transition: all 0.3s ease;
+    }
+    .glass-card:hover {
+      border-color: rgba(212, 175, 55, 0.35);
+      box-shadow: var(--glow);
+      transform: translateY(-5px);
+    }
+    
+    /* Seat Grid Elements */
+    .theatre-screen {
+      height: 12px;
+      background: var(--gold-gradient);
+      width: 70%;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.7);
+    }
+    
+    #seatingGrid {
+      display: grid;
+      grid-template-columns: repeat(16, minmax(0, 1fr));
+      gap: 0.35rem;
+    }
+    
+    .seat {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 6px 6px 2px 2px; /* Theatre seat look */
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      font-weight: bold;
+      color: rgba(255,255,255,0.7);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      position: relative;
+    }
+    
+    .seat.vip {
+      background-color: #d4af37;
+      color: #121212;
+      box-shadow: 0 0 5px rgba(212,175,55,0.3);
+    }
+    .seat.premium {
+      background-color: #8b0000;
+      color: #fff;
+    }
+    .seat.regular {
+      background-color: #555555;
+      color: #fff;
+    }
+    .seat.selected {
+      background-color: #22c55e !important;
+      color: #121212 !important;
+      box-shadow: 0 0 12px #22c55e;
+      transform: scale(1.15) rotate(5deg);
+    }
+    .seat.reserved {
+      background-color: #1f2937 !important;
+      color: #4b5563 !important;
+      cursor: not-allowed;
+      pointer-events: none;
+      opacity: 0.4;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+    .seat:hover:not(.reserved) {
+      transform: scale(1.25);
+      box-shadow: 0 0 10px var(--highlight);
+      z-index: 10;
+    }
+    
+    /* Print Layout for E-Ticket */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printTicketArea, #printTicketArea * {
+        visibility: visible;
+      }
+      #printTicketArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 20px;
+        background: white !important;
+        color: black !important;
+        border: 2px solid #b8860b !important;
+        border-radius: 0;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+    
+    /* Vinyl Spinning Audio Player */
+    .music-record.playing {
+      animation: spin 3.5s linear infinite;
+    }
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body class="dark">
+  <!-- Spotlight Cursor Overlay -->
+  <div class="spotlight" id="spotlight"></div>
+  
+  <!-- Ambient Audio Teaser Player -->
+  <div class="fixed bottom-6 right-6 z-[2000] no-print">
+    <div class="flex items-center gap-3 bg-black bg-opacity-80 backdrop-blur-md p-3 rounded-full border border-gold-500 shadow-2xl hover:border-gold-300 transition-all duration-300">
+      <div id="audioPlayBtn" class="w-12 h-12 bg-gradient-to-r from-gold-500 to-gold-600 rounded-full flex items-center justify-center cursor-pointer shadow-lg active:scale-95 transition-all">
+        <i class="fas fa-music text-black text-lg music-record" id="audioRecordIcon"></i>
+      </div>
+      <div class="hidden md:flex flex-col text-left pr-3 max-w-[150px]">
+        <span class="text-[10px] text-gold-500 font-bold uppercase tracking-widest leading-none mb-1">Ambient Raga</span>
+        <select id="audioTrackSelect" class="text-xs bg-transparent text-white focus:outline-none cursor-pointer pr-4 font-semibold w-full">
+          <option value="sitar" class="bg-black text-white">Sitar Melodic Loop</option>
+          <option value="flute" class="bg-black text-white">Classical Flute</option>
+          <option value="natya" class="bg-black text-white">Natya Tarang</option>
+        </select>
+      </div>
+    </div>
+    <audio id="ambientAudio" loop>
+      <!-- Royalty-free public domain classical loops -->
+      <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" type="audio/mp3">
+    </audio>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="navigation fixed top-0 w-full z-[1000] backdrop-blur-lg border-b border-white border-opacity-5 transition-all duration-300 glass-card bg-opacity-95">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <a href="#home" class="flex items-center gap-3 text-xl font-extrabold marathi-font tracking-wide">
+        <!-- Five-tap target on logo triggers Admin portal -->
+        <img src="assets/logo.png" alt="Kalabhoomi logo" id="brandLogo" class="w-10 h-10 object-contain rounded-full bg-white bg-opacity-90 border border-gold-500 p-1 shadow-md hover:scale-105 active:scale-90 transition-all cursor-pointer" loading="eager">
+        <span class="text-white"><span class="text-gold-500">Kala</span>bhoomi</span>
+      </a>
+      
+      <div class="hidden lg:flex items-center gap-8 font-semibold">
+        <a href="#home" class="nav-link text-sm uppercase tracking-wider" data-translate="nav_home">Home</a>
+        <a href="#shows" class="nav-link text-sm uppercase tracking-wider" data-translate="nav_shows">Shows</a>
+        <a href="#booking" class="nav-link text-sm uppercase tracking-wider" data-translate="nav_bookings">Bookings</a>
+        <a href="#gallery" class="nav-link text-sm uppercase tracking-wider" data-translate="nav_gallery">Gallery</a>
+        <a href="#contact" class="nav-link text-sm uppercase tracking-wider" data-translate="nav_contact">Contact</a>
+      </div>
+      
+      <div class="flex items-center gap-4">
+        <button class="theme-toggle p-2 rounded-full border border-gold-500 hover:bg-gold-500 hover:text-black transition-all">
+          <i class="fas fa-sun text-sm"></i>
+        </button>
+        <button class="lang-toggle p-2 rounded-full border border-gold-500 hover:bg-gold-500 hover:text-black transition-all">
+          <i class="fas fa-language text-sm"></i>
+        </button>
+        <button class="mobile-menu-btn lg:hidden text-white p-2">
+          <i class="fas fa-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Mobile Menu -->
+    <div class="nav-menu lg:hidden hidden flex-col items-center bg-black bg-opacity-95 border-b border-gold-500 w-full py-4 space-y-4">
+      <a href="#home" class="nav-link text-sm uppercase tracking-wider py-2" data-translate="nav_home">Home</a>
+      <a href="#shows" class="nav-link text-sm uppercase tracking-wider py-2" data-translate="nav_shows">Shows</a>
+      <a href="#booking" class="nav-link text-sm uppercase tracking-wider py-2" data-translate="nav_bookings">Bookings</a>
+      <a href="#gallery" class="nav-link text-sm uppercase tracking-wider py-2" data-translate="nav_gallery">Gallery</a>
+      <a href="#contact" class="nav-link text-sm uppercase tracking-wider py-2" data-translate="nav_contact">Contact</a>
+    </div>
+  </nav>
+
+  <script>
+    (() => {
+      const getAdminLoginUrl = () => window.location.protocol === 'file:' ? 'admin.html' : '/login';
+      const openAdminLoginTab = () => {
+        const loginWindow = window.open(getAdminLoginUrl(), '_blank');
+        if (loginWindow) {
+          loginWindow.opener = null;
+        } else {
+          window.location.href = getAdminLoginUrl();
+        }
+      };
+
+      document.addEventListener('keydown', (e) => {
+        const isAdminShortcut = e.ctrlKey && e.shiftKey && (e.key || '').toLowerCase() === 'z';
+        if (isAdminShortcut && !e.repeat) {
+          e.preventDefault();
+          e.stopPropagation();
+          openAdminLoginTab();
+        }
+      }, true);
+
+      let logoTapCount = 0;
+      let logoTapTimer;
+      document.addEventListener('click', (e) => {
+        const logo = e.target.closest('#brandLogo');
+        const brandLink = e.target.closest('a[href="#home"]');
+        const isBrandLogoClick = logo || (brandLink && brandLink.querySelector('#brandLogo'));
+
+        if (!isBrandLogoClick) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+        logoTapCount += 1;
+        clearTimeout(logoTapTimer);
+
+        if (logoTapCount >= 5) {
+          logoTapCount = 0;
+          openAdminLoginTab();
+        } else {
+          logoTapTimer = setTimeout(() => { logoTapCount = 0; }, 1200);
+        }
+      }, true);
+    })();
+  </script>
+
+  <!-- Hero Section -->
+  <section class="relative min-h-screen flex items-center justify-center overflow-hidden" id="home">
+    <div class="video-container absolute inset-0 z-1 w-full h-full">
+      <video id="heroVideo" autoplay muted loop playsinline preload="auto" class="w-full h-full object-cover brightness-[0.35] contrast-[1.1]">
+        <source src="assets/hero.mp4" type="video/mp4">
+      </video>
+      <div class="hero-video-fallback absolute inset-0 bg-gradient-to-b from-transparent to-[#080808]" id="heroVideoFallback" style="display:none;"></div>
+      <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#080808]"></div>
+    </div>
+    
+    <div class="relative z-10 text-center max-w-4xl px-4 flex flex-col items-center justify-center mt-12">
+      <div class="mb-6 animate-pulse">
+        <img src="assets/logo.png" alt="Kalabhoomi logo" class="w-24 h-24 object-contain rounded-full bg-white bg-opacity-95 p-2 border-2 border-gold-500 shadow-2xl">
+      </div>
+      <h1 class="text-4xl md:text-7xl font-extrabold mb-4 tracking-tight leading-tight text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)]">
+        Kalabhoomi Entertainment Mandal
+      </h1>
+      <p class="text-xl md:text-3xl mb-8 tracking-widest text-gold-500 font-medium marathi-font drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+        कला हीच आमची ओळख
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4">
+        <button class="cta-btn px-8 py-3.5 rounded-full text-sm font-bold shadow-lg" onclick="document.getElementById('shows').scrollIntoView({behavior: 'smooth'})" data-translate="explore_shows">
+          Explore Shows
+        </button>
+        <button class="outline-btn px-8 py-3.5 rounded-full text-sm font-semibold" onclick="document.getElementById('booking').scrollIntoView({behavior: 'smooth'})" data-translate="book_tickets">
+          Book Tickets
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Traditional Divider -->
+  <div class="traditional-divider"><i class="fas fa-theater-masks"></i></div>
+
+  <!-- Featured Shows Section -->
+  <section class="py-20 px-4" id="shows">
+    <div class="container mx-auto max-w-6xl">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-5xl font-extrabold text-gold-500 mb-4 tracking-wide uppercase inline-block border-b-2 border-crimson-500 pb-3" data-translate="shows_events">Shows & Events</h2>
+        <p class="text-gray-400 max-w-lg mx-auto text-sm" data-translate="shows_subtitle">Experience the magic of Marathi drama and classical music on stage.</p>
+      </div>
+      
+      <!-- Current Active/Featured Show Card -->
+      <div id="featuredShowContainer" class="mb-16">
+        <!-- Rendered dynamically by script -->
+      </div>
+      
+      <!-- Upcoming & Completed Shows Grid -->
+      <h3 class="text-2xl font-bold text-white mb-8 border-l-4 border-gold-500 pl-3 uppercase tracking-wider" data-translate="upcoming_shows">Upcoming & Previous Shows</h3>
+      <div id="showsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Rendered dynamically by script -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Traditional Divider -->
+  <div class="traditional-divider"><i class="fas fa-om"></i></div>
+
+  <!-- Ticket Booking Section -->
+  <section class="py-20 px-4 bg-black bg-opacity-40" id="booking">
+    <div class="container mx-auto max-w-6xl">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-5xl font-extrabold text-gold-500 mb-4 tracking-wide uppercase inline-block border-b-2 border-crimson-500 pb-3" data-translate="book_tickets">Book Tickets</h2>
+        <p class="text-gray-400 max-w-lg mx-auto text-sm" data-translate="booking_subtitle">Reserve your premium seats interactively and download your pass instantly.</p>
+      </div>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        <!-- Left: Interactive Seating Chart (8 Cols) -->
+        <div class="lg:col-span-7 bg-[#121212] border border-gold-500 border-opacity-20 rounded-2xl p-6 shadow-2xl relative">
+          <!-- Show Selector dropdown -->
+          <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white border-opacity-5 pb-6">
+            <div>
+              <label class="block text-xs uppercase text-gold-500 tracking-wider font-bold mb-2" data-translate="select_show">Select Event</label>
+              <select id="bookingShowSelect" class="w-full bg-[#1e1e1e] border border-gold-500 text-white py-2 px-4 rounded focus:outline-none focus:border-gold-300 font-bold transition">
+                <!-- Populated dynamically by script -->
+              </select>
+            </div>
+          </div>
+          
+          <!-- Seating chart grid wrapper -->
+          <div class="stage-container mb-6 text-center relative pt-4">
+            <div class="theatre-screen mx-auto"></div>
+            <span class="text-xs uppercase tracking-widest text-gold-500 opacity-80 font-bold" data-translate="stage">STAGE / रंगमंच</span>
+          </div>
+          
+          <!-- Legend -->
+          <div class="flex flex-wrap items-center justify-center gap-4 text-xs text-gray-400 border-t border-white border-opacity-5 pt-3 mb-6">
+            <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-t-md bg-gold-500 block"></span>VIP (A-B)</span>
+            <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-t-md bg-crimson-500 block"></span>Premium (C-F)</span>
+            <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-t-md bg-zinc-600 block"></span>Regular (G-J)</span>
+            <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-t-md bg-green-500 block"></span>Selected</span>
+            <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-t-md bg-zinc-800 border border-zinc-700 block flex items-center justify-center text-[8px] text-zinc-500"><i class="fas fa-ban"></i></span>Reserved</span>
+          </div>
+          
+          <!-- Grid representing 120 seats + aisle -->
+          <div class="max-w-[550px] mx-auto overflow-x-auto">
+            <div id="seatingGrid" class="text-center">
+              <!-- Grid elements rendered dynamically by JS -->
+            </div>
+          </div>
+        </div>
+        
+        <!-- Right: Real-time Checkout Summary Panel (5 Cols) -->
+        <div class="lg:col-span-5 bg-[#121212] border border-gold-500 border-opacity-20 rounded-2xl p-6 shadow-2xl space-y-6">
+          <h3 class="text-xl font-bold text-gold-500 border-b border-white border-opacity-5 pb-4 uppercase tracking-wider" data-translate="booking_summary">Booking Summary</h3>
+          
+          <!-- Seating Cart -->
+          <div class="space-y-4">
+            <div class="flex justify-between items-center text-sm">
+              <span class="text-gray-400" data-translate="selected_seats">Selected Seats</span>
+              <span class="font-bold text-white text-right" id="checkoutSeatsText">None</span>
+            </div>
+            <div class="flex justify-between items-center text-sm">
+              <span class="text-gray-400" data-translate="ticket_count">Ticket Count</span>
+              <span class="font-bold text-white" id="checkoutCountText">0</span>
+            </div>
+            <div class="flex justify-between items-center text-lg border-t border-white border-opacity-5 pt-4">
+              <span class="text-gold-500 font-bold" data-translate="total_price">Total Price</span>
+              <span class="font-extrabold text-gold-500" id="checkoutTotalText">₹0</span>
+            </div>
+          </div>
+          
+          <!-- Checkout User Fields Form -->
+          <form id="ticketCheckoutForm" class="space-y-4 pt-4 border-t border-white border-opacity-5">
+            <div>
+              <label class="block text-xs uppercase tracking-wider font-bold text-gray-400 mb-1" data-translate="your_name">Full Name</label>
+              <input type="text" id="custName" required placeholder="Enter your name" class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 text-sm focus:outline-none focus:border-gold-500">
+            </div>
+            <div>
+              <label class="block text-xs uppercase tracking-wider font-bold text-gray-400 mb-1" data-translate="phone">Phone Number</label>
+              <input type="tel" id="custPhone" required placeholder="Enter phone number" class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 text-sm focus:outline-none focus:border-gold-500">
+            </div>
+            <div>
+              <label class="block text-xs uppercase tracking-wider font-bold text-gray-400 mb-1" data-translate="your_email">Email Address</label>
+              <input type="email" id="custEmail" required placeholder="Enter email address" class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 text-sm focus:outline-none focus:border-gold-500">
+            </div>
+            <button type="submit" class="w-full cta-btn py-3.5 rounded-lg text-sm font-bold mt-6 uppercase" data-translate="book_now">
+              Confirm & Pay
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Traditional Divider -->
+  <div class="traditional-divider"><i class="fas fa-palette"></i></div>
+
+  <!-- Multimedia Filter Gallery -->
+  <section class="py-20 px-4" id="gallery">
+    <div class="container mx-auto max-w-6xl">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-5xl font-extrabold text-gold-500 mb-4 tracking-wide uppercase inline-block border-b-2 border-crimson-500 pb-3" data-translate="gallery_title">Kalabhoomi Gallery</h2>
+        <p class="text-gray-400 max-w-lg mx-auto text-sm" data-translate="gallery_subtitle">Glance through the aesthetic visuals of our legendary Marathi Natya events.</p>
+      </div>
+      
+      <!-- Category Filter Tabs -->
+      <div class="flex flex-wrap justify-center gap-3 mb-12" id="galleryFilters">
+        <button class="filter-btn active" data-filter="all" data-translate="all">All</button>
+        <button class="filter-btn" data-filter="drama" data-translate="drama_tab">Drama</button>
+        <button class="filter-btn" data-filter="music" data-translate="music_tab">Music</button>
+        <button class="filter-btn" data-filter="scenes" data-translate="scenes_tab">Backstage</button>
+      </div>
+      
+      <!-- Grid container -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="galleryGrid">
+        <!-- Rendered dynamically by script -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Team Member Access -->
+  <section class="py-20 px-4" id="members">
+    <div class="container mx-auto max-w-4xl">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-5xl font-extrabold text-gold-500 mb-4 tracking-wide uppercase inline-block border-b-2 border-crimson-500 pb-3">Member Access</h2>
+        <p class="text-gray-400 max-w-2xl mx-auto text-sm">Team members can log in to view their attendance and other details.</p>
+        <div class="mt-8">
+          <a href="admin.html" class="cta-btn px-8 py-3.5 rounded-full text-sm font-bold shadow-lg">
+            <i class="fas fa-sign-in-alt mr-2"></i> Member & Admin Login
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Traditional Divider -->
+  <div class="traditional-divider"><i class="fas fa-phone-alt"></i></div>
+
+  <!-- Contact Section -->
+  <section class="py-20 px-4" id="contact">
+    <div class="container mx-auto max-w-6xl">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-5xl font-extrabold text-gold-500 mb-4 tracking-wide uppercase inline-block border-b-2 border-crimson-500 pb-3" data-translate="contact_us">Contact Us</h2>
+        <p class="text-gray-400 max-w-lg mx-auto text-sm" data-translate="contact_subtitle">Reach out to us for ticket bookings, artist registrations, and sponsorships.</p>
+      </div>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <!-- Left Contact info & details -->
+        <div class="lg:col-span-7 space-y-8 bg-[#121212] border border-white border-opacity-5 p-8 rounded-2xl">
+          <h3 class="text-2xl font-bold text-white mb-6 uppercase tracking-wider" data-translate="get_in_touch">Get in Touch</h3>
+          <form class="space-y-4" id="contactForm">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs uppercase tracking-wider font-bold text-gray-400 mb-1" data-translate="your_name">Name</label>
+                <input type="text" required placeholder="Your name" class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 text-sm focus:outline-none focus:border-gold-500">
+              </div>
+              <div>
+                <label class="block text-xs uppercase tracking-wider font-bold text-gray-400 mb-1" data-translate="your_email">Email</label>
+                <input type="email" required placeholder="Your email" class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 text-sm focus:outline-none focus:border-gold-500">
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs uppercase tracking-wider font-bold text-gray-400 mb-1" data-translate="subject">Subject</label>
+              <input type="text" required placeholder="Subject" class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 text-sm focus:outline-none focus:border-gold-500">
+            </div>
+            <div>
+              <label class="block text-xs uppercase tracking-wider font-bold text-gray-400 mb-1" data-translate="message">Message</label>
+              <textarea rows="4" required placeholder="Your message..." class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 text-sm focus:outline-none focus:border-gold-500"></textarea>
+            </div>
+            <button type="submit" class="w-full cta-btn py-3.5 rounded-lg text-sm font-bold uppercase" data-translate="send_message">Send Message</button>
+          </form>
+          
+          <div class="pt-8 border-t border-white border-opacity-5 grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-gray-300">
+            <div class="flex items-start gap-3">
+              <i class="fas fa-map-marker-alt text-gold-500 mt-1"></i>
+              <div>
+                <h4 class="font-bold text-white mb-1 uppercase tracking-wide">Office</h4>
+                <p id="contactAddress">123 Theatre Lane, Dadar West, Mumbai, Maharashtra 400028, India</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <i class="fas fa-phone-alt text-gold-500 mt-1"></i>
+              <div>
+                <h4 class="font-bold text-white mb-1 uppercase tracking-wide">Call Us</h4>
+                <p id="contactPhone">+91 98765 43210</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <i class="fas fa-envelope text-gold-500 mt-1"></i>
+              <div>
+                <h4 class="font-bold text-white mb-1 uppercase tracking-wide">Email</h4>
+                <p id="contactEmail">info@kalabhoomi.com</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <i class="fab fa-instagram text-gold-500 mt-1"></i>
+              <div>
+                <h4 class="font-bold text-white mb-1 uppercase tracking-wide">Instagram</h4>
+                <p id="contactInstagram">@kalabhoomi_official</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Right interactive Google map embed & FAQ accordion -->
+        <div class="lg:col-span-5 space-y-6">
+          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3771.9378782360155!2d72.83565151484851!3d19.02194058711916!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7cedb0ea09f45%3A0xc1f64bd63925f0d6!2sDadar%2C%20Mumbai%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1621345678901!5m2!1sen!2sin" width="100%" height="240" style="border:0;" allowfullscreen="" loading="lazy" class="rounded-2xl border border-white border-opacity-5"></iframe>
+          
+          <div class="bg-[#121212] border border-white border-opacity-5 p-6 rounded-2xl space-y-4">
+            <h3 class="text-lg font-bold text-gold-500 uppercase tracking-wider mb-2" data-translate="faq">Frequently Asked Questions</h3>
+            <div class="space-y-3" id="faqAccordion">
+              <!-- Populate dynamically by scripts -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-black border-t border-white border-opacity-5 py-12 px-4 relative no-print">
+    <div class="container mx-auto max-w-6xl grid grid-cols-1 md:grid-cols-4 gap-8 mb-8 text-sm">
+      <div class="space-y-4">
+        <div class="flex items-center gap-3">
+          <img src="assets/logo.png" alt="Kalabhoomi logo" class="w-8 h-8 rounded-full bg-white p-1 border border-gold-500">
+          <h4 class="text-lg font-extrabold text-white">Kalabhoomi</h4>
+        </div>
+        <p class="text-gray-400" data-translate="footer_about">Kalabhoomi Entertainment Mandal is dedicated to preserving and promoting Marathi theatre, Natya Sangeet, and cultural arts.</p>
+      </div>
+      <div>
+        <h4 class="font-bold text-gold-500 uppercase tracking-wider mb-4" data-translate="footer_quick_links">Quick Links</h4>
+        <ul class="space-y-2 text-gray-400">
+          <li><a href="#home" class="hover:text-gold-500 transition">Home</a></li>
+          <li><a href="#shows" class="hover:text-gold-500 transition">Shows & Events</a></li>
+          <li><a href="#booking" class="hover:text-gold-500 transition">Book Tickets</a></li>
+          <li><a href="#gallery" class="hover:text-gold-500 transition">Gallery</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-bold text-gold-500 uppercase tracking-wider mb-4" data-translate="footer_support">Support</h4>
+        <ul class="space-y-2 text-gray-400">
+          <li><a href="#contact" class="hover:text-gold-500 transition">Contact Us</a></li>
+          <li><a href="javascript:void(0)" class="hover:text-gold-500 transition">Privacy Policy</a></li>
+          <li><a href="javascript:void(0)" class="hover:text-gold-500 transition">Terms & Conditions</a></li>
+          <li><a href="javascript:void(0)" class="hover:text-gold-500 transition">Refund Policy</a></li>
+        </ul>
+      </div>
+      <div class="space-y-4">
+        <h4 class="font-bold text-gold-500 uppercase tracking-wider mb-4" data-translate="footer_newsletter">Newsletter</h4>
+        <p class="text-gray-400" data-translate="footer_newsletter_desc">Subscribe to receive updates about upcoming shows, workshops, and more.</p>
+        <form class="flex" id="newsletterForm">
+          <input type="email" required placeholder="Your email" class="bg-[#1c1c1c] border border-white border-opacity-10 text-white text-xs rounded-l p-2.5 w-full focus:outline-none focus:border-gold-500">
+          <button type="submit" class="bg-gold-500 text-black px-4 rounded-r font-bold hover:bg-gold-400 transition flex items-center justify-center">
+            <i class="fas fa-paper-plane text-xs"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+    
+    <div class="container mx-auto max-w-6xl border-t border-white border-opacity-5 pt-8 text-center flex flex-col md:flex-row justify-between items-center text-xs text-gray-400 gap-4">
+      <p data-translate="footer_copyright">&copy; 2026 Kalabhoomi Entertainment Mandal. All rights reserved.</p>
+      <div class="flex items-center gap-4">
+        <div class="flex gap-4">
+          <a href="javascript:void(0)" class="text-gray-400 hover:text-gold-500 transition"><i class="fab fa-facebook-f text-base"></i></a>
+          <a href="https://www.instagram.com/kalabhoomi_official?igsh=MTdreTZvazN1dzF6dA==" target="_blank" class="text-gray-400 hover:text-gold-500 transition"><i class="fab fa-instagram text-base"></i></a>
+          <a href="javascript:void(0)" class="text-gray-400 hover:text-gold-500 transition"><i class="fab fa-youtube text-base"></i></a>
+          <a href="javascript:void(0)" class="text-gray-400 hover:text-gold-500 transition"><i class="fab fa-whatsapp text-base"></i></a>
+        </div>
+        <!-- Secret Lock Icon as fallback backup to open Admin Portal -->
+        <i class="fas fa-lock text-gold-500 text-opacity-30 hover:text-opacity-100 cursor-pointer transition pl-4 border-l border-white border-opacity-10" id="secretAdminTrigger"></i>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================= MODALS & POPUPS ================= -->
+  
+  <!-- 1. Interactive Lightbox Modal for Gallery -->
+  <div class="fixed inset-0 z-[5000] hidden items-center justify-center bg-black bg-opacity-95 p-4 no-print" id="galleryModal">
+    <span class="absolute top-6 right-6 text-white text-3xl font-light cursor-pointer hover:text-gold-500 transition" id="closeGalleryModal">&times;</span>
+    <button class="absolute left-6 text-white text-4xl hover:text-gold-500 transition" id="galleryPrevBtn"><i class="fas fa-chevron-left"></i></button>
+    <div class="max-w-4xl max-h-[80vh] flex flex-col items-center w-full">
+      <img src="" id="modalImage" class="max-w-full max-h-[70vh] rounded-lg border border-gold-500 shadow-2xl object-contain">
+      <video src="" id="modalVideo" controls class="max-w-full max-h-[70vh] rounded-lg border border-gold-500 shadow-2xl object-contain hidden"></video>
+      <p id="modalCaption" class="text-gold-500 mt-4 font-bold text-center tracking-wide uppercase text-sm"></p>
+    </div>
+    <button class="absolute right-6 text-white text-4xl hover:text-gold-500 transition" id="galleryNextBtn"><i class="fas fa-chevron-right"></i></button>
+  </div>
+
+  <!-- 2. Interactive Checkout Seating QR Payment Modal -->
+  <div class="fixed inset-0 z-[4000] hidden items-center justify-center bg-black bg-opacity-90 p-4 no-print" id="paymentModal">
+    <div class="bg-[#121212] border border-gold-500 rounded-2xl p-8 max-w-md w-full text-center space-y-6 shadow-2xl relative">
+      <span class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl cursor-pointer" id="closePaymentModal">&times;</span>
+      <h3 class="text-xl font-bold text-gold-500 uppercase tracking-wider" data-translate="payment_details">UPI Payment Scan</h3>
+      <p class="text-xs text-gray-300" data-translate="scan_to_complete">Scan this QR Code using GPay, PhonePe, or Paytm, and upload your payment confirmation.</p>
+      
+      <!-- Dynamically generated UPI QR Code using public server with precise price -->
+      <div class="bg-white p-3 rounded-xl inline-block shadow-lg mx-auto">
+        <img src="" id="paymentQrCodeImg" class="w-48 h-48 object-contain">
+      </div>
+      
+      <div class="space-y-2 text-sm text-left bg-[#1c1c1c] p-4 rounded-lg">
+        <div class="flex justify-between"><span class="text-gray-400">Merchant:</span><span class="text-white font-semibold">Kalabhoomi Mandal</span></div>
+        <div class="flex justify-between"><span class="text-gray-400">Total Price:</span><span class="text-gold-500 font-extrabold" id="paymentModalAmount">₹0</span></div>
+      </div>
+      
+      <form id="paymentConfirmForm" class="space-y-4">
+        <div>
+          <label class="block text-xs uppercase tracking-wider font-bold text-gray-400 text-left mb-1" data-translate="upload_screenshot">Upload Screenshot</label>
+          <input type="file" required accept="image/*" class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 text-xs focus:outline-none focus:border-gold-500">
+        </div>
+        <button type="submit" class="w-full cta-btn py-3.5 rounded-lg text-sm font-bold uppercase" id="verifyPaymentBtn" data-translate="verify_pay">Verify Payment</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. Ticket Success printable E-Ticket Pass Modal -->
+  <div class="fixed inset-0 z-[4500] hidden items-center justify-center bg-black bg-opacity-95 p-4 overflow-y-auto" id="ticketModal">
+    <div class="max-w-xl w-full my-8 space-y-6">
+      <div class="bg-gradient-to-b from-[#8b0000] to-[#3a0000] border-4 border-gold-500 rounded-3xl p-8 text-center text-white relative shadow-[0_0_30px_rgba(212,175,55,0.3)]" id="printTicketArea">
+        <span class="absolute top-4 right-4 text-gray-300 hover:text-white text-xl cursor-pointer no-print" id="closeTicketModal">&times;</span>
+        
+        <div class="flex justify-center mb-4">
+          <img src="assets/logo.png" class="w-16 h-16 object-contain rounded-full bg-white bg-opacity-95 p-1.5 border border-gold-500">
+        </div>
+        
+        <h3 class="text-2xl font-black text-gold-500 tracking-wide uppercase">Kalabhoomi Entertainment Mandal</h3>
+        <p class="text-xs uppercase tracking-widest text-gold-200 marathi-font mb-4">प्रवेशिका / Entry Pass</p>
+        
+        <!-- Ticket cut divider decoration -->
+        <div class="border-t-2 border-dashed border-gold-500 opacity-40 my-6"></div>
+        
+        <div class="space-y-4 text-left">
+          <h4 class="text-xl font-extrabold text-gold-500 text-center mb-4 marathi-font" id="ticketShowTitle">Show Title Here</h4>
+          <div class="grid grid-cols-2 gap-4 text-sm bg-black bg-opacity-40 p-4 rounded-xl border border-gold-500 border-opacity-10">
+            <div><span class="block text-xs text-gold-500 uppercase font-semibold">Date & Time</span><span id="ticketDateText" class="font-bold"></span></div>
+            <div><span class="block text-xs text-gold-500 uppercase font-semibold">Venue</span><span id="ticketVenueText" class="font-bold"></span></div>
+            <div><span class="block text-xs text-gold-500 uppercase font-semibold">Seats Booked</span><span id="ticketSeatsText" class="font-extrabold text-gold-500"></span></div>
+            <div><span class="block text-xs text-gold-500 uppercase font-semibold">Amount Paid</span><span id="ticketAmountText" class="font-bold"></span></div>
+          </div>
+          
+          <div class="bg-black bg-opacity-20 p-4 rounded-xl space-y-1 text-xs text-gray-300">
+            <div><span class="font-semibold">Holder:</span> <span id="ticketNameText"></span></div>
+            <div><span class="font-semibold">Phone:</span> <span id="ticketPhoneText"></span></div>
+            <div><span class="font-semibold">Email:</span> <span id="ticketEmailText"></span></div>
+            <div class="pt-1.5"><span class="font-semibold">Ticket ID:</span> <span class="text-gold-500 font-mono font-bold" id="ticketIdText"></span></div>
+          </div>
+        </div>
+        
+        <!-- Barcode styling -->
+        <div class="mt-8 flex flex-col items-center justify-center space-y-2 bg-white bg-opacity-95 p-3 rounded-lg max-w-[220px] mx-auto">
+          <div class="w-full h-8 bg-black flex items-center justify-center text-[10px] tracking-[6px] text-white font-mono leading-none py-1">|||||||||||||||||||</div>
+          <span class="text-[8px] text-black font-semibold uppercase tracking-wider">MEMBER PASS VERIFIED</span>
+        </div>
+        
+        <p class="text-[9px] text-gold-200 mt-6 opacity-70 leading-relaxed uppercase tracking-wider" data-translate="ticket_disclaimer">Please show this barcode/receipt at the venue gate for check-in. Art is our Identity.</p>
+      </div>
+      
+      <div class="flex gap-4 no-print">
+        <button class="w-full outline-btn py-3.5 rounded-lg text-sm font-bold uppercase" id="printTicketBtn">
+          <i class="fas fa-print mr-2"></i>Print Pass
+        </button>
+        <button class="w-full cta-btn py-3.5 rounded-lg text-sm font-bold uppercase" id="finishTicketBtn">
+          Finish Booking
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script id="app-script">
+    // Multilingual Translation System
+    const translations = {
+      en: {
+        nav_home: "Home",
+        nav_shows: "Shows",
+        nav_bookings: "Bookings",
+        nav_gallery: "Gallery",
+        nav_contact: "Contact",
+        explore_shows: "Explore Shows",
+        book_tickets: "Book Tickets",
+        shows_events: "Shows & Events",
+        shows_subtitle: "Experience the magic of Marathi drama and classical music on stage.",
+        book_tickets: "Book Tickets",
+        booking_subtitle: "Reserve your premium seats interactively and download your pass instantly.",
+        select_show: "Select Event",
+        stage: "STAGE / रंगमंच",
+        booking_summary: "Booking Summary",
+        selected_seats: "Selected Seats",
+        ticket_count: "Ticket Count",
+        total_price: "Total Price",
+        your_name: "Full Name",
+        phone: "Phone Number",
+        your_email: "Email Address",
+        book_now: "Confirm & Pay",
+        gallery_title: "Kalabhoomi Gallery",
+        gallery_subtitle: "Glance through the aesthetic visuals of our legendary Marathi Natya events.",
+        all: "All",
+        drama_tab: "Drama",
+        music_tab: "Music",
+        scenes_tab: "Backstage",
+        contact_us: "Contact Us",
+        contact_subtitle: "Reach out to us for ticket bookings, artist registrations, and sponsorships.",
+        get_in_touch: "Get in Touch",
+        subject: "Subject",
+        message: "Message",
+        send_message: "Send Message",
+        faq: "Frequently Asked Questions",
+        footer_about: "Kalabhoomi Entertainment Mandal is dedicated to preserving and promoting Marathi theatre, Natya Sangeet, and cultural arts.",
+        footer_quick_links: "Quick Links",
+        footer_support: "Support",
+        footer_newsletter: "Newsletter",
+        footer_newsletter_desc: "Subscribe to receive updates about upcoming shows, workshops, and more.",
+        footer_copyright: "© 2026 Kalabhoomi Entertainment Mandal. All rights reserved.",
+        payment_details: "UPI Payment Scan",
+        scan_to_complete: "Scan this QR Code using GPay, PhonePe, or Paytm, and upload your payment confirmation.",
+        upload_screenshot: "Upload Screenshot",
+        verify_pay: "Verify Payment",
+        admin_login: "Admin Portal Login",
+        enter_pass: "Enter security password to access Kalabhoomi database console.",
+        incorrect_pass: "Incorrect password. Please try again.",
+        ticket_disclaimer: "Please show this barcode/receipt at the venue gate for check-in. Art is our Identity.",
+        featured_label: "FEATURED SHOW",
+        upcoming_label: "UPCOMING EVENT",
+        completed_label: "PAST PRODUCTION",
+        book_now_btn: "Book Seats Now",
+        no_active_booking: "Bookings closed for this show."
+      },
+      mr: {
+        nav_home: "होम",
+        nav_shows: "कार्यक्रम",
+        nav_bookings: "बुकिंग",
+        nav_gallery: "गॅलरी",
+        nav_contact: "संपर्क",
+        explore_shows: "कार्यक्रम पाहा",
+        book_tickets: "तिकीटे बुक करा",
+        shows_events: "कार्यक्रम आणि इव्हेंट",
+        shows_subtitle: "मराठी रंगभूमी आणि अभिजात संगीत मैफिलींचा आनंद घ्या.",
+        booking_subtitle: "तिकीटे थेट निवडून आरक्षित करा आणि आपले पास त्वरित मिळवा.",
+        select_show: "कार्यक्रम निवडा",
+        stage: "रंगमंच / STAGE",
+        booking_summary: "बुकिंग सारांश",
+        selected_seats: "निवडलेल्या जागा",
+        ticket_count: "जागा संख्या",
+        total_price: "एकूण किंमत",
+        your_name: "पूर्ण नाव",
+        phone: "फोन नंबर",
+        your_email: "ईमेल पत्ता",
+        book_now: "निश्चित करा आणि भरा",
+        gallery_title: "कलाभूमी गॅलरी",
+        gallery_subtitle: "आमच्या अजरामर संगीत नाटकांची सुंदर झलक.",
+        all: "सर्व",
+        drama_tab: "नाटक",
+        music_tab: "नाट्य संगीत",
+        scenes_tab: "नेपथ्य / रंगमंच",
+        contact_us: "आमच्याशी संपर्क साधा",
+        contact_subtitle: "तिकीट बुकिंग, कलाकारांची नोंदणी आणि प्रायोजकत्वासाठी संपर्क करा.",
+        get_in_touch: "संपर्क साधा",
+        subject: "विषय",
+        message: "संदेश",
+        send_message: "संदेश पाठवा",
+        faq: "वारंवार विचारले जाणारे प्रश्न",
+        footer_about: "कलाभूमी एंटरटेनमेंट मंडळ मराठी रंगभूमी, नाट्यसंगीत आणि सांस्कृतिक कलांचे जतन आणि प्रचार करण्यासाठी समर्पित आहे.",
+        footer_quick_links: "जलद लिंक्स",
+        footer_support: "समर्थन",
+        footer_newsletter: "न्यूझलेटर",
+        footer_newsletter_desc: "आगामी कार्यक्रम, कार्यशाळा आणि अधिक माहितीसाठी सदस्यत्व घ्या.",
+        footer_copyright: "© २०२६ कलाभूमी एंटरटेनमेंट मंडळ. सर्व हक्क राखीव.",
+        payment_details: "यूपीआय पेमेंट स्कॅन",
+        scan_to_complete: "GPay, PhonePe किंवा Paytm वापरून या QR कोडला स्कॅन करा आणि तुमचे पेमेंट कन्फर्मेशन अपलोड करा.",
+        upload_screenshot: "स्क्रीनशॉट अपलोड करा",
+        verify_pay: "पैसे तपासा",
+        admin_login: "अॅडमिन पोर्टल लॉगिन",
+        enter_pass: "कलाभूमी डेटाबेस कन्सोलमध्ये प्रवेश करण्यासाठी सुरक्षा पासवर्ड टाका.",
+        incorrect_pass: "पासवर्ड चुकीचा आहे. कृपया पुन्हा प्रयत्न करा.",
+        ticket_disclaimer: "कृपया या बारकोड/रिसीटसह venue gate वर दाखल व्हा. कला हि आपली ओळख आहे.",
+        featured_label: "वैशिष्ट्यपूर्ण कार्यक्रम",
+        upcoming_label: "लवकरच येणारा कार्यक्रम",
+        completed_label: "पूर्वीचा कार्यक्रम",
+        book_now_btn: "तिकीटे बुक करा",
+        no_active_booking: "या कार्यक्रमासाठी बुकिंग बंद आहे."
+      }
+    };
+
+    const currentYear = new Date().getFullYear();
+    const initialShows = [
+      {
+        id: "show-saubhadra",
+        titleEn: "Sangeet Saubhadra (संगीत सौभद्र)",
+        titleMr: "अजरामर संगीत सौभद्र",
+        date: `${currentYear}-08-15T18:30`,
+        venueEn: "Ravindra Natya Mandir, Dadar West",
+        venueMr: "रवींद्र नाट्य मंदिर, दादर पश्चिम",
+        priceVip: 500,
+        pricePrem: 300,
+        priceReg: 150,
+        status: "featured",
+        descEn: "A timeless masterpiece of Marathi Sangeet Natak. Experience brilliant classical Natya Sangeet compositions alongside a comedic and romantic family drama.",
+        descMr: "मराठी नाट्यसंगीताचा एक अद्वितीय सुवर्णकाळ. उत्कृष्ट शास्त्रीय नाट्यसंगीत पदे आणि विनोदी कौटुंबिक कथानकाचा एक सुंदर मिलाफ."
+      },
+      {
+        id: "show-natyasandhya",
+        titleEn: "Natya Sangeet Sandhya (नाट्य संध्या)",
+        titleMr: "नाट्य संगीत संध्या मैफिल",
+        date: `${currentYear}-09-02T19:00`,
+        venueEn: "Shivaji Mandir, Dadar West",
+        venueMr: "शिवाजी मंदिर, दादर पश्चिम",
+        priceVip: 600,
+        pricePrem: 400,
+        priceReg: 200,
+        status: "upcoming",
+        descEn: "A magnificent classical vocal concert capturing the heritage of iconic Marathi Natyakalakar legends, with sitar, harmonium, and tabla live accompanists.",
+        descMr: "मराठी संगीत नाटकांच्या सुवर्ण युगातील सुप्रसिद्ध पदांची एक स्वरमयी संध्याकाळ. तंतुवाद्य आणि तबला साथीदारांसह सुरेल अनुभव."
+      },
+      {
+        id: "show-manapman",
+        titleEn: "Sangeet Manapman (संगीत मानापमान)",
+        titleMr: "अजरामर संगीत मानापमान",
+        date: `${currentYear}-05-12T17:30`,
+        venueEn: "Gadkari Rangayatan, Thane",
+        venueMr: "गडकरी रंगायतन, ठाणे",
+        priceVip: 450,
+        pricePrem: 250,
+        priceReg: 120,
+        status: "completed",
+        descEn: "A classic tragicomic musical drama that explores love, pride, and societal status in traditional Maharashtra. Directed by renowned art masters.",
+        descMr: "मराठी नाट्य क्षेत्रातील एक अभिजात संगीत नाटक. महाराष्ट्र संस्कृतीतील प्रेम, सन्मान आणि अभिमानाचे उत्कृष्ट सादरीकरण."
+      }
+    ];
+
+    const initialBookings = [
+      { id: "KB-498214", custName: "Prathamesh", custPhone: "9876543210", custEmail: "prathamesh@example.com", showId: "show-saubhadra", seats: ["A5", "A6"], amount: 1000, status: "Confirmed" },
+      { id: "KB-904128", custName: "Sneha Patil", custPhone: "8765432109", custEmail: "sneha@example.com", showId: "show-saubhadra", seats: ["C4"], amount: 300, status: "Pending" }
+    ];
+
+    const initialGallery = [
+      { id: "gal-1", category: "music", title: "Live Singing Performance", url: "assets/gallery/video_1.mp4", thumbnail: "assets/gallery/video_1_thumb.jpg" },
+      { id: "gal-2", category: "drama", title: "Marathi Theatrical Drama Scene", url: "assets/gallery/video_2.mp4", thumbnail: "assets/gallery/video_2_thumb.jpg" },
+      { id: "gal-3", category: "music", title: "Traditional Vocal Recital", url: "assets/gallery/video_3.mp4", thumbnail: "assets/gallery/video_3_thumb.jpg" },
+      { id: "gal-4", category: "scenes", title: "Backstage Preparation & Setup", url: "assets/gallery/video_4.mp4", thumbnail: "assets/gallery/video_4_thumb.jpg" },
+      { id: "gal-5", category: "music", title: "Natya Sangeet Concert Highlights", url: "assets/gallery/video_5.mp4", thumbnail: "assets/gallery/video_5_thumb.jpg" },
+      { id: "gal-6", category: "scenes", title: "Group Stage Rehearsals", url: "assets/gallery/video_6.mp4", thumbnail: "assets/gallery/video_6_thumb.jpg" },
+      { id: "gal-7", category: "drama", title: "Dramatic monologue act", url: "assets/gallery/video_7.mp4", thumbnail: "assets/gallery/video_7_thumb.jpg" },
+      { id: "gal-8", category: "music", title: "Classical Instrumental Accompaniment", url: "assets/gallery/video_8.mp4", thumbnail: "assets/gallery/video_8_thumb.jpg" },
+      { id: "gal-9", category: "drama", title: "Live Musical Theater Play", url: "assets/gallery/video_9.mp4", thumbnail: "assets/gallery/video_9_thumb.jpg" },
+      { id: "gal-10", category: "scenes", title: "Behind the Scenes Rehearsal", url: "assets/gallery/video_10.mp4", thumbnail: "assets/gallery/video_10_thumb.jpg" },
+      { id: "gal-11", category: "music", title: "Vocal Performance Practice", url: "assets/gallery/performance_singing_male.png" },
+      { id: "gal-12", category: "drama", title: "Drama Scene Spotlight", url: "assets/gallery/image_1.jpg" },
+      { id: "gal-13", category: "scenes", title: "Backstage Production Mirror", url: "assets/gallery/image_2.jpg" }
+    ];
+
+    const initialFaq = [
+      { qEn: "How do I book tickets?", aEn: "You can book tickets through our website by visiting the Book Tickets section, selecting your preferred seats, scanning the UPI QR code, and uploading your payment confirmation screenshot. Our admin will confirm it within minutes!", qMr: "तिकीटे कशी बुक करू शकतो?", aMr: "तुम्ही तिकिटे आमच्या बुकिंग विभागाला भेट देऊन, हव्या त्या जागा निवडून, UPI QR कोड स्कॅन करून आणि स्क्रीनशॉट अपलोड करून बुक करू शकता. आमचे अॅडमिन काही मिनिटांत त्याची पडताळणी करतील!" },
+      { qEn: "Can I get a refund on my ticket?", aEn: "Refunds are available up to 48 hours before the show. After that, you can transfer your ticket to someone else, but direct refunds are not processed.", qMr: "तिकिटाचे पैसे परत मिळतील का?", aMr: "प्रयोगाच्या ४८ तास आधी पैसे परत मिळतील. त्यानंतर परतावा शक्य नाही, पण तुम्ही तिकीट दुसऱ्या कोणालाही देऊ शकता." },
+      { qEn: "Is parking available at the Dadar venues?", aEn: "Yes, Ravindra Natya Mandir and Shivaji Mandir have paid municipal/venue parking space, but we recommend arriving early during popular weekend shows.", qMr: "दादर नाट्यगृहात पार्किंग उपलब्ध आहे का?", aMr: "होय, रवींद्र नाट्य मंदिर आणि शिवाजी मंदिरात पार्किंग उपलब्ध आहे, परंतु शनिवार-रविवारच्या गर्दीच्या वेळी लवकर येण्याची शिफारस केली जाते." }
+    ];
+
+    // Seed helpers
+    function seedDatabase() {
+      const CURRENT_VERSION = "1.0.5";
+      const dbVersion = localStorage.getItem('kb_db_version');
+
+      // Force update elements on version upgrade
+      if (dbVersion !== CURRENT_VERSION) {
+        localStorage.setItem('kb_gallery', JSON.stringify(initialGallery));
+        localStorage.setItem('kb_shows', JSON.stringify(initialShows));
+        localStorage.setItem('kb_db_version', CURRENT_VERSION);
+      }
+
+      if (!localStorage.getItem('kb_shows')) {
+        localStorage.setItem('kb_shows', JSON.stringify(initialShows));
+      }
+      if (!localStorage.getItem('kb_bookings')) {
+        localStorage.setItem('kb_bookings', JSON.stringify(initialBookings));
+      }
+      if (!localStorage.getItem('kb_faq')) {
+        localStorage.setItem('kb_faq', JSON.stringify(initialFaq));
+      }
+      if (!localStorage.getItem('kb_admin_pass')) {
+        localStorage.setItem('kb_admin_pass', 'admin123');
+      }
+      if (!localStorage.getItem('kb_stats')) {
+        localStorage.setItem('kb_stats', JSON.stringify({ showsCount: 42, artistsCount: 28 }));
+      }
+      if (!localStorage.getItem('kb_contact')) {
+        localStorage.setItem('kb_contact', JSON.stringify({
+          addressEn: "123 Theatre Lane, Dadar West, Mumbai, Maharashtra 400028, India",
+          addressMr: "१२३ नाट्य गल्ली, दादर पश्चिम, मुंबई, महाराष्ट्र ४०००२८, भारत",
+          phone: "+91 98765 43210",
+          email: "info@kalabhoomi.com",
+          instagram: "https://www.instagram.com/kalabhoomi_official"
+        }));
+      }
+    }
+
+    seedDatabase();
+
+    // Elements & State
+    let selectedSeatsList = [];
+    let activeBookingShow = null;
+
+    // Load dynamic settings & stats
+    function applySystemSettings() {
+      const stats = JSON.parse(localStorage.getItem('kb_stats'));
+      const contact = JSON.parse(localStorage.getItem('kb_contact'));
+      
+      const currentAddress = currentLang === 'mr' ? contact.addressMr : contact.addressEn;
+      document.getElementById('contactAddress').textContent = currentAddress;
+      document.getElementById('contactPhone').textContent = contact.phone;
+      document.getElementById('contactEmail').textContent = contact.email;
+      
+      // Update instas
+      const instaLink = contact.instagram;
+      document.getElementById('contactInstagram').textContent = "@" + instaLink.split('/').pop();
+      document.querySelectorAll('a[href*="instagram.com"]').forEach(el => {
+        el.href = instaLink;
+      });
+    }
+
+    // Format Dates
+    function formatDateString(dateStr, lang) {
+      const dt = new Date(dateStr);
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+      return dt.toLocaleDateString(lang === 'mr' ? 'mr-IN' : 'en-US', options);
+    }
+
+    // Dynamic Render Shows
+    function renderShows() {
+      const shows = JSON.parse(localStorage.getItem('kb_shows'));
+      const featuredContainer = document.getElementById('featuredShowContainer');
+      const gridContainer = document.getElementById('showsGrid');
+      
+      featuredContainer.innerHTML = '';
+      gridContainer.innerHTML = '';
+      
+      // Popular Select Show dropdown for booking
+      const selectDropdown = document.getElementById('bookingShowSelect');
+      const savedSelVal = selectDropdown ? selectDropdown.value : null;
+      if (selectDropdown) selectDropdown.innerHTML = '';
+
+      let featuredShow = shows.find(s => s.status === 'featured');
+      let nonFeaturedShows = shows.filter(s => s.status !== 'featured');
+      
+      // Render featured show
+      if (featuredShow) {
+        activeBookingShow = featuredShow;
+        const title = currentLang === 'mr' ? featuredShow.titleMr : featuredShow.titleEn;
+        const venue = currentLang === 'mr' ? featuredShow.venueMr : featuredShow.venueEn;
+        const desc = currentLang === 'mr' ? featuredShow.descMr : featuredShow.descEn;
+        
+        featuredContainer.innerHTML = `
+          <div class="glass-card rounded-3xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 gap-8 p-6 lg:p-8 items-center border border-gold-500 border-opacity-30">
+            <div class="lg:col-span-5 relative group overflow-hidden rounded-2xl h-64 bg-gradient-to-r from-crimson-800 to-black flex items-center justify-center border border-gold-500 border-opacity-10 shadow-lg">
+              <i class="fas fa-theater-masks text-8xl text-gold-500 opacity-60"></i>
+              <div class="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-20 transition"></div>
+            </div>
+            
+            <div class="lg:col-span-7 space-y-4">
+              <div class="inline-block px-3 py-1 bg-gold-500 text-black text-xs font-extrabold uppercase rounded-full tracking-widest">
+                ${translations[currentLang].featured_label}
+              </div>
+              <h3 class="text-2xl md:text-4xl font-extrabold text-white leading-tight">${title}</h3>
+              <p class="text-sm text-gray-400 leading-relaxed">${desc}</p>
+              
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-white border-opacity-5 text-sm text-gray-300">
+                <div class="flex items-center gap-2">
+                  <i class="far fa-calendar-alt text-gold-500"></i>
+                  <span>${formatDateString(featuredShow.date, currentLang)}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <i class="fas fa-map-marker-alt text-gold-500"></i>
+                  <span>${venue}</span>
+                </div>
+              </div>
+              
+              <!-- Countdown Clock -->
+              <div class="pt-2">
+                <span class="text-[9px] uppercase tracking-wider text-gold-500 font-bold block mb-1">Time Remaining:</span>
+                <div class="grid grid-cols-4 gap-2 text-center max-w-[280px]" id="showCountdown">
+                  <div class="bg-white bg-opacity-5 rounded-lg p-2 border border-white border-opacity-10">
+                    <span class="block text-xl font-black text-gold-500" id="cdDays">00</span>
+                    <span class="text-[8px] uppercase tracking-wider text-gray-400">Days</span>
+                  </div>
+                  <div class="bg-white bg-opacity-5 rounded-lg p-2 border border-white border-opacity-10">
+                    <span class="block text-xl font-black text-gold-500" id="cdHours">00</span>
+                    <span class="text-[8px] uppercase tracking-wider text-gray-400">Hours</span>
+                  </div>
+                  <div class="bg-white bg-opacity-5 rounded-lg p-2 border border-white border-opacity-10">
+                    <span class="block text-xl font-black text-gold-500" id="cdMins">00</span>
+                    <span class="text-[8px] uppercase tracking-wider text-gray-400">Mins</span>
+                  </div>
+                  <div class="bg-white bg-opacity-5 rounded-lg p-2 border border-white border-opacity-10">
+                    <span class="block text-xl font-black text-gold-500" id="cdSecs">00</span>
+                    <span class="text-[8px] uppercase tracking-wider text-gray-400">Secs</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="pt-4 flex flex-wrap gap-4">
+                <button onclick="document.getElementById('booking').scrollIntoView({behavior: 'smooth'})" class="cta-btn px-6 py-2.5 rounded-full text-xs font-extrabold">
+                  ${translations[currentLang].book_now_btn}
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+        startFeaturedShowCountdown(featuredShow.date);
+      } else {
+        if (countdownInterval) clearInterval(countdownInterval);
+        featuredContainer.innerHTML = `
+          <div class="bg-black bg-opacity-40 border border-white border-opacity-5 p-12 rounded-3xl text-center">
+            <i class="fas fa-calendar-times text-5xl text-gold-500 mb-4 opacity-70"></i>
+            <h3 class="text-xl font-bold mb-2">No Active Show Program</h3>
+            <p class="text-xs text-gray-400">We are currently preparing our next amazing Marathi masterpiece production. Stay tuned!</p>
+          </div>
+        `;
+      }
+
+      // Render other grid shows
+      nonFeaturedShows.forEach(show => {
+        const title = currentLang === 'mr' ? show.titleMr : show.titleEn;
+        const venue = currentLang === 'mr' ? show.venueMr : show.venueEn;
+        const desc = currentLang === 'mr' ? show.descMr : show.descEn;
+        
+        let statusBadge = '';
+        if (show.status === 'upcoming') {
+          statusBadge = `<span class="bg-blue-600 text-white text-[10px] font-extrabold px-2.5 py-1 uppercase rounded-full tracking-wider">${translations[currentLang].upcoming_label}</span>`;
+        } else {
+          statusBadge = `<span class="bg-zinc-700 text-gray-300 text-[10px] font-extrabold px-2.5 py-1 uppercase rounded-full tracking-wider">${translations[currentLang].completed_label}</span>`;
+        }
+
+        gridContainer.innerHTML += `
+          <div class="glass-card rounded-2xl overflow-hidden flex flex-col justify-between h-full border border-white border-opacity-5">
+            <div class="relative h-44 bg-gradient-to-br from-crimson-900 to-black flex items-center justify-center text-gold-500">
+              <i class="fas fa-music text-6xl opacity-40"></i>
+              <div class="absolute bottom-4 left-4">
+                ${statusBadge}
+              </div>
+            </div>
+            
+            <div class="p-6 flex-grow flex flex-col justify-between space-y-4">
+              <div class="space-y-2">
+                <h4 class="text-lg font-bold text-white leading-snug">${title}</h4>
+                <p class="text-xs text-gray-400 leading-relaxed line-clamp-3">${desc}</p>
+              </div>
+              
+              <div class="space-y-2 text-xs text-gray-300 pt-4 border-t border-white border-opacity-5">
+                <div class="flex items-center gap-2">
+                  <i class="far fa-calendar text-gold-500"></i>
+                  <span>${formatDateString(show.date, currentLang)}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <i class="fas fa-map-marker-alt text-gold-500"></i>
+                  <span class="truncate">${venue}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      // Populate booking dropdown
+      shows.forEach(show => {
+        const text = currentLang === 'mr' ? show.titleMr : show.titleEn;
+        const opt = document.createElement('option');
+        opt.value = show.id;
+        opt.textContent = text;
+        if (show.status !== 'featured') {
+          opt.textContent += ` (${show.status === 'upcoming' ? 'Upcoming' : 'Completed'})`;
+        }
+        if (selectDropdown) selectDropdown.appendChild(opt);
+      });
+
+      if (selectDropdown && savedSelVal) {
+        selectDropdown.value = savedSelVal;
+      }
+      
+      applySystemSettings();
+    }
+
+    // Dynamic Seating Map Generator (16 columns: left row label, 6 seats, 2 aisle spaces, 6 seats, right row label)
+    function renderSeatingGrid() {
+      const grid = document.getElementById('seatingGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      
+      const selectShowId = document.getElementById('bookingShowSelect').value;
+      const shows = JSON.parse(localStorage.getItem('kb_shows'));
+      const activeShow = shows.find(s => s.id === selectShowId);
+      
+      if (!activeShow) return;
+      activeBookingShow = activeShow;
+
+      // Extract reserved seats for this show from confirmed bookings in localStorage
+      const bookings = JSON.parse(localStorage.getItem('kb_bookings')) || [];
+      const reservedSeatsSet = new Set();
+      bookings.filter(b => b.showId === selectShowId && b.status === "Confirmed")
+              .forEach(b => b.seats.forEach(s => reservedSeatsSet.add(s)));
+
+      const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+
+      rows.forEach(row => {
+        // Find tier of this row
+        let tierClass = 'regular';
+        if (row === 'A' || row === 'B') tierClass = 'vip';
+        else if (row === 'C' || row === 'D' || row === 'E' || row === 'F') tierClass = 'premium';
+        
+        // 1. Left Row Letter
+        const leftLetter = document.createElement('div');
+        leftLetter.className = 'text-gold-500 font-bold flex items-center justify-center text-[10px] uppercase opacity-60';
+        leftLetter.textContent = row;
+        grid.appendChild(leftLetter);
+
+        // 2. Left Seats (1 to 6)
+        for (let col = 1; col <= 6; col++) {
+          createSeatElement(row, col, tierClass, reservedSeatsSet, activeShow, grid);
+        }
+
+        // 3. Aisle Spacer (2 columns span)
+        const spacer = document.createElement('div');
+        spacer.className = 'col-span-2';
+        grid.appendChild(spacer);
+
+        // 4. Right Seats (7 to 12)
+        for (let col = 7; col <= 12; col++) {
+          createSeatElement(row, col, tierClass, reservedSeatsSet, activeShow, grid);
+        }
+
+        // 5. Right Row Letter
+        const rightLetter = document.createElement('div');
+        rightLetter.className = 'text-gold-500 font-bold flex items-center justify-center text-[10px] uppercase opacity-60';
+        rightLetter.textContent = row;
+        grid.appendChild(rightLetter);
+      });
+      
+      updateCheckoutDetails(activeShow);
+    }
+
+    function createSeatElement(row, col, tierClass, reservedSeatsSet, activeShow, grid) {
+      const seatId = `${row}${col}`;
+      const seatBtn = document.createElement('button');
+      seatBtn.className = `seat ${tierClass}`;
+      seatBtn.dataset.seat = seatId;
+      seatBtn.dataset.row = row;
+      seatBtn.textContent = col;
+      
+      if (reservedSeatsSet.has(seatId)) {
+        seatBtn.classList.add('reserved');
+        seatBtn.innerHTML = '<i class="fas fa-ban text-[8px]"></i>';
+      }
+
+      if (selectedSeatsList.includes(seatId)) {
+        seatBtn.classList.add('selected');
+      }
+
+      seatBtn.addEventListener('click', () => handleSeatSelection(seatBtn, activeShow));
+      grid.appendChild(seatBtn);
+    }
+
+    function handleSeatSelection(seatBtn, activeShow) {
+      if (seatBtn.classList.contains('reserved')) return;
+      
+      if (activeShow.status === 'completed') {
+        alert(translations[currentLang].no_active_booking);
+        return;
+      }
+      
+      const seatId = seatBtn.dataset.seat;
+      
+      if (selectedSeatsList.includes(seatId)) {
+        selectedSeatsList = selectedSeatsList.filter(s => s !== seatId);
+        seatBtn.classList.remove('selected');
+      } else {
+        selectedSeatsList.push(seatId);
+        seatBtn.classList.add('selected');
+      }
+      
+      updateCheckoutDetails(activeShow);
+    }
+
+    function updateCheckoutDetails(activeShow) {
+      const seatsText = document.getElementById('checkoutSeatsText');
+      const countText = document.getElementById('checkoutCountText');
+      const totalText = document.getElementById('checkoutTotalText');
+      
+      if (selectedSeatsList.length === 0) {
+        seatsText.textContent = 'None';
+        countText.textContent = '0';
+        totalText.textContent = '₹0';
+        return;
+      }
+      
+      seatsText.textContent = selectedSeatsList.join(', ');
+      countText.textContent = selectedSeatsList.length;
+      
+      let sumPrice = 0;
+      selectedSeatsList.forEach(seatId => {
+        const row = seatId.charAt(0);
+        if (row === 'A' || row === 'B') sumPrice += Number(activeShow.priceVip);
+        else if (row === 'C' || row === 'D' || row === 'E' || row === 'F') sumPrice += Number(activeShow.pricePrem);
+        else sumPrice += Number(activeShow.priceReg);
+      });
+      
+      totalText.textContent = `₹${sumPrice}`;
+    }
+
+    // Dynamic Filter Gallery Renderer
+    function renderGallery(filter = 'all') {
+      const galleryItems = JSON.parse(localStorage.getItem('kb_gallery')) || [];
+      const grid = document.getElementById('galleryGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      
+      const filtered = filter === 'all' ? galleryItems : galleryItems.filter(i => i.category === filter);
+      
+      filtered.forEach((item, index) => {
+        const tile = document.createElement('div');
+        tile.className = 'gallery-item overflow-hidden rounded-2xl relative cursor-pointer border border-white border-opacity-5 h-64 group shadow-lg';
+        
+        const isVideo = item.url.endsWith('.mp4');
+        const displayUrl = item.thumbnail || item.url;
+        const playIcon = isVideo ? '<div class="absolute inset-0 flex items-center justify-center z-10"><div class="h-12 w-12 rounded-full bg-black bg-opacity-65 flex items-center justify-center border border-white border-opacity-20 group-hover:scale-110 transition duration-300"><i class="fas fa-play text-white text-sm ml-0.5"></i></div></div>' : '';
+        
+        tile.innerHTML = `
+          <img src="${displayUrl}" alt="${item.title}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+          ${playIcon}
+          <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6 z-20">
+            <div>
+              <span class="text-[9px] uppercase tracking-widest font-extrabold text-gold-500">${item.category}</span>
+              <h4 class="text-sm font-bold text-white mt-1">${item.title}</h4>
+            </div>
+          </div>
+        `;
+        
+        tile.addEventListener('click', () => openGalleryLightbox(filtered, index));
+        grid.appendChild(tile);
+      });
+    }
+
+    // Lightbox Functionality
+    let currentGalleryList = [];
+    let currentLightboxIdx = 0;
+
+    function openGalleryLightbox(items, index) {
+      currentGalleryList = items;
+      currentLightboxIdx = index;
+      
+      const modal = document.getElementById('galleryModal');
+      const img = document.getElementById('modalImage');
+      const video = document.getElementById('modalVideo');
+      const caption = document.getElementById('modalCaption');
+      
+      const item = items[index];
+      const isVideo = item.url.endsWith('.mp4');
+      
+      if (isVideo) {
+        img.classList.add('hidden');
+        if (video) {
+          video.classList.remove('hidden');
+          video.src = item.url;
+          video.play().catch(() => {});
+        }
+      } else {
+        if (video) {
+          video.classList.add('hidden');
+          video.pause();
+          video.src = '';
+        }
+        img.classList.remove('hidden');
+        img.src = item.url;
+      }
+      
+      caption.textContent = `${item.title} [${item.category.toUpperCase()}]`;
+      
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function slideGallery(dir) {
+      currentLightboxIdx += dir;
+      if (currentLightboxIdx < 0) currentLightboxIdx = currentGalleryList.length - 1;
+      if (currentLightboxIdx >= currentGalleryList.length) currentLightboxIdx = 0;
+      
+      const img = document.getElementById('modalImage');
+      const video = document.getElementById('modalVideo');
+      const caption = document.getElementById('modalCaption');
+      
+      const item = currentGalleryList[currentLightboxIdx];
+      const isVideo = item.url.endsWith('.mp4');
+      
+      if (isVideo) {
+        img.classList.add('hidden');
+        if (video) {
+          video.classList.remove('hidden');
+          video.src = item.url;
+          video.play().catch(() => {});
+        }
+      } else {
+        if (video) {
+          video.classList.add('hidden');
+          video.pause();
+          video.src = '';
+        }
+        img.classList.remove('hidden');
+        img.src = item.url;
+      }
+      
+      caption.textContent = `${item.title} [${item.category.toUpperCase()}]`;
+    }
+
+    // FAQ Accordion Populator
+    function renderFaqs() {
+      const faqs = JSON.parse(localStorage.getItem('kb_faq')) || [];
+      const accordion = document.getElementById('faqAccordion');
+      if (!accordion) return;
+      accordion.innerHTML = '';
+      
+      faqs.forEach((faq, index) => {
+        const question = currentLang === 'mr' ? faq.qMr : faq.qEn;
+        const answer = currentLang === 'mr' ? faq.aMr : faq.aEn;
+        
+        accordion.innerHTML += `
+          <div class="border-b border-white border-opacity-5 pb-3">
+            <button class="flex justify-between items-center w-full text-left font-bold py-2 hover:text-gold-500 transition text-xs md:text-sm text-white" onclick="toggleFaq(${index})">
+              <span>${question}</span>
+              <i class="fas fa-plus text-xs" id="faqIcon-${index}"></i>
+            </button>
+            <div class="hidden text-xs text-gray-400 mt-2 leading-relaxed pl-1" id="faqAnswer-${index}">
+              ${answer}
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function toggleFaq(index) {
+      const answer = document.getElementById(`faqAnswer-${index}`);
+      const icon = document.getElementById(`faqIcon-${index}`);
+      
+      const isOpen = !answer.classList.contains('hidden');
+      
+      // Close all
+      document.querySelectorAll('#faqAccordion [id^="faqAnswer-"]').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('#faqAccordion [id^="faqIcon-"]').forEach(el => {
+        el.classList.remove('fa-minus');
+        el.classList.add('fa-plus');
+      });
+
+      if (!isOpen) {
+        answer.classList.remove('hidden');
+        icon.classList.remove('fa-plus');
+        icon.classList.add('fa-minus');
+      }
+    }
+
+    // Global Event Listeners Setup
+    document.addEventListener('DOMContentLoaded', () => {
+      // Init elements
+      renderShows();
+      renderSeatingGrid();
+      renderGallery('all');
+      renderFaqs();
+      
+      // Language trigger
+      document.querySelector('.lang-toggle').addEventListener('click', () => {
+        const newLang = currentLang === 'en' ? 'mr' : 'en';
+        updateLanguage(newLang);
+        updateLanguageToggleIcon();
+        renderSeatingGrid();
+        renderFaqs();
+      });
+
+      function updateLanguageToggleIcon() {
+        const icon = document.querySelector('.lang-toggle i');
+        icon.className = currentLang === 'en' ? 'fas fa-language text-sm' : 'fas fa-globe text-sm';
+      }
+      updateLanguageToggleIcon();
+
+      // Theme toggle
+      document.querySelector('.theme-toggle').addEventListener('click', () => {
+        const body = document.body;
+        const icon = document.querySelector('.theme-toggle i');
+        
+        if (body.classList.contains('light-theme')) {
+          body.classList.remove('light-theme');
+          icon.className = 'fas fa-sun text-sm';
+        } else {
+          body.classList.add('light-theme');
+          icon.className = 'fas fa-moon text-sm';
+        }
+        renderShows();
+        renderSeatingGrid();
+      });
+
+      // Show selector changed
+      document.getElementById('bookingShowSelect').addEventListener('change', () => {
+        selectedSeatsList = [];
+        renderSeatingGrid();
+      });
+
+      // Gallery Filter buttons
+      document.querySelectorAll('#galleryFilters button').forEach(btn => {
+        btn.addEventListener('click', function() {
+          document.querySelector('#galleryFilters button.active').classList.remove('active');
+          this.classList.add('active');
+          renderGallery(this.dataset.filter);
+        });
+      });
+
+      // Lightbox closes
+      document.getElementById('closeGalleryModal').addEventListener('click', () => {
+        document.getElementById('galleryModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+        const video = document.getElementById('modalVideo');
+        if (video) {
+          video.pause();
+          video.src = '';
+        }
+      });
+      document.getElementById('galleryPrevBtn').addEventListener('click', () => slideGallery(-1));
+      document.getElementById('galleryNextBtn').addEventListener('click', () => slideGallery(1));
+
+      // Checkout form submit opens QR modal
+      document.getElementById('ticketCheckoutForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        if (selectedSeatsList.length === 0) {
+          alert("Please select at least one seat on the stage map!");
+          return;
+        }
+
+        const sumPrice = document.getElementById('checkoutTotalText').textContent;
+        document.getElementById('paymentModalAmount').textContent = sumPrice;
+        
+        // Generate QR code link dynamically based on price
+        const upiString = `upi://pay?pa=kalabhoomi@upi&pn=Kalabhoomi%20Entertainment&am=${sumPrice.replace('₹','')}&tn=Show%20Ticket`;
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiString)}`;
+        document.getElementById('paymentQrCodeImg').src = qrUrl;
+
+        document.getElementById('paymentModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      });
+
+      document.getElementById('closePaymentModal').addEventListener('click', () => {
+        document.getElementById('paymentModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+      });
+
+      // Payment verify triggers E-Ticket Pass
+      document.getElementById('paymentConfirmForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const btn = document.getElementById('verifyPaymentBtn');
+        btn.disabled = true;
+        btn.textContent = "Verifying with bank...";
+        
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.textContent = "Verify Payment";
+          
+          document.getElementById('paymentModal').style.display = 'none';
+          
+          // Generate booking pass
+          const tId = "KB-" + Math.floor(100000 + Math.random() * 900000);
+          const showTitle = activeBookingShow ? (currentLang === 'mr' ? activeBookingShow.titleMr : activeBookingShow.titleEn) : "Sangeet Saubhadra";
+          const showVenue = activeBookingShow ? (currentLang === 'mr' ? activeBookingShow.venueMr : activeBookingShow.venueEn) : "Ravindra Natya Mandir";
+          const showDate = activeBookingShow ? formatDateString(activeBookingShow.date, currentLang) : "";
+          
+          const name = document.getElementById('custName').value;
+          const phone = document.getElementById('custPhone').value;
+          const email = document.getElementById('custEmail').value;
+          const sumPrice = document.getElementById('checkoutTotalText').textContent;
+          
+          // Write booking to localStorage
+          const bookings = JSON.parse(localStorage.getItem('kb_bookings')) || [];
+          bookings.push({
+            id: tId,
+            custName: name,
+            custPhone: phone,
+            custEmail: email,
+            showId: activeBookingShow.id,
+            seats: [...selectedSeatsList],
+            amount: Number(sumPrice.replace('₹','')),
+            status: "Confirmed" // Automatically approved for mock convenience!
+          });
+          localStorage.setItem('kb_bookings', JSON.stringify(bookings));
+
+          // Set ticket values in modal
+          document.getElementById('ticketShowTitle').textContent = showTitle;
+          document.getElementById('ticketDateText').textContent = showDate;
+          document.getElementById('ticketVenueText').textContent = showVenue;
+          document.getElementById('ticketSeatsText').textContent = selectedSeatsList.join(', ');
+          document.getElementById('ticketAmountText').textContent = sumPrice;
+          
+          document.getElementById('ticketNameText').textContent = name;
+          document.getElementById('ticketPhoneText').textContent = phone;
+          document.getElementById('ticketEmailText').textContent = email;
+          document.getElementById('ticketIdText').textContent = tId;
+
+          // Open Ticket Success Modal
+          document.getElementById('ticketModal').style.display = 'flex';
+        }, 1500);
+      });
+
+      document.getElementById('closeTicketModal').addEventListener('click', () => {
+        closeTicketFlow();
+      });
+      document.getElementById('finishTicketBtn').addEventListener('click', () => {
+        closeTicketFlow();
+      });
+
+      function closeTicketFlow() {
+        document.getElementById('ticketModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+        
+        // Reset state
+        selectedSeatsList = [];
+        document.getElementById('ticketCheckoutForm').reset();
+        document.getElementById('paymentConfirmForm').reset();
+        renderSeatingGrid();
+        renderBookingsTable();
+      }
+
+      // Print ticket pass
+      document.getElementById('printTicketBtn').addEventListener('click', () => {
+        window.print();
+      });
+
+      // Mobile menu toggle
+      const mobileBtn = document.querySelector('.mobile-menu-btn');
+      const mobileMenu = document.querySelector('.nav-menu');
+      
+      mobileBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+      });
+
+      // Audio Ambient controls
+      const playBtn = document.getElementById('audioPlayBtn');
+      const audio = document.getElementById('ambientAudio');
+      const record = document.getElementById('audioRecordIcon');
+      const select = document.getElementById('audioTrackSelect');
+      
+      let isPlaying = false;
+      
+      playBtn.addEventListener('click', () => {
+        if (isPlaying) {
+          audio.pause();
+          record.classList.remove('playing');
+          isPlaying = false;
+        } else {
+          audio.play().catch(() => {});
+          record.classList.add('playing');
+          isPlaying = true;
+        }
+      });
+
+      select.addEventListener('change', () => {
+        const track = select.value;
+        if (track === 'sitar') {
+          audio.src = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3";
+        } else if (track === 'flute') {
+          audio.src = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3";
+        } else {
+          audio.src = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-12.mp3";
+        }
+        if (isPlaying) {
+          audio.play().catch(() => {});
+        }
+      });
+
+      // Spotlight Cursor movement inside desktop
+      const spotlight = document.getElementById('spotlight');
+      document.addEventListener('mousemove', (e) => {
+        if (window.innerWidth > 768) {
+          spotlight.style.opacity = '0.7';
+          spotlight.style.left = e.pageX + 'px';
+          spotlight.style.top = e.pageY + 'px';
+        }
+      });
+      document.addEventListener('mouseleave', () => {
+        spotlight.style.opacity = '0';
+      });
+
+      // Contact form submit mock
+      document.getElementById('contactForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert("Thank you! Your message has been sent to the Kalabhoomi Mandal. We will revert shortly.");
+        document.getElementById('contactForm').reset();
+      });
+
+      // Newsletter submit mock
+      document.getElementById('newsletterForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert("Subscribed successfully to Kalabhoomi updates!");
+        document.getElementById('newsletterForm').reset();
+      });
+
+      const openAdminLogin = () => {
+        const loginUrl = window.location.protocol === 'file:' ? 'admin.html' : '/login';
+        window.open(loginUrl, '_blank', 'noopener');
+      };
+
+      // Trigger A: Keyboard Shortcut (Ctrl+Shift+Z) -> open the admin login page
+      document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'z') {
+          e.preventDefault();
+          openAdminLogin();
+        }
+      });
+
+      // Trigger B: Phone 5-tap on brand logo -> open the admin login page
+      let tapCount = 0;
+      let tapTimer;
+      const brandLogo = document.getElementById('brandLogo');
+      if (brandLogo) {
+        brandLogo.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          tapCount++;
+          clearTimeout(tapTimer);
+
+          if (tapCount >= 5) {
+            tapCount = 0;
+            openAdminLogin();
+          } else {
+            tapTimer = setTimeout(() => { tapCount = 0; }, 900);
+          }
+        });
+      }
+
+      // Trigger C: Lock icon in footer -> open the admin login page
+      const secretAdminTrigger = document.getElementById('secretAdminTrigger');
+      if (secretAdminTrigger) {
+        secretAdminTrigger.addEventListener('click', openAdminLogin);
+      }
+    });
+
+  </script>
+</body>
+</html>

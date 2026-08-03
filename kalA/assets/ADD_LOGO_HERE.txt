@@ -1,0 +1,13 @@
+1) Create this file:
+
+  kalA/assets/logo.png
+
+2) Use the logo image you shared, and rename it to:
+
+  logo.png
+
+Then refresh the page — it will appear in:
+- Browser tab icon (favicon)
+- Navbar (top left)
+- Hero section (above title)
+- Footer (about section)
