@@ -811,6 +811,8 @@
   </div>
 
   <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-sync.js"></script>
   <script id="app-script">
     // Multilingual Translation System
     const translations = {
@@ -1035,9 +1037,6 @@
         }));
       }
     }
-
-    seedDatabase();
-
     // Elements & State
     let selectedSeatsList = [];
     let activeBookingShow = null;
@@ -1500,7 +1499,9 @@
     }
 
     // Global Event Listeners Setup
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
+      await syncFromSupabase();
+      seedDatabase();
       // Init elements
       renderShows();
       renderSeatingGrid();

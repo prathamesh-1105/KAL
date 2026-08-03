@@ -1,4 +1,5 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  await syncFromSupabase();
   const loginScreen = document.getElementById('loginScreen');
   const adminConsole = document.getElementById('adminConsole');
   const memberDashboard = document.getElementById('memberDashboard');
