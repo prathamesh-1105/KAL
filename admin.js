@@ -1,3 +1,8 @@
+if (typeof window.syncFromSupabase !== 'function') {
+  window.syncFromSupabase = async function() {
+    console.warn('Backend sync script failed to load. Running in offline/local-only mode.');
+  };
+}
 window.addEventListener('error', function(e) {
   alert('Global Error: ' + e.message + ' at ' + e.filename + ':' + e.lineno);
 });
@@ -718,6 +723,7 @@ function initDatabases() {
     localStorage.setItem('kb_venues', JSON.stringify(['Ravindra Natya Mandir, Dadar', 'Shivaji Mandir, Dadar', 'Dadar Matunga Cultural Centre']));
   }
 }
+
 
 
 
