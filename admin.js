@@ -4,12 +4,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const loginBtnText = document.getElementById('loginBtnText');
   const loginSpinner = document.getElementById('loginSpinner');
 
-  if (loginBtn) {
-    loginBtn.disabled = true;
-    if (loginBtnText) loginBtnText.textContent = 'Syncing...';
-    if (loginSpinner) loginSpinner.classList.remove('hidden');
-  }
-
   if (loginForm) {
     loginForm.addEventListener('submit', (e) => {
       if (loginBtn && loginBtn.disabled) {
@@ -41,20 +35,28 @@ document.addEventListener('DOMContentLoaded', async () => {
   try { bindSiteContentForm(); } catch(e){ console.error(e) }
   try { bindBookingsActions(); } catch(e){ console.error(e) }
 
+  initDatabases();
+  restoreSession();
+
+  if (loginBtn) {
+    loginBtn.disabled = true;
+    if (loginBtnText) loginBtnText.textContent = 'Syncing...';
+    if (loginSpinner) loginSpinner.classList.remove('hidden');
+  }
+
   await syncFromSupabase();
+
+  if (sessionStorage.getItem('isAdminLoggedIn') === 'true') {
+    renderAdminDashboard();
+  } else if (sessionStorage.getItem('isMemberLoggedIn') === 'true') {
+    renderMemberDashboard(sessionStorage.getItem('memberId'));
+  }
 
   if (loginBtn) {
     loginBtn.disabled = false;
     if (loginBtnText) loginBtnText.textContent = 'Authenticate';
     if (loginSpinner) loginSpinner.classList.add('hidden');
   }
-
-  const loginScreen = document.getElementById('loginScreen');
-  const adminConsole = document.getElementById('adminConsole');
-  const memberDashboard = document.getElementById('memberDashboard');
-
-  initDatabases();
-  restoreSession();
 });
 
 function restoreSession() {
