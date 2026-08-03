@@ -285,9 +285,10 @@ function bindSettingsForm() {
 }
 
 function bindTeamCredentialsForm() {
-  document.getElementById('teamCredentialsForm')?.addEventListener('submit', (e) => {
+  document.getElementById('submitTeamCredentialsBtn')?.addEventListener('click', (e) => {
     e.preventDefault();
     const members = safeGetJSON('kb_team_members', '[]');
+    if(!document.getElementById('teamMemberName').value || !document.getElementById('teamMemberLogin').value || !document.getElementById('teamMemberPass').value) { alert('Please fill in all required fields.'); return; }
     const formId = document.getElementById('teamMemberFormId').value;
     const memberData = {
       id: formId || 'mem-' + Math.floor(1000 + Math.random() * 9000),
@@ -316,7 +317,7 @@ function bindTeamCredentialsForm() {
 }
 
 function resetTeamMemberForm() {
-  document.getElementById('teamCredentialsForm')?.reset();
+  document.getElementById('teamMemberName').value='';document.getElementById('teamMemberLogin').value='';document.getElementById('teamMemberPass').value='';document.getElementById('teamMemberRole').value='';
   document.getElementById('teamMemberFormId').value = '';
 }
 
@@ -711,4 +712,5 @@ function initDatabases() {
     localStorage.setItem('kb_venues', JSON.stringify(['Ravindra Natya Mandir, Dadar', 'Shivaji Mandir, Dadar', 'Dadar Matunga Cultural Centre']));
   }
 }
+
 

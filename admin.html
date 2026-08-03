@@ -353,7 +353,7 @@
               </div>
 
               <h5 class="font-bold text-white uppercase border-b border-white border-opacity-5 pb-2 pt-4">Team Member Credentials</h5>
-              <form id="teamCredentialsForm" class="space-y-3">
+              <div id="teamCredentialsForm" class="space-y-3">
                 <input type="hidden" id="teamMemberFormId">
                 <div>
                   <label class="block text-gray-400 mb-1">Member Name</label>
@@ -372,12 +372,10 @@
                   <input type="text" id="teamMemberRole" placeholder="e.g. Stage Crew" class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
                 </div>
                 <div class="flex gap-3">
-                  <button type="submit" class="flex-1 cta-btn py-3 rounded-lg font-bold uppercase">Save Credentials</button>
+                  <button type="button" id="submitTeamCredentialsBtn" class="flex-1 cta-btn py-3 rounded-lg font-bold uppercase">Save Credentials</button>
                   <button type="button" id="resetTeamMemberFormBtn" class="outline-btn px-4 py-3 rounded-lg font-bold uppercase">Reset</button>
                 </div>
-              </form>
-
-              <div class="overflow-x-auto mt-3">
+              </div><div class="overflow-x-auto mt-3">
                 <table class="w-full text-xs text-left border border-white border-opacity-5">
                   <thead class="bg-black text-gold-500 uppercase tracking-wider font-bold">
                     <tr>
@@ -671,3 +669,4 @@
   <script src="admin.js?v=3"></script>
 </body>
 </html>
+
