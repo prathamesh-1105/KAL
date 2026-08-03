@@ -9,7 +9,7 @@ localStorage.setItem = function(key, value) {
   if (key.startsWith('kb_')) {
     // Asynchronously update Supabase
     supabaseClient.from('kv_store')
-      .upsert({ id: key, value: JSON.parse(value) })
+      .upsert({ id: key, value: { raw: value } })
       .then(({error}) => { if (error) console.error('Supabase Sync Error:', error); });
   }
 };
@@ -20,7 +20,13 @@ async function syncFromSupabase() {
     if (error) throw error;
     if (data && data.length > 0) {
       data.forEach(row => {
-        originalSetItem.call(localStorage, row.id, JSON.stringify(row.value));
+        if (row.value && typeof row.value.raw !== 'undefined') {
+          originalSetItem.call(localStorage, row.id, row.value.raw);
+        } else {
+          // Fallback for previously synced data (if any was successfully parsed)
+          const val = typeof row.value === 'string' ? row.value : JSON.stringify(row.value);
+          originalSetItem.call(localStorage, row.id, val);
+        }
       });
     }
   } catch (err) {
