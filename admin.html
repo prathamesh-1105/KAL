@@ -152,7 +152,10 @@
           </div>
         </div>
         <p class="text-[10px] text-red-500 hidden text-center" id="loginError">Incorrect username or password. Please try again.</p>
-        <button type="submit" class="w-full cta-btn py-3 rounded-lg text-xs font-bold uppercase tracking-wider">Log In</button>
+        <button type="submit" id="loginBtn" class="w-full cta-btn py-3 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2">
+          <i class="fas fa-spinner fa-spin hidden" id="loginSpinner"></i>
+          <span id="loginBtnText">Log In</span>
+        </button>
       </form>
 
       <div class="text-center pt-2">

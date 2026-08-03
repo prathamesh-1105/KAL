@@ -20,6 +20,27 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  document.getElementById('logoutBtn')?.addEventListener('click', () => logout('admin'));
+  document.getElementById('memberLogoutBtn')?.addEventListener('click', () => logout('member'));
+
+  document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      document.querySelector('.admin-tab-btn.active')?.classList.remove('active');
+      this.classList.add('active');
+      document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.add('hidden'));
+      document.getElementById(this.dataset.tab)?.classList.remove('hidden');
+    });
+  });
+
+  try { bindShowsForm(); } catch(e){ console.error(e) }
+  try { bindGalleryForm(); } catch(e){ console.error(e) }
+  try { bindSettingsForm(); } catch(e){ console.error(e) }
+  try { bindTeamCredentialsForm(); } catch(e){ console.error(e) }
+  try { bindAttendanceForm(); } catch(e){ console.error(e) }
+  try { bindFaqForm(); } catch(e){ console.error(e) }
+  try { bindSiteContentForm(); } catch(e){ console.error(e) }
+  try { bindBookingsActions(); } catch(e){ console.error(e) }
+
   await syncFromSupabase();
 
   if (loginBtn) {
@@ -34,26 +55,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   initDatabases();
   restoreSession();
-  document.getElementById('logoutBtn')?.addEventListener('click', () => logout('admin'));
-  document.getElementById('memberLogoutBtn')?.addEventListener('click', () => logout('member'));
-
-  document.querySelectorAll('.admin-tab-btn').forEach(btn => {
-    btn.addEventListener('click', function () {
-      document.querySelector('.admin-tab-btn.active')?.classList.remove('active');
-      this.classList.add('active');
-      document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.add('hidden'));
-      document.getElementById(this.dataset.tab)?.classList.remove('hidden');
-    });
-  });
-
-  bindShowsForm();
-  bindGalleryForm();
-  bindSettingsForm();
-  bindTeamCredentialsForm();
-  bindAttendanceForm();
-  bindFaqForm();
-  bindSiteContentForm();
-  bindBookingsActions();
 });
 
 function restoreSession() {
