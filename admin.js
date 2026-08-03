@@ -1,3 +1,9 @@
+window.addEventListener('error', function(e) {
+  alert('Global Error: ' + e.message + ' at ' + e.filename + ':' + e.lineno);
+});
+window.addEventListener('unhandledrejection', function(e) {
+  alert('Promise Error: ' + (e.reason && e.reason.message ? e.reason.message : e.reason));
+});
 function safeGetJSON(key, defaultStr = '[]') {
   try {
     const val = localStorage.getItem(key);
@@ -712,6 +718,7 @@ function initDatabases() {
     localStorage.setItem('kb_venues', JSON.stringify(['Ravindra Natya Mandir, Dadar', 'Shivaji Mandir, Dadar', 'Dadar Matunga Cultural Centre']));
   }
 }
+
 
 
 
