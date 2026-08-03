@@ -306,7 +306,7 @@
         <!-- Tab 3: System Settings & Stats -->
         <div class="admin-tab-content space-y-6 hidden" id="tabSettings">
           <h4 class="text-lg font-bold text-gold-500 uppercase tracking-wide">Contact Details & Site Stats</h4>
-          <form id="settingsForm" class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
             <div class="space-y-4">
               <h5 class="font-bold text-white uppercase border-b border-white border-opacity-5 pb-2">Global Contact Fields</h5>
               <div>
@@ -330,7 +330,7 @@
                 <input type="url" id="setInstagram" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
               </div>
               <div class="pt-4">
-                 <button type="submit" class="w-full cta-btn py-3.5 rounded-lg font-bold uppercase">
+                 <button type="button" id="saveSettingsBtn" class="w-full cta-btn py-3.5 rounded-lg font-bold uppercase">
                   Save Contact & Security
                 </button>
               </div>
@@ -418,7 +418,7 @@
                 </button>
               </div>
             </div>
-          </form>
+          </div>
         </div>
 
         <!-- Tab 4: Gallery Manager -->

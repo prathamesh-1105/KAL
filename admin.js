@@ -218,7 +218,7 @@ function bindGalleryForm() {
 }
 
 function bindSettingsForm() {
-  document.getElementById('settingsForm')?.addEventListener('submit', (e) => {
+  document.getElementById('saveSettingsBtn')?.addEventListener('click', (e) => {
     e.preventDefault();
     localStorage.setItem('kb_contact', JSON.stringify({
       addressEn: document.getElementById('setAddrEn').value,
