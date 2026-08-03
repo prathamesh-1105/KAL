@@ -1,13 +1,39 @@
 document.addEventListener('DOMContentLoaded', async () => {
+  const loginForm = document.getElementById('loginForm');
+  const loginBtn = document.getElementById('loginBtn');
+  const loginBtnText = document.getElementById('loginBtnText');
+  const loginSpinner = document.getElementById('loginSpinner');
+
+  if (loginBtn) {
+    loginBtn.disabled = true;
+    if (loginBtnText) loginBtnText.textContent = 'Syncing...';
+    if (loginSpinner) loginSpinner.classList.remove('hidden');
+  }
+
+  if (loginForm) {
+    loginForm.addEventListener('submit', (e) => {
+      if (loginBtn && loginBtn.disabled) {
+        e.preventDefault();
+        return;
+      }
+      handleLogin(e);
+    });
+  }
+
   await syncFromSupabase();
+
+  if (loginBtn) {
+    loginBtn.disabled = false;
+    if (loginBtnText) loginBtnText.textContent = 'Authenticate';
+    if (loginSpinner) loginSpinner.classList.add('hidden');
+  }
+
   const loginScreen = document.getElementById('loginScreen');
   const adminConsole = document.getElementById('adminConsole');
   const memberDashboard = document.getElementById('memberDashboard');
 
   initDatabases();
   restoreSession();
-
-  document.getElementById('loginForm').addEventListener('submit', handleLogin);
   document.getElementById('logoutBtn')?.addEventListener('click', () => logout('admin'));
   document.getElementById('memberLogoutBtn')?.addEventListener('click', () => logout('member'));
 
