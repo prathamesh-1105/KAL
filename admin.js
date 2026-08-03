@@ -483,7 +483,10 @@ function renderGalleryTable() {
     return `
       <tr class="hover:bg-white hover:bg-opacity-5 transition border-b border-white border-opacity-5">
         <td class="p-3"><div class="h-12 w-16 rounded overflow-hidden border border-white border-opacity-10 bg-black flex items-center justify-center relative">
-          <img src="${displayUrl}" class="h-full w-full object-cover" onerror="this.src='https://placehold.co/64x48?text=Media'">
+          ${(isVideo && !item.thumbnail) 
+            ? `<video src="${item.url}" class="h-full w-full object-cover" muted></video>` 
+            : `<img src="${displayUrl}" class="h-full w-full object-cover" onerror="this.src='https://placehold.co/64x48?text=Media'">`
+          }
           ${isVideo ? '<div class="absolute inset-0 bg-black/40 flex items-center justify-center"><i class="fas fa-play text-[10px] text-white"></i></div>' : ''}
         </div></td>
         <td class="p-3 font-bold">${item.title}</td>
