@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>
+    window.addEventListener('error', function(e) {
+      alert('Early Global Error: ' + e.message + ' at ' + e.filename + ':' + e.lineno);
+    });
+  </script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Kalabhoomi - Admin Console</title>
@@ -666,9 +671,10 @@
     &copy; Kalabhoomi Entertainment Mandal. Admin Terminal.
   </footer>
 
-  <script src="admin.js?v=5"></script>
+  <script src="admin.js?v=6"></script>
 </body>
 </html>
+
 
 
 
