@@ -1,3 +1,13 @@
+function safeGetJSON(key, defaultStr = '[]') {
+  try {
+    const val = localStorage.getItem(key);
+    if (!val || val === 'undefined' || val === 'null' || val === '[object Object]') return JSON.parse(defaultStr);
+    return JSON.parse(val);
+  } catch(e) {
+    console.warn('Resetting corrupt localstorage key:', key, e);
+    return JSON.parse(defaultStr);
+  }
+}
 document.addEventListener('DOMContentLoaded', async () => {
   const loginForm = document.getElementById('loginForm');
   const loginBtn = document.getElementById('loginBtn');
@@ -103,7 +113,7 @@ function handleLogin(e) {
     return;
   }
 
-  const members = JSON.parse(localStorage.getItem('kb_team_members') || '[]');
+  const members = safeGetJSON('kb_team_members', '[]');
   const member = members.find(m => m.login === username && m.password === password);
   if (member) {
     sessionStorage.setItem('isMemberLoggedIn', 'true');
@@ -148,14 +158,14 @@ function renderAdminDashboard() {
 }
 
 function renderMemberDashboard(memberId) {
-  const members = JSON.parse(localStorage.getItem('kb_team_members') || '[]');
+  const members = safeGetJSON('kb_team_members', '[]');
   const member = members.find(m => m.id === memberId);
   if (!member) return;
 
   document.getElementById('welcomeMessage').textContent = `Welcome, ${member.name}!`;
   document.getElementById('memberRole').textContent = member.role || 'Team Member';
 
-  const attendance = JSON.parse(localStorage.getItem('kb_attendance') || '[]');
+  const attendance = safeGetJSON('kb_attendance', '[]');
   const records = attendance.filter(a => a.memberId === memberId).sort((a, b) => b.date.localeCompare(a.date));
   const tbody = document.getElementById('attendanceTableBodyForMember');
   tbody.innerHTML = records.length === 0
@@ -185,7 +195,7 @@ function bindShowsForm() {
     e.preventDefault();
     const showId = document.getElementById('formShowId').value || 'show-' + Math.floor(1000 + Math.random() * 9000);
     const status = document.getElementById('formStatus').value;
-    const shows = JSON.parse(localStorage.getItem('kb_shows') || '[]');
+    const shows = safeGetJSON('kb_shows', '[]');
 
     if (status === 'featured') {
       shows.forEach(s => { if (s.status === 'featured') s.status = 'completed'; });
@@ -230,7 +240,7 @@ function bindGalleryForm() {
   document.getElementById('galleryForm')?.addEventListener('submit', (e) => {
     e.preventDefault();
     const id = document.getElementById('formGalleryId').value || 'gal-' + Math.floor(1000 + Math.random() * 9000);
-    const gallery = JSON.parse(localStorage.getItem('kb_gallery') || '[]');
+    const gallery = safeGetJSON('kb_gallery', '[]');
     const itemData = {
       id,
       title: document.getElementById('formGalTitle').value,
@@ -277,7 +287,7 @@ function bindSettingsForm() {
 function bindTeamCredentialsForm() {
   document.getElementById('teamCredentialsForm')?.addEventListener('submit', (e) => {
     e.preventDefault();
-    const members = JSON.parse(localStorage.getItem('kb_team_members') || '[]');
+    const members = safeGetJSON('kb_team_members', '[]');
     const formId = document.getElementById('teamMemberFormId').value;
     const memberData = {
       id: formId || 'mem-' + Math.floor(1000 + Math.random() * 9000),
@@ -320,7 +330,7 @@ function bindAttendanceForm() {
     const status = document.getElementById('attendanceStatus').value;
     if (!date || !memberId) { alert('Please select date and member.'); return; }
 
-    const attendance = JSON.parse(localStorage.getItem('kb_attendance') || '[]');
+    const attendance = safeGetJSON('kb_attendance', '[]');
     const existingIdx = attendance.findIndex(a => a.memberId === memberId && a.date === date);
     const record = { id: 'att-' + Date.now(), memberId, date, status, notes: '' };
     if (existingIdx !== -1) attendance[existingIdx] = { ...attendance[existingIdx], status };
@@ -345,7 +355,7 @@ function bindFaqForm() {
 
   document.getElementById('faqForm')?.addEventListener('submit', (e) => {
     e.preventDefault();
-    const faqs = JSON.parse(localStorage.getItem('kb_faq') || '[]');
+    const faqs = safeGetJSON('kb_faq', '[]');
     const id = document.getElementById('formFaqId').value || 'faq-' + Date.now();
     const faqData = {
       id,
@@ -398,7 +408,7 @@ function bindBookingsActions() {
 }
 
 function renderShowsTable() {
-  const shows = JSON.parse(localStorage.getItem('kb_shows') || '[]');
+  const shows = safeGetJSON('kb_shows', '[]');
   const tbody = document.getElementById('showsTableBody');
   if (!tbody) return;
   tbody.innerHTML = shows.map(show => `
@@ -416,7 +426,7 @@ function renderShowsTable() {
 }
 
 window.editShowEvent = function (showId) {
-  const show = JSON.parse(localStorage.getItem('kb_shows') || '[]').find(s => s.id === showId);
+  const show = safeGetJSON('kb_shows', '[]').find(s => s.id === showId);
   if (!show) return;
   populateVenueSelect();
   document.getElementById('formShowId').value = show.id;
@@ -436,7 +446,7 @@ window.editShowEvent = function (showId) {
 
 window.deleteShowEvent = function (showId) {
   if (confirm('Delete this event?')) {
-    let shows = JSON.parse(localStorage.getItem('kb_shows') || '[]');
+    let shows = safeGetJSON('kb_shows', '[]');
     shows = shows.filter(s => s.id !== showId);
     localStorage.setItem('kb_shows', JSON.stringify(shows));
     renderShowsTable();
@@ -444,8 +454,8 @@ window.deleteShowEvent = function (showId) {
 };
 
 function renderBookingsTable() {
-  const bookings = JSON.parse(localStorage.getItem('kb_bookings') || '[]');
-  const shows = JSON.parse(localStorage.getItem('kb_shows') || '[]');
+  const bookings = safeGetJSON('kb_bookings', '[]');
+  const shows = safeGetJSON('kb_shows', '[]');
   const tbody = document.getElementById('bookingsTableBody');
   if (!tbody) return;
   tbody.innerHTML = bookings.map(b => {
@@ -468,7 +478,7 @@ function renderBookingsTable() {
 }
 
 window.confirmBooking = function (bookingId) {
-  const bookings = JSON.parse(localStorage.getItem('kb_bookings') || '[]');
+  const bookings = safeGetJSON('kb_bookings', '[]');
   const idx = bookings.findIndex(b => b.id === bookingId);
   if (idx !== -1) {
     bookings[idx].status = 'Confirmed';
@@ -479,7 +489,7 @@ window.confirmBooking = function (bookingId) {
 
 window.deleteBooking = function (bookingId) {
   if (confirm('Cancel this booking?')) {
-    let bookings = JSON.parse(localStorage.getItem('kb_bookings') || '[]');
+    let bookings = safeGetJSON('kb_bookings', '[]');
     bookings = bookings.filter(b => b.id !== bookingId);
     localStorage.setItem('kb_bookings', JSON.stringify(bookings));
     renderBookingsTable();
@@ -487,9 +497,9 @@ window.deleteBooking = function (bookingId) {
 };
 
 function loadSystemSettingsForm() {
-  const stats = JSON.parse(localStorage.getItem('kb_stats') || '{}');
-  const contact = JSON.parse(localStorage.getItem('kb_contact') || '{}');
-  const venues = JSON.parse(localStorage.getItem('kb_venues') || '[]');
+  const stats = safeGetJSON('kb_stats', '{}');
+  const contact = safeGetJSON('kb_contact', '{}');
+  const venues = safeGetJSON('kb_venues', '[]');
 
   if (document.getElementById('setAddrEn')) document.getElementById('setAddrEn').value = contact.addressEn || '';
   if (document.getElementById('setAddrMr')) document.getElementById('setAddrMr').value = contact.addressMr || '';
@@ -504,7 +514,7 @@ function loadSystemSettingsForm() {
 }
 
 function renderGalleryTable() {
-  const gallery = JSON.parse(localStorage.getItem('kb_gallery') || '[]');
+  const gallery = safeGetJSON('kb_gallery', '[]');
   const tbody = document.getElementById('galleryTableBody');
   if (!tbody) return;
   tbody.innerHTML = gallery.map(item => {
@@ -531,7 +541,7 @@ function renderGalleryTable() {
 }
 
 window.editGalleryItem = function (itemId) {
-  const item = JSON.parse(localStorage.getItem('kb_gallery') || '[]').find(i => i.id === itemId);
+  const item = safeGetJSON('kb_gallery', '[]').find(i => i.id === itemId);
   if (!item) return;
   document.getElementById('formGalleryId').value = item.id;
   document.getElementById('formGalTitle').value = item.title;
@@ -544,7 +554,7 @@ window.editGalleryItem = function (itemId) {
 
 window.deleteGalleryItem = function (itemId) {
   if (confirm('Remove this gallery item?')) {
-    let gallery = JSON.parse(localStorage.getItem('kb_gallery') || '[]');
+    let gallery = safeGetJSON('kb_gallery', '[]');
     gallery = gallery.filter(i => i.id !== itemId);
     localStorage.setItem('kb_gallery', JSON.stringify(gallery));
     renderGalleryTable();
@@ -552,7 +562,7 @@ window.deleteGalleryItem = function (itemId) {
 };
 
 function renderTeamMembersTable() {
-  const members = JSON.parse(localStorage.getItem('kb_team_members') || '[]');
+  const members = safeGetJSON('kb_team_members', '[]');
   const tbody = document.getElementById('teamMembersTableBody');
   if (!tbody) return;
   tbody.innerHTML = members.length === 0
@@ -571,7 +581,7 @@ function renderTeamMembersTable() {
 }
 
 window.editTeamMember = function (id) {
-  const member = JSON.parse(localStorage.getItem('kb_team_members') || '[]').find(m => m.id === id);
+  const member = safeGetJSON('kb_team_members', '[]').find(m => m.id === id);
   if (!member) return;
   document.getElementById('teamMemberFormId').value = member.id;
   document.getElementById('teamMemberName').value = member.name;
@@ -582,7 +592,7 @@ window.editTeamMember = function (id) {
 
 window.deleteTeamMember = function (id) {
   if (confirm('Delete this member? Their attendance records will remain.')) {
-    let members = JSON.parse(localStorage.getItem('kb_team_members') || '[]');
+    let members = safeGetJSON('kb_team_members', '[]');
     members = members.filter(m => m.id !== id);
     localStorage.setItem('kb_team_members', JSON.stringify(members));
     renderTeamMembersTable();
@@ -593,7 +603,7 @@ window.deleteTeamMember = function (id) {
 function populateAttendanceMemberSelect() {
   const select = document.getElementById('attendanceMember');
   if (!select) return;
-  const members = JSON.parse(localStorage.getItem('kb_team_members') || '[]');
+  const members = safeGetJSON('kb_team_members', '[]');
   select.innerHTML = '<option value="">Select member...</option>' +
     members.map(m => `<option value="${m.id}">${m.name} (${m.login})</option>`).join('');
 }
@@ -601,8 +611,8 @@ function populateAttendanceMemberSelect() {
 function renderRecentAttendance() {
   const container = document.getElementById('recentAttendance');
   if (!container) return;
-  const attendance = JSON.parse(localStorage.getItem('kb_attendance') || '[]');
-  const members = JSON.parse(localStorage.getItem('kb_team_members') || '[]');
+  const attendance = safeGetJSON('kb_attendance', '[]');
+  const members = safeGetJSON('kb_team_members', '[]');
   const recent = [...attendance].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 20);
   container.innerHTML = recent.length === 0
     ? '<p class="text-gray-500">No attendance records yet.</p>'
@@ -613,7 +623,7 @@ function renderRecentAttendance() {
 }
 
 function renderFaqTable() {
-  const faqs = JSON.parse(localStorage.getItem('kb_faq') || '[]');
+  const faqs = safeGetJSON('kb_faq', '[]');
   const tbody = document.getElementById('faqTableBody');
   if (!tbody) return;
   tbody.innerHTML = faqs.map((f, i) => `
@@ -629,7 +639,7 @@ function renderFaqTable() {
 }
 
 window.editFaqItem = function (id) {
-  const faqs = JSON.parse(localStorage.getItem('kb_faq') || '[]');
+  const faqs = safeGetJSON('kb_faq', '[]');
   const faq = faqs.find(f => f.id === id) || faqs[Number(id)];
   if (!faq) return;
   document.getElementById('formFaqId').value = faq.id || id;
@@ -643,7 +653,7 @@ window.editFaqItem = function (id) {
 
 window.deleteFaqItem = function (id) {
   if (confirm('Delete this FAQ?')) {
-    let faqs = JSON.parse(localStorage.getItem('kb_faq') || '[]');
+    let faqs = safeGetJSON('kb_faq', '[]');
     faqs = faqs.filter((f, i) => (f.id || String(i)) !== id);
     localStorage.setItem('kb_faq', JSON.stringify(faqs));
     renderFaqTable();
@@ -667,7 +677,7 @@ function loadSiteContentForm() {
     bookingSubtitleEn: 'Reserve your premium seats interactively and download your pass instantly.',
     bookingSubtitleMr: 'तिकीटे थेट निवडून आरक्षित करा आणि आपले पास त्वरित मिळवा.'
   };
-  const content = { ...defaults, ...JSON.parse(localStorage.getItem('kb_site_content') || '{}') };
+  const content = { ...defaults, ...safeGetJSON('kb_site_content', '{}') };
   const fields = [
     ['contentHeroTitleEn', 'heroTitleEn'], ['contentHeroTitleMr', 'heroTitleMr'],
     ['contentHeroTaglineEn', 'heroTaglineEn'], ['contentHeroTaglineMr', 'heroTaglineMr'],
@@ -686,7 +696,7 @@ function loadSiteContentForm() {
 function populateVenueSelect() {
   const select = document.getElementById('formVenueEn');
   if (!select) return;
-  const venues = JSON.parse(localStorage.getItem('kb_venues') || '["Ravindra Natya Mandir, Dadar", "Shivaji Mandir, Dadar", "Dadar Matunga Cultural Centre"]');
+  const venues = safeGetJSON('kb_venues', '["Ravindra Natya Mandir, Dadar", "Shivaji Mandir, Dadar", "Dadar Matunga Cultural Centre"]');
   const current = select.value;
   select.innerHTML = venues.map(v => `<option value="${v}">${v}</option>`).join('');
   if (current) select.value = current;
@@ -701,3 +711,4 @@ function initDatabases() {
     localStorage.setItem('kb_venues', JSON.stringify(['Ravindra Natya Mandir, Dadar', 'Shivaji Mandir, Dadar', 'Dadar Matunga Cultural Centre']));
   }
 }
+
