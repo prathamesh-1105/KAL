@@ -132,16 +132,16 @@ function logout(type) {
 }
 
 function renderAdminDashboard() {
-  renderShowsTable();
-  renderBookingsTable();
-  loadSystemSettingsForm();
-  renderGalleryTable();
-  renderTeamMembersTable();
-  populateAttendanceMemberSelect();
-  renderRecentAttendance();
-  renderFaqTable();
-  loadSiteContentForm();
-  populateVenueSelect();
+  try { renderShowsTable(); } catch(e) { console.error('renderShowsTable error:', e); }
+  try { renderBookingsTable(); } catch(e) { console.error('renderBookingsTable error:', e); }
+  try { loadSystemSettingsForm(); } catch(e) { console.error('loadSystemSettingsForm error:', e); }
+  try { renderGalleryTable(); } catch(e) { console.error('renderGalleryTable error:', e); }
+  try { renderTeamMembersTable(); } catch(e) { console.error('renderTeamMembersTable error:', e); }
+  try { populateAttendanceMemberSelect(); } catch(e) { console.error('populateAttendanceMemberSelect error:', e); }
+  try { renderRecentAttendance(); } catch(e) { console.error('renderRecentAttendance error:', e); }
+  try { renderFaqTable(); } catch(e) { console.error('renderFaqTable error:', e); }
+  try { loadSiteContentForm(); } catch(e) { console.error('loadSiteContentForm error:', e); }
+  try { populateVenueSelect(); } catch(e) { console.error('populateVenueSelect error:', e); }
 }
 
 function renderMemberDashboard(memberId) {
@@ -505,8 +505,8 @@ function renderGalleryTable() {
   const tbody = document.getElementById('galleryTableBody');
   if (!tbody) return;
   tbody.innerHTML = gallery.map(item => {
-    const isVideo = item.url.endsWith('.mp4');
-    const displayUrl = item.thumbnail || item.url;
+    const isVideo = item.url && item.url.endsWith('.mp4');
+    const displayUrl = item.thumbnail || item.url || '';
     return `
       <tr class="hover:bg-white hover:bg-opacity-5 transition border-b border-white border-opacity-5">
         <td class="p-3"><div class="h-12 w-16 rounded overflow-hidden border border-white border-opacity-10 bg-black flex items-center justify-center relative">
