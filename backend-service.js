@@ -1,12 +1,12 @@
 const SUPABASE_URL = 'https://pzojjwjvzqlkhymackhr.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_881Zovjrl1eIuBUJtBZq6A_58e8nwus';
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
 // Override localStorage.setItem to sync with Supabase
 const originalSetItem = localStorage.setItem;
 localStorage.setItem = function(key, value) {
   originalSetItem.apply(this, arguments);
-  if (key.startsWith('kb_')) {
+  if (key.startsWith('kb_') && supabaseClient) {
     // Asynchronously update Supabase
     supabaseClient.from('kv_store')
       .upsert({ id: key, value: { raw: value } })
@@ -15,6 +15,10 @@ localStorage.setItem = function(key, value) {
 };
 
 async function syncFromSupabase() {
+  if (!supabaseClient) {
+    console.warn('Supabase not loaded, skipping sync.');
+    return;
+  }
   try {
     const { data, error } = await supabaseClient.from('kv_store').select('*');
     if (error) throw error;
