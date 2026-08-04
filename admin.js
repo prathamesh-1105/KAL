@@ -518,7 +518,7 @@ function loadSystemSettingsForm() {
   if (document.getElementById('setPhone')) document.getElementById('setPhone').value = contact.phone || '';
   if (document.getElementById('setEmail')) document.getElementById('setEmail').value = contact.email || '';
   if (document.getElementById('setInstagram')) document.getElementById('setInstagram').value = contact.instagram || '';
-  if (document.getElementById('adm_p_fld')) document.getElementById('adm_p_fld').value = localStorage.getItem('kb_admin_pass') || 'admin123';
+  // Password intentionally not pre-filled
   if (document.getElementById('adm_u_fld')) document.getElementById('adm_u_fld').value = localStorage.getItem('kb_admin_user') || 'admin';
   if (document.getElementById('setStatShows')) document.getElementById('setStatShows').value = stats.showsCount || 42;
   if (document.getElementById('setStatArtists')) document.getElementById('setStatArtists').value = stats.artistsCount || 28;
