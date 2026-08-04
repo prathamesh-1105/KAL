@@ -278,10 +278,22 @@ function bindSettingsForm() {
       email: document.getElementById('setEmail').value,
       instagram: document.getElementById('setInstagram').value
     }));
-    localStorage.setItem('kb_admin_pass', document.getElementById('adm_p_fld').value);
+      alert('Contact settings saved!');
+  });
+
+  document.getElementById('saveAdminCredsBtn')?.addEventListener('click', (e) => {
+    e.preventDefault();
     const adminUserEl = document.getElementById('adm_u_fld');
-    if (adminUserEl) localStorage.setItem('kb_admin_user', adminUserEl.value || 'admin');
-    alert('Contact & security settings saved!');
+    const adminPassEl = document.getElementById('adm_p_fld');
+    
+    if (adminUserEl && adminUserEl.value.trim() !== '') {
+      localStorage.setItem('kb_admin_user', adminUserEl.value.trim());
+    }
+    if (adminPassEl && adminPassEl.value.trim() !== '') {
+      localStorage.setItem('kb_admin_pass', adminPassEl.value.trim());
+      adminPassEl.value = ''; // clear it after saving
+    }
+    alert('Admin security key updated successfully!');
   });
 
   document.getElementById('saveSiteConfigBtn')?.addEventListener('click', () => {
