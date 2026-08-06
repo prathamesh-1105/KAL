@@ -1,14 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>
+    window.addEventListener('error', function(e) {
+      alert('Early Global Error: ' + e.message + ' at ' + e.filename + ':' + e.lineno);
+    });
+  </script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Kalabhoomi - Admin Console</title>
-  <link rel="icon" href="/assets/logo.png">
+  <link rel="icon" href="../assets/logo.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Tiro+Devanagari+Marathi&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../backend-service.js?v=5"></script>
+  
   
   <script>
     tailwind.config = {
@@ -47,6 +54,44 @@
   </script>
 
   <style>
+
+    body.light-theme {
+      background-color: #f8f6f0 !important;
+      color: #1a1a1a !important;
+    }
+    body.light-theme .glass-card {
+      background: rgba(255, 255, 255, 0.92) !important;
+      border-color: rgba(139, 0, 0, 0.25) !important;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+      color: #1a1a1a !important;
+    }
+    body.light-theme .text-white {
+      color: #1a1a1a !important;
+    }
+    body.light-theme .text-gray-300,
+    body.light-theme .text-gray-400 {
+      color: #333333 !important;
+    }
+    body.light-theme input,
+    body.light-theme select,
+    body.light-theme textarea {
+      background-color: #ffffff !important;
+      color: #1a1a1a !important;
+      border-color: rgba(139, 0, 0, 0.3) !important;
+    }
+    body.light-theme .bg-black,
+    body.light-theme .bg-\[\#121212\],
+    body.light-theme .bg-\[\#1c1c1c\],
+    body.light-theme .bg-\[\#151515\] {
+      background-color: #ffffff !important;
+      color: #1a1a1a !important;
+    }
+    body.light-theme .bg-black\/60,
+    body.light-theme .bg-black\/40 {
+      background-color: rgba(240, 238, 230, 0.9) !important;
+      color: #1a1a1a !important;
+    }
+
     :root {
       --primary: #080808;
       --secondary: #121212;
@@ -147,49 +192,166 @@
           </div>
           <div>
             <label class="block text-[10px] uppercase tracking-wider text-gray-400 font-bold">Password</label>
-            <input type="password" id="adminPassword" required placeholder="••••••••" class="w-full bg-[#151515] border border-white border-opacity-10 text-white rounded-lg p-3 text-sm focus:outline-none focus:border-gold-500 text-center transition">
+            <input type="text" id="adminPassword" required placeholder="••••••••" class="w-full bg-[#151515] border border-white border-opacity-10 text-white rounded-lg p-3 text-sm focus:outline-none focus:border-gold-500 text-center transition">
           </div>
         </div>
         <p class="text-[10px] text-red-500 hidden text-center" id="loginError">Incorrect username or password. Please try again.</p>
-        <button type="submit" class="w-full cta-btn py-3 rounded-lg text-xs font-bold uppercase tracking-wider">Log In</button>
+        <button type="submit" id="loginBtn" class="w-full cta-btn py-3 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2">
+          <i class="fas fa-spinner fa-spin hidden" id="loginSpinner"></i>
+          <span id="loginBtnText">Log In</span>
+        </button>
       </form>
 
       <div class="text-center pt-2">
-        <a href="/" class="text-xs text-gray-500 hover:text-gold-500 transition duration-300">
+        <a href="../index.html" class="text-xs text-gray-500 hover:text-gold-500 transition duration-300">
           <i class="fas fa-arrow-left mr-2"></i>Back to Homepage
         </a>
       </div>
     </div>
     
-    <!-- MEMBER DASHBOARD (Copied from member.html) -->
-    <div id="memberDashboard" class="w-full max-w-4xl glass-card rounded-2xl shadow-2xl hidden flex-col">
+    <!-- MEMBER DASHBOARD -->
+    <div id="memberDashboard" class="w-full max-w-5xl glass-card rounded-2xl shadow-2xl hidden flex-col overflow-hidden">
       <!-- Header -->
-      <div class="bg-gradient-to-r from-zinc-900 to-black p-6 border-b border-gold-500 flex justify-between items-center">
-        <div>
-          <h3 class="text-xl font-bold text-white" id="welcomeMessage">Welcome, Member!</h3>
-          <p class="text-xs text-gold-500 font-bold uppercase tracking-widest" id="memberRole">Your Role</p>
+      <div class="bg-gradient-to-r from-crimson-950 via-zinc-900 to-black p-6 border-b border-gold-500/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div class="flex items-center gap-4">
+          <div class="h-14 w-14 rounded-full bg-gold-500/10 border-2 border-gold-500 flex items-center justify-center text-gold-500 text-2xl font-bold">
+            <i class="fas fa-user-shield"></i>
+          </div>
+          <div>
+            <h3 class="text-2xl font-black text-white" id="welcomeMessage">Welcome, Member!</h3>
+            <div class="flex items-center gap-3 mt-1">
+              <span class="px-2.5 py-0.5 rounded-full bg-gold-500/20 text-gold-400 text-xs font-bold uppercase tracking-wider border border-gold-500/30" id="memberRole">Role</span>
+              <span class="text-xs text-gray-400" id="memberPayRate">Rate: ₹0 / Show</span>
+            </div>
+          </div>
         </div>
-        <button class="bg-red-950 hover:bg-red-800 text-red-200 transition px-4 py-2 rounded text-xs font-bold uppercase flex items-center gap-2" id="memberLogoutBtn">
-          <i class="fas fa-sign-out-alt"></i> Log Out
-        </button>
+        <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+          <button class="theme-toggle p-2 rounded-full border border-gold-500 hover:bg-gold-500 hover:text-black transition-all" title="Toggle Light/Dark Theme">
+            <i class="fas fa-sun text-xs"></i>
+          </button>
+          <a href="../index.html" class="outline-btn px-4 py-2 rounded text-xs font-bold uppercase flex items-center gap-2">
+            <i class="fas fa-home"></i> View Site
+          </a>
+          <button class="bg-red-950 hover:bg-red-800 text-red-200 transition px-4 py-2 rounded text-xs font-bold uppercase flex items-center gap-2" id="memberLogoutBtn">
+            <i class="fas fa-sign-out-alt"></i> Log Out
+          </button>
+        </div>
       </div>
-      <!-- Content -->
-      <div class="p-6 md:p-8 space-y-6">
-        <h4 class="text-lg font-bold text-gold-500 uppercase tracking-wide">My Attendance Record</h4>
-        <div class="overflow-x-auto">
-          <table class="w-full text-sm text-left border border-white/5">
-            <thead class="bg-black text-gold-500 uppercase tracking-wider font-bold text-xs">
-              <tr>
-                <th class="p-3">Date</th>
-                <th class="p-3">Status</th>
-                <th class="p-3">Notes</th>
-              </tr>
-            </thead>
-            <tbody id="attendanceTableBodyForMember" class="divide-y divide-white/5 text-gray-300">
-              <!-- Populated dynamically -->
-            </tbody>
-          </table>
+
+      <!-- Content Container -->
+      <div class="p-6 md:p-8 space-y-8">
+        <!-- KPI Metrics Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Card 1: Total Earnings -->
+          <div class="bg-black/60 border border-gold-500/20 rounded-xl p-5 relative overflow-hidden group hover:border-gold-500/50 transition">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Total Income Earned</p>
+                <h4 class="text-2xl font-black text-gold-400 mt-1" id="memberStatIncome">₹0</h4>
+              </div>
+              <div class="p-3 bg-gold-500/10 rounded-lg text-gold-500">
+                <i class="fas fa-wallet text-xl"></i>
+              </div>
+            </div>
+            <p class="text-[10px] text-gray-500 mt-3" id="memberStatIncomeSub">Calculated from attended events</p>
+          </div>
+
+          <!-- Card 2: Events Attended -->
+          <div class="bg-black/60 border border-gold-500/20 rounded-xl p-5 relative overflow-hidden group hover:border-gold-500/50 transition">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Events Attended</p>
+                <h4 class="text-2xl font-black text-white mt-1" id="memberStatEvents">0</h4>
+              </div>
+              <div class="p-3 bg-crimson-500/10 rounded-lg text-crimson-400">
+                <i class="fas fa-theater-masks text-xl"></i>
+              </div>
+            </div>
+            <p class="text-[10px] text-gray-500 mt-3" id="memberStatEventsSub">Completed shows & performances</p>
+          </div>
+
+          <!-- Card 3: Attendance Rate -->
+          <div class="bg-black/60 border border-gold-500/20 rounded-xl p-5 relative overflow-hidden group hover:border-gold-500/50 transition">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Attendance Rate</p>
+                <h4 class="text-2xl font-black text-green-400 mt-1" id="memberStatRate">0%</h4>
+              </div>
+              <div class="p-3 bg-green-500/10 rounded-lg text-green-400">
+                <i class="fas fa-chart-line text-xl"></i>
+              </div>
+            </div>
+            <p class="text-[10px] text-gray-500 mt-3" id="memberStatRateSub">Present sessions ratio</p>
+          </div>
+
+          <!-- Card 4: Upcoming Event -->
+          <div class="bg-black/60 border border-gold-500/20 rounded-xl p-5 relative overflow-hidden group hover:border-gold-500/50 transition">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Next Scheduled Show</p>
+                <h4 class="text-sm font-bold text-white mt-1 truncate max-w-[140px]" id="memberStatNextShow">None</h4>
+              </div>
+              <div class="p-3 bg-blue-500/10 rounded-lg text-blue-400">
+                <i class="fas fa-calendar-star text-xl"></i>
+              </div>
+            </div>
+            <p class="text-[10px] text-gray-500 mt-3" id="memberStatNextShowDate">No upcoming dates</p>
+          </div>
         </div>
+
+        <!-- Section 1: Attended Events & Earnings -->
+        <div class="space-y-4">
+          <div class="flex justify-between items-center border-b border-white/10 pb-3">
+            <h4 class="text-base font-bold text-gold-500 uppercase tracking-wide flex items-center gap-2">
+              <i class="fas fa-coins text-gold-400"></i> Attended Events & Earned Income
+            </h4>
+            <span class="text-xs text-gray-400" id="memberEventCountBadge">0 Shows</span>
+          </div>
+
+          <div class="overflow-x-auto rounded-xl border border-white/10 bg-black/40">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-zinc-900/90 text-gold-500 uppercase tracking-wider font-bold border-b border-white/10">
+                <tr>
+                  <th class="p-3.5">Event / Show</th>
+                  <th class="p-3.5">Date</th>
+                  <th class="p-3.5">Venue</th>
+                  <th class="p-3.5">Status</th>
+                  <th class="p-3.5 text-right">Earned Income (₹)</th>
+                </tr>
+              </thead>
+              <tbody id="memberEventsTableBody" class="divide-y divide-white/5 text-gray-300">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Section 2: Full Attendance Log -->
+        <div class="space-y-4">
+          <div class="flex justify-between items-center border-b border-white/10 pb-3">
+            <h4 class="text-base font-bold text-gold-500 uppercase tracking-wide flex items-center gap-2">
+              <i class="fas fa-clipboard-user text-gold-400"></i> Complete Attendance History
+            </h4>
+          </div>
+
+          <div class="overflow-x-auto rounded-xl border border-white/10 bg-black/40">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-zinc-900/90 text-gold-500 uppercase tracking-wider font-bold border-b border-white/10">
+                <tr>
+                  <th class="p-3.5">Date</th>
+                  <th class="p-3.5">Linked Event / Type</th>
+                  <th class="p-3.5">Attendance Status</th>
+                  <th class="p-3.5">Notes</th>
+                  <th class="p-3.5 text-right">Payout (₹)</th>
+                </tr>
+              </thead>
+              <tbody id="attendanceTableBodyForMember" class="divide-y divide-white/5 text-gray-300">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -199,7 +361,7 @@
       <div class="bg-gradient-to-r from-crimson-950 to-black p-6 border-b border-gold-500 flex flex-col md:flex-row justify-between items-center gap-4">
         <div class="flex items-center gap-3">
           <div class="h-12 w-12 rounded-full overflow-hidden border border-gold-500/30 flex items-center justify-center bg-black">
-            <img src="/assets/logo.png" alt="Logo" class="h-10 w-10 object-contain" onerror="this.src='https://placehold.co/100x100?text=K'">
+            <img src="../assets/logo.png" alt="Logo" class="h-10 w-10 object-contain" onerror="this.src='https://placehold.co/100x100?text=K'">
           </div>
           <div>
             <h3 class="text-xl font-black text-white uppercase tracking-wider">Kalabhoomi Admin Terminal</h3>
@@ -207,8 +369,11 @@
           </div>
         </div>
         
-        <div class="flex gap-3">
-          <a href="/" class="outline-btn px-4 py-2 rounded text-xs font-bold uppercase flex items-center gap-2">
+        <div class="flex gap-3 items-center">
+          <button class="theme-toggle p-2 rounded-full border border-gold-500 hover:bg-gold-500 hover:text-black transition-all" title="Toggle Light/Dark Theme">
+            <i class="fas fa-sun text-xs"></i>
+          </button>
+          <a href="../index.html" class="outline-btn px-4 py-2 rounded text-xs font-bold uppercase flex items-center gap-2">
             <i class="fas fa-home"></i> View Site
           </a>
           <button class="bg-red-950 hover:bg-red-800 text-red-200 transition px-4 py-2 rounded text-xs font-bold uppercase flex items-center gap-2" id="logoutBtn">
@@ -227,6 +392,12 @@
         </button>
         <button class="admin-tab-btn px-6 py-4 text-xs font-bold uppercase tracking-wider border-r border-white border-opacity-5 hover:text-gold-500 transition whitespace-nowrap" data-tab="tabSettings">
           <i class="fas fa-sliders-h mr-2"></i>System Settings
+        </button>
+        <button class="admin-tab-btn px-6 py-4 text-xs font-bold uppercase tracking-wider border-r border-white border-opacity-5 hover:text-gold-500 transition whitespace-nowrap" data-tab="tabMembers">
+          <i class="fas fa-users-cog mr-2"></i>Member Settings
+        </button>
+        <button class="admin-tab-btn px-6 py-4 text-xs font-bold uppercase tracking-wider border-r border-white border-opacity-5 hover:text-gold-500 transition whitespace-nowrap" data-tab="tabMemberDashboard">
+          <i class="fas fa-id-card mr-2"></i>Member View
         </button>
         <button class="admin-tab-btn px-6 py-4 text-xs font-bold uppercase tracking-wider border-r border-white border-opacity-5 hover:text-gold-500 transition whitespace-nowrap" data-tab="tabGallery">
           <i class="fas fa-images mr-2"></i>Gallery Manager
@@ -306,7 +477,7 @@
         <!-- Tab 3: System Settings & Stats -->
         <div class="admin-tab-content space-y-6 hidden" id="tabSettings">
           <h4 class="text-lg font-bold text-gold-500 uppercase tracking-wide">Contact Details & Site Stats</h4>
-          <form id="settingsForm" class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
             <div class="space-y-4">
               <h5 class="font-bold text-white uppercase border-b border-white border-opacity-5 pb-2">Global Contact Fields</h5>
               <div>
@@ -330,7 +501,7 @@
                 <input type="url" id="setInstagram" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
               </div>
               <div class="pt-4">
-                 <button type="submit" class="w-full cta-btn py-3.5 rounded-lg font-bold uppercase">
+                 <button type="button" id="saveSettingsBtn" class="w-full cta-btn py-3.5 rounded-lg font-bold uppercase">
                   Save Contact & Security
                 </button>
               </div>
@@ -340,53 +511,16 @@
               <h5 class="font-bold text-white uppercase border-b border-white border-opacity-5 pb-2">Admin Security Key</h5>
               <div>
                 <label class="block text-gray-400 mb-1">Admin Username</label>
-                <input type="text" id="setAdminUser" required placeholder="admin" class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
+                <input type="text" id="adm_u_fld" autocomplete="off" placeholder="admin" class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
               </div>
               <div>
-                <label class="block text-gray-400 mb-1">Change Admin Password</label>
-                <input type="text" id="setAdminPass" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
+                <label class="block text-gray-400 mb-1">Change Admin Password (Optional)</label>
+                <input type="text" id="adm_p_fld" autocomplete="new-password" placeholder="Leave blank to keep current" class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
               </div>
-
-              <h5 class="font-bold text-white uppercase border-b border-white border-opacity-5 pb-2 pt-4">Team Member Credentials</h5>
-              <form id="teamCredentialsForm" class="space-y-3">
-                <input type="hidden" id="teamMemberFormId">
-                <div>
-                  <label class="block text-gray-400 mb-1">Member Name</label>
-                  <input type="text" id="teamMemberName" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
-                </div>
-                <div>
-                  <label class="block text-gray-400 mb-1">Member ID / Username</label>
-                  <input type="text" id="teamMemberLogin" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
-                </div>
-                <div>
-                  <label class="block text-gray-400 mb-1">Password</label>
-                  <input type="text" id="teamMemberPass" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
-                </div>
-                <div>
-                  <label class="block text-gray-400 mb-1">Role / Department</label>
-                  <input type="text" id="teamMemberRole" placeholder="e.g. Stage Crew" class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
-                </div>
-                <div class="flex gap-3">
-                  <button type="submit" class="flex-1 cta-btn py-3 rounded-lg font-bold uppercase">Save Credentials</button>
-                  <button type="button" id="resetTeamMemberFormBtn" class="outline-btn px-4 py-3 rounded-lg font-bold uppercase">Reset</button>
-                </div>
-              </form>
-
-              <div class="overflow-x-auto mt-3">
-                <table class="w-full text-xs text-left border border-white border-opacity-5">
-                  <thead class="bg-black text-gold-500 uppercase tracking-wider font-bold">
-                    <tr>
-                      <th class="p-3">Name</th>
-                      <th class="p-3">ID</th>
-                      <th class="p-3">Password</th>
-                      <th class="p-3">Role</th>
-                      <th class="p-3 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody id="teamMembersTableBody" class="divide-y divide-white divide-opacity-5 text-gray-300">
-                    <!-- Populated dynamically -->
-                  </tbody>
-                </table>
+              <div class="pt-2">
+                 <button type="button" id="saveAdminCredsBtn" class="w-full outline-btn py-3 rounded-lg font-bold uppercase">
+                  Update Security Key
+                </button>
               </div>
 
               <div class="pt-6">
@@ -418,7 +552,84 @@
                 </button>
               </div>
             </div>
-          </form>
+          </div>
+        </div>
+
+        <!-- Tab 3.5: Member Settings -->
+        <div class="admin-tab-content space-y-6 hidden" id="tabMembers">
+          <h4 class="text-lg font-bold text-gold-500 uppercase tracking-wide">Member Settings</h4>
+          <div class="grid grid-cols-1 gap-6 text-xs">
+            <div class="space-y-4">
+              <h5 class="font-bold text-white uppercase border-b border-white border-opacity-5 pb-2 pt-4">Team Member Credentials</h5>
+              <div id="teamCredentialsForm" class="space-y-3">
+                <input type="hidden" id="teamMemberFormId">
+                <div>
+                  <label class="block text-gray-400 mb-1">Member Name</label>
+                  <input type="text" id="teamMemberName" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
+                </div>
+                <div>
+                  <label class="block text-gray-400 mb-1">Member ID / Username</label>
+                  <input type="text" id="tm_l_fld" autocomplete="off" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
+                </div>
+                <div>
+                  <label class="block text-gray-400 mb-1">Password</label>
+                  <input type="text" id="tm_p_fld" autocomplete="new-password" required class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
+                </div>
+                <div>
+                  <label class="block text-gray-400 mb-1">Role / Department</label>
+                  <input type="text" id="teamMemberRole" placeholder="e.g. Stage Crew" class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
+                </div>
+                <div>
+                  <label class="block text-gray-400 mb-1">Pay Per Show / Event (₹)</label>
+                  <input type="number" id="tm_pay_fld" min="0" placeholder="e.g. 1500" class="w-full bg-[#1c1c1c] border border-white border-opacity-10 text-white rounded p-3 focus:outline-none focus:border-gold-500">
+                </div>
+                <div class="flex gap-3">
+                  <button type="button" id="submitTeamCredentialsBtn" class="flex-1 cta-btn py-3 rounded-lg font-bold uppercase">Save Credentials</button>
+                  <button type="button" id="resetTeamMemberFormBtn" class="outline-btn px-4 py-3 rounded-lg font-bold uppercase">Reset</button>
+                </div>
+              </div><div class="overflow-x-auto mt-3">
+                <table class="w-full text-xs text-left border border-white border-opacity-5">
+                  <thead class="bg-black text-gold-500 uppercase tracking-wider font-bold">
+                    <tr>
+                      <th class="p-3">Name</th>
+                      <th class="p-3">ID</th>
+                      <th class="p-3">Password</th>
+                      <th class="p-3">Role</th>
+                      <th class="p-3">Pay/Show</th>
+                      <th class="p-3 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="teamMembersTableBody" class="divide-y divide-white divide-opacity-5 text-gray-300">
+                    <!-- Populated dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3.6: Member Dashboard View for Admin -->
+        <div class="admin-tab-content space-y-6 hidden" id="tabMemberDashboard">
+          <div class="bg-gradient-to-r from-zinc-900 via-crimson-950/40 to-black p-5 rounded-xl border border-gold-500/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+              <h4 class="text-lg font-black text-white uppercase tracking-wide flex items-center gap-2">
+                <i class="fas fa-id-card text-gold-500"></i> Team Member Dashboard Inspection
+              </h4>
+              <p class="text-xs text-gray-400 mt-0.5">Inspect earnings, attendance history, and performance stats for any team member.</p>
+            </div>
+            
+            <div class="flex items-center gap-3 w-full md:w-auto">
+              <label class="text-xs text-gold-400 font-bold uppercase tracking-wider whitespace-nowrap">Select Member:</label>
+              <select id="adminMemberDashboardSelect" class="bg-[#1c1c1c] border border-gold-500/50 text-gold-400 text-xs font-bold rounded-lg p-2.5 focus:outline-none focus:border-gold-500 flex-grow md:w-64 cursor-pointer">
+                <option value="">Loading members...</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Member Dashboard View Area -->
+          <div id="adminMemberDashboardContainer" class="space-y-6">
+            <!-- Populated dynamically by renderAdminMemberDashboard -->
+          </div>
         </div>
 
         <!-- Tab 4: Gallery Manager -->
@@ -451,23 +662,35 @@
         <!-- Tab 5: Attendance Manager -->
         <div class="admin-tab-content space-y-6 hidden" id="tabAttendance">
           <h4 class="text-lg font-bold text-gold-500 uppercase tracking-wide">Mark Team Attendance</h4>
-          <div class="glass-card p-4 rounded-lg grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+          <div class="glass-card p-4 rounded-lg grid grid-cols-1 md:grid-cols-5 gap-4 items-end text-xs">
             <div>
-              <label class="block text-gray-400 mb-1 text-xs">Select Date</label>
+              <label class="block text-gray-400 mb-1">Select Date</label>
               <input type="date" id="attendanceDate" class="w-full bg-[#1c1c1c] border border-white/10 text-white rounded p-2.5 focus:outline-none focus:border-gold-500">
             </div>
             <div>
-              <label class="block text-gray-400 mb-1 text-xs">Select Member</label>
+              <label class="block text-gray-400 mb-1">Select Member</label>
               <select id="attendanceMember" class="w-full bg-[#1c1c1c] border border-white/10 text-white rounded p-2.5 focus:outline-none focus:border-gold-500"></select>
             </div>
             <div>
-              <label class="block text-gray-400 mb-1 text-xs">Mark Status</label>
+              <label class="block text-gray-400 mb-1">Linked Show / Event</label>
+              <select id="attendanceShow" class="w-full bg-[#1c1c1c] border border-white/10 text-white rounded p-2.5 focus:outline-none focus:border-gold-500">
+                <option value="">General Practice / Session</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-gray-400 mb-1">Mark Status</label>
               <select id="attendanceStatus" class="w-full bg-[#1c1c1c] border border-white/10 text-white rounded p-2.5 focus:outline-none focus:border-gold-500">
                 <option value="Present">Present</option>
                 <option value="Absent">Absent</option>
               </select>
             </div>
-            <button id="saveAttendanceBtn" class="cta-btn py-2.5 rounded text-xs font-bold uppercase">Save Record</button>
+            <div>
+              <label class="block text-gray-400 mb-1">Payout Earned (₹)</label>
+              <input type="number" id="attendancePayout" placeholder="0" min="0" class="w-full bg-[#1c1c1c] border border-white/10 text-white rounded p-2.5 focus:outline-none focus:border-gold-500">
+            </div>
+            <div class="md:col-span-5 flex justify-end mt-2">
+              <button id="saveAttendanceBtn" class="cta-btn px-6 py-2.5 rounded text-xs font-bold uppercase">Save Attendance Record</button>
+            </div>
           </div>
           <div>
             <h5 class="text-md font-bold text-gold-500/80 uppercase tracking-wide mt-4">Recent Records</h5>
@@ -663,6 +886,38 @@
     &copy; Kalabhoomi Entertainment Mandal. Admin Terminal.
   </footer>
 
-  <script src="/admin.js"></script>
+  <script src="../admin.js?v=9"></script>
+
+  <!-- 4. Admin Member Inspection Report Modal -->
+  <div class="fixed inset-0 z-[7000] hidden items-center justify-center bg-black bg-opacity-90 p-4 overflow-y-auto" id="adminMemberReportModal">
+    <div class="bg-[#121212] border-2 border-gold-500 rounded-2xl p-6 max-w-4xl w-full space-y-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+      <span class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl cursor-pointer" id="closeAdminMemberReportModal">&times;</span>
+      <div class="border-b border-gold-500/30 pb-3 flex items-center gap-3">
+        <div class="h-10 w-10 rounded-full bg-gold-500/20 text-gold-400 flex items-center justify-center text-lg font-bold">
+          <i class="fas fa-id-card"></i>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-white uppercase tracking-wider" id="reportMemberName">Member Performance & Financial Report</h3>
+          <p class="text-xs text-gold-500 font-medium" id="reportMemberRole">Role</p>
+        </div>
+      </div>
+      
+      <div id="adminMemberReportContent" class="space-y-6">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <div class="flex justify-end pt-2">
+        <button type="button" class="outline-btn px-6 py-2 rounded text-xs font-bold uppercase" id="closeAdminMemberReportBtn">Close Report</button>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
+
+
+
+
+
+
+

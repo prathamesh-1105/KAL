@@ -49,12 +49,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   try { bindShowsForm(); } catch(e){ console.error(e) }
   try { bindGalleryForm(); } catch(e){ console.error(e) }
+  try { bindInstagramImporter(); } catch(e){ console.error(e) }
   try { bindSettingsForm(); } catch(e){ console.error(e) }
   try { bindTeamCredentialsForm(); } catch(e){ console.error(e) }
   try { bindAttendanceForm(); } catch(e){ console.error(e) }
   try { bindFaqForm(); } catch(e){ console.error(e) }
   try { bindSiteContentForm(); } catch(e){ console.error(e) }
   try { bindBookingsActions(); } catch(e){ console.error(e) }
+  try { bindAdminMemberDashboardEvents(); } catch(e){ console.error(e) }
 
   initDatabases();
   restoreSession();
@@ -162,6 +164,7 @@ function renderAdminDashboard() {
   try { renderGalleryTable(); } catch(e) { console.error('renderGalleryTable error:', e); }
   try { renderTeamMembersTable(); } catch(e) { console.error('renderTeamMembersTable error:', e); }
   try { populateAttendanceMemberSelect(); } catch(e) { console.error('populateAttendanceMemberSelect error:', e); }
+  try { populateAdminMemberDashboardSelect(); } catch(e) { console.error('populateAdminMemberDashboardSelect error:', e); }
   try { renderRecentAttendance(); } catch(e) { console.error('renderRecentAttendance error:', e); }
   try { renderFaqTable(); } catch(e) { console.error('renderFaqTable error:', e); }
   try { loadSiteContentForm(); } catch(e) { console.error('loadSiteContentForm error:', e); }
@@ -173,20 +176,90 @@ function renderMemberDashboard(memberId) {
   const member = members.find(m => m.id === memberId);
   if (!member) return;
 
-  document.getElementById('welcomeMessage').textContent = `Welcome, ${member.name}!`;
-  document.getElementById('memberRole').textContent = member.role || 'Team Member';
+  const welcomeEl = document.getElementById('welcomeMessage');
+  if (welcomeEl) welcomeEl.textContent = `Welcome, ${member.name}!`;
+
+  const roleEl = document.getElementById('memberRole');
+  if (roleEl) roleEl.textContent = member.role || 'Team Member';
+
+  const payRateEl = document.getElementById('memberPayRate');
+  if (payRateEl) payRateEl.textContent = `Base Rate: ₹${Number(member.payPerShow || 0).toLocaleString('en-IN')} / Show`;
 
   const attendance = safeGetJSON('kb_attendance', '[]');
-  const records = attendance.filter(a => a.memberId === memberId).sort((a, b) => b.date.localeCompare(a.date));
-  const tbody = document.getElementById('attendanceTableBodyForMember');
-  tbody.innerHTML = records.length === 0
-    ? '<tr><td colspan="3" class="p-4 text-center text-gray-500">No attendance records yet.</td></tr>'
-    : records.map(r => `
-      <tr class="border-b border-white/5">
-        <td class="p-3">${r.date}</td>
-        <td class="p-3"><span class="px-2 py-0.5 rounded text-xs ${r.status === 'Present' ? 'bg-green-950 text-green-400' : 'bg-red-950 text-red-400'}">${r.status}</span></td>
-        <td class="p-3 text-gray-400">${r.notes || '—'}</td>
-      </tr>`).join('');
+  const memberAttendance = attendance.filter(a => a.memberId === memberId).sort((a, b) => b.date.localeCompare(a.date));
+  const shows = safeGetJSON('kb_shows', '[]');
+
+  // Calculations
+  const presentRecords = memberAttendance.filter(a => a.status === 'Present');
+  const totalIncome = presentRecords.reduce((sum, r) => sum + Number(r.payout !== undefined ? r.payout : (member.payPerShow || 0)), 0);
+  const eventsAttendedCount = presentRecords.filter(r => r.showId || r.notes?.toLowerCase().includes('show') || r.notes?.toLowerCase().includes('event')).length || presentRecords.length;
+  const attendanceRate = memberAttendance.length > 0 ? Math.round((presentRecords.length / memberAttendance.length) * 100) : 0;
+
+  // Next Scheduled Show
+  const now = new Date().toISOString().split('T')[0];
+  const upcomingShows = shows.filter(s => s.date >= now).sort((a, b) => a.date.localeCompare(b.date));
+  const nextShow = upcomingShows[0];
+
+  // Set KPI Cards
+  const incomeEl = document.getElementById('memberStatIncome');
+  if (incomeEl) incomeEl.textContent = `₹${totalIncome.toLocaleString('en-IN')}`;
+
+  const eventsEl = document.getElementById('memberStatEvents');
+  if (eventsEl) eventsEl.textContent = eventsAttendedCount;
+
+  const rateEl = document.getElementById('memberStatRate');
+  if (rateEl) rateEl.textContent = `${attendanceRate}%`;
+
+  const nextShowEl = document.getElementById('memberStatNextShow');
+  if (nextShowEl) nextShowEl.textContent = nextShow ? (nextShow.titleEn || nextShow.title || 'Upcoming Show') : 'None Scheduled';
+
+  const nextShowDateEl = document.getElementById('memberStatNextShowDate');
+  if (nextShowDateEl) nextShowDateEl.textContent = nextShow ? `${nextShow.date} (${nextShow.venueEn || 'Venue TBD'})` : 'No upcoming dates';
+
+  const countBadgeEl = document.getElementById('memberEventCountBadge');
+  if (countBadgeEl) countBadgeEl.textContent = `${eventsAttendedCount} Events Attended`;
+
+  // Render Attended Events Table
+  const eventsTbody = document.getElementById('memberEventsTableBody');
+  if (eventsTbody) {
+    const attendedEventRecords = presentRecords;
+    eventsTbody.innerHTML = attendedEventRecords.length === 0
+      ? '<tr><td colspan="5" class="p-4 text-center text-gray-500">No attended events recorded yet.</td></tr>'
+      : attendedEventRecords.map(r => {
+          const linkedShow = shows.find(s => s.id === r.showId);
+          const showTitle = linkedShow ? (linkedShow.titleEn || linkedShow.title) : (r.notes || 'General Session / Event');
+          const venue = linkedShow ? (linkedShow.venueEn || 'Main Stage') : 'Kalabhoomi Center';
+          const payoutAmount = Number(r.payout !== undefined ? r.payout : (member.payPerShow || 0));
+          return `
+            <tr class="border-b border-white/5 hover:bg-white/[0.02]">
+              <td class="p-3.5 font-bold text-white">${showTitle}</td>
+              <td class="p-3.5 font-mono text-gray-400">${r.date}</td>
+              <td class="p-3.5 text-gray-400">${venue}</td>
+              <td class="p-3.5"><span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-green-950 text-green-400 border border-green-500/30">Attended</span></td>
+              <td class="p-3.5 text-right font-mono font-bold text-gold-400">₹${payoutAmount.toLocaleString('en-IN')}</td>
+            </tr>`;
+        }).join('');
+  }
+
+  // Render Full Attendance History Table
+  const attTbody = document.getElementById('attendanceTableBodyForMember');
+  if (attTbody) {
+    attTbody.innerHTML = memberAttendance.length === 0
+      ? '<tr><td colspan="5" class="p-4 text-center text-gray-500">No attendance records found.</td></tr>'
+      : memberAttendance.map(r => {
+          const linkedShow = shows.find(s => s.id === r.showId);
+          const showTitle = linkedShow ? (linkedShow.titleEn || linkedShow.title) : (r.notes || 'Regular Attendance');
+          const payoutAmount = r.status === 'Present' ? Number(r.payout !== undefined ? r.payout : (member.payPerShow || 0)) : 0;
+          return `
+            <tr class="border-b border-white/5 hover:bg-white/[0.02]">
+              <td class="p-3.5 font-mono text-gray-300">${r.date}</td>
+              <td class="p-3.5 text-gray-300 font-medium">${showTitle}</td>
+              <td class="p-3.5"><span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase ${r.status === 'Present' ? 'bg-green-950 text-green-400 border border-green-500/30' : 'bg-red-950 text-red-400 border border-red-500/30'}">${r.status}</span></td>
+              <td class="p-3.5 text-gray-400">${r.notes || '—'}</td>
+              <td class="p-3.5 text-right font-mono font-bold ${payoutAmount > 0 ? 'text-gold-400' : 'text-gray-500'}">₹${payoutAmount.toLocaleString('en-IN')}</td>
+            </tr>`;
+        }).join('');
+  }
 }
 
 function bindShowsForm() {
@@ -318,7 +391,8 @@ function bindTeamCredentialsForm() {
       name: document.getElementById('teamMemberName').value,
       login: document.getElementById('tm_l_fld').value,
       password: document.getElementById('tm_p_fld').value,
-      role: document.getElementById('teamMemberRole').value || 'Team Member'
+      role: document.getElementById('teamMemberRole').value || 'Team Member',
+      payPerShow: Number(document.getElementById('tm_pay_fld')?.value || 0)
     };
 
     const existingLogin = members.find(m => m.login === memberData.login && m.id !== memberData.id);
@@ -333,36 +407,74 @@ function bindTeamCredentialsForm() {
     resetTeamMemberForm();
     renderTeamMembersTable();
     populateAttendanceMemberSelect();
-    alert('Member credentials saved! Share the ID and password with the member.');
+    populateAdminMemberDashboardSelect();
+    alert('Member credentials saved!');
   });
 
   document.getElementById('resetTeamMemberFormBtn')?.addEventListener('click', resetTeamMemberForm);
 }
 
 function resetTeamMemberForm() {
-  document.getElementById('teamMemberName').value='';document.getElementById('tm_l_fld').value='';document.getElementById('tm_p_fld').value='';document.getElementById('teamMemberRole').value='';
-  document.getElementById('teamMemberFormId').value = '';
+  if (document.getElementById('teamMemberName')) document.getElementById('teamMemberName').value = '';
+  if (document.getElementById('tm_l_fld')) document.getElementById('tm_l_fld').value = '';
+  if (document.getElementById('tm_p_fld')) document.getElementById('tm_p_fld').value = '';
+  if (document.getElementById('teamMemberRole')) document.getElementById('teamMemberRole').value = '';
+  if (document.getElementById('tm_pay_fld')) document.getElementById('tm_pay_fld').value = '';
+  if (document.getElementById('teamMemberFormId')) document.getElementById('teamMemberFormId').value = '';
 }
 
 function bindAttendanceForm() {
   const dateEl = document.getElementById('attendanceDate');
   if (dateEl && !dateEl.value) dateEl.value = new Date().toISOString().split('T')[0];
 
+  const memberSelect = document.getElementById('attendanceMember');
+  if (memberSelect) {
+    memberSelect.addEventListener('change', () => {
+      const memberId = memberSelect.value;
+      const member = safeGetJSON('kb_team_members', '[]').find(m => m.id === memberId);
+      const payoutInput = document.getElementById('attendancePayout');
+      if (payoutInput && member) {
+        payoutInput.value = member.payPerShow || 0;
+      }
+    });
+  }
+
   document.getElementById('saveAttendanceBtn')?.addEventListener('click', () => {
     const date = document.getElementById('attendanceDate').value;
     const memberId = document.getElementById('attendanceMember').value;
     const status = document.getElementById('attendanceStatus').value;
+    const showId = document.getElementById('attendanceShow')?.value || '';
+    const payout = Number(document.getElementById('attendancePayout')?.value || 0);
+
     if (!date || !memberId) { alert('Please select date and member.'); return; }
 
     const attendance = safeGetJSON('kb_attendance', '[]');
-    const existingIdx = attendance.findIndex(a => a.memberId === memberId && a.date === date);
-    const record = { id: 'att-' + Date.now(), memberId, date, status, notes: '' };
-    if (existingIdx !== -1) attendance[existingIdx] = { ...attendance[existingIdx], status };
+    const existingIdx = attendance.findIndex(a => a.memberId === memberId && a.date === date && (a.showId || '') === showId);
+    const record = { 
+      id: 'att-' + Date.now(), 
+      memberId, 
+      date, 
+      status, 
+      showId,
+      payout: status === 'Present' ? payout : 0,
+      notes: showId ? 'Show Attendance' : 'General Session' 
+    };
+
+    if (existingIdx !== -1) attendance[existingIdx] = { ...attendance[existingIdx], status, payout: record.payout, showId };
     else attendance.push(record);
+
     localStorage.setItem('kb_attendance', JSON.stringify(attendance));
     renderRecentAttendance();
-    alert('Attendance saved!');
+    alert('Attendance and payout saved successfully!');
   });
+}
+
+function populateAttendanceShowSelect() {
+  const select = document.getElementById('attendanceShow');
+  if (!select) return;
+  const shows = safeGetJSON('kb_shows', '[]');
+  select.innerHTML = '<option value="">General Practice / Session</option>' +
+    shows.map(s => `<option value="${s.id}">${s.titleEn || s.title} (${s.date})</option>`).join('');
 }
 
 function bindFaqForm() {
@@ -585,21 +697,77 @@ window.deleteGalleryItem = function (itemId) {
   }
 };
 
+window.parseInstagramShortcode = function(url) {
+  if (!url) return null;
+  const match = url.match(/instagram\.com\/(?:p|reel|tv)\/([A-Za-z0-9_-]+)/);
+  return match ? match[1] : null;
+};
+
+function bindInstagramImporter() {
+  const form = document.getElementById('instaImportForm');
+  if (!form) return;
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const rawUrl = document.getElementById('instaPostUrl').value.trim();
+    const titleInput = document.getElementById('instaPostTitle').value.trim();
+    const category = document.getElementById('instaCategory').value;
+
+    const shortcode = window.parseInstagramShortcode(rawUrl);
+    if (!shortcode) {
+      alert("Invalid Instagram URL! Please paste a link like https://www.instagram.com/p/CODE/ or https://www.instagram.com/reel/CODE/");
+      return;
+    }
+
+    const cleanInstaUrl = `https://www.instagram.com/p/${shortcode}/`;
+    const title = titleInput || `@kalabhoomi_official Post (${shortcode})`;
+
+    let gallery = safeGetJSON('kb_gallery', '[]');
+    const existing = gallery.find(item => item.shortcode === shortcode || item.url === cleanInstaUrl);
+
+    if (existing) {
+      alert("This Instagram post is already imported into the live gallery!");
+      return;
+    }
+
+    const newItem = {
+      id: 'gal-insta-' + Date.now(),
+      category: category,
+      title: title,
+      url: cleanInstaUrl,
+      instaUrl: cleanInstaUrl,
+      shortcode: shortcode,
+      thumbnail: `https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&auto=format&fit=crop`,
+      isInsta: true,
+      createdAt: new Date().toISOString()
+    };
+
+    gallery.unshift(newItem);
+    localStorage.setItem('kb_gallery', JSON.stringify(gallery));
+
+    renderGalleryTable();
+    form.reset();
+    alert(`🎉 Published Instagram post (${shortcode}) to @kalabhoomi_official live web stream!`);
+  });
+}
+
 function renderTeamMembersTable() {
   const members = safeGetJSON('kb_team_members', '[]');
   const tbody = document.getElementById('teamMembersTableBody');
   if (!tbody) return;
   tbody.innerHTML = members.length === 0
-    ? '<tr><td colspan="5" class="p-4 text-center text-gray-500">No members yet. Add credentials above.</td></tr>'
+    ? '<tr><td colspan="6" class="p-4 text-center text-gray-500">No members yet. Add credentials above.</td></tr>'
     : members.map(m => `
-      <tr class="border-b border-white/5">
+      <tr class="border-b border-white/5 hover:bg-white/[0.02]">
         <td class="p-3 font-bold">${m.name}</td>
         <td class="p-3 font-mono text-gold-400">${m.login}</td>
         <td class="p-3 font-mono">${m.password}</td>
         <td class="p-3">${m.role || '—'}</td>
-        <td class="p-3 text-right space-x-2">
-          <button class="bg-[#1c1c1c] text-gold-500 px-2 py-1 rounded hover:bg-gold-500 hover:text-black transition" onclick="editTeamMember('${m.id}')">Edit</button>
-          <button class="bg-red-950 text-red-400 px-2 py-1 rounded hover:bg-red-800 transition" onclick="deleteTeamMember('${m.id}')">Delete</button>
+        <td class="p-3 font-mono text-gold-500 font-bold">₹${Number(m.payPerShow || 0).toLocaleString('en-IN')}</td>
+        <td class="p-3 text-right space-x-1.5">
+          <button class="bg-gold-500/20 text-gold-400 border border-gold-500/40 px-2 py-1 rounded text-xs hover:bg-gold-500 hover:text-black transition" onclick="openMemberReportModal('${m.id}')"><i class="fas fa-id-card mr-1"></i>View Dashboard</button>
+          <button class="bg-[#1c1c1c] text-white px-2 py-1 rounded text-xs hover:bg-gold-500 hover:text-black transition" onclick="editTeamMember('${m.id}')">Edit</button>
+          <button class="bg-red-950 text-red-400 px-2 py-1 rounded text-xs hover:bg-red-800 transition" onclick="deleteTeamMember('${m.id}')">Delete</button>
         </td>
       </tr>`).join('');
 }
@@ -607,11 +775,12 @@ function renderTeamMembersTable() {
 window.editTeamMember = function (id) {
   const member = safeGetJSON('kb_team_members', '[]').find(m => m.id === id);
   if (!member) return;
-  document.getElementById('teamMemberFormId').value = member.id;
-  document.getElementById('teamMemberName').value = member.name;
-  document.getElementById('tm_l_fld').value = member.login;
-  document.getElementById('tm_p_fld').value = member.password;
-  document.getElementById('teamMemberRole').value = member.role || '';
+  if (document.getElementById('teamMemberFormId')) document.getElementById('teamMemberFormId').value = member.id;
+  if (document.getElementById('teamMemberName')) document.getElementById('teamMemberName').value = member.name;
+  if (document.getElementById('tm_l_fld')) document.getElementById('tm_l_fld').value = member.login;
+  if (document.getElementById('tm_p_fld')) document.getElementById('tm_p_fld').value = member.password;
+  if (document.getElementById('teamMemberRole')) document.getElementById('teamMemberRole').value = member.role || '';
+  if (document.getElementById('tm_pay_fld')) document.getElementById('tm_pay_fld').value = member.payPerShow || 0;
 };
 
 window.deleteTeamMember = function (id) {
@@ -621,6 +790,7 @@ window.deleteTeamMember = function (id) {
     localStorage.setItem('kb_team_members', JSON.stringify(members));
     renderTeamMembersTable();
     populateAttendanceMemberSelect();
+    populateAdminMemberDashboardSelect();
   }
 };
 
@@ -740,3 +910,448 @@ function initDatabases() {
 
 
 
+
+
+function applyAdminTheme(theme) {
+  const body = document.body;
+  document.querySelectorAll('.theme-toggle i').forEach(icon => {
+    if (theme === 'light') {
+      icon.className = 'fas fa-moon text-sm';
+    } else {
+      icon.className = 'fas fa-sun text-sm';
+    }
+  });
+  if (theme === 'light') {
+    body.classList.add('light-theme');
+  } else {
+    body.classList.remove('light-theme');
+  }
+  localStorage.setItem('kb_theme', theme);
+}
+
+function initAdminTheme() {
+  const savedTheme = localStorage.getItem('kb_theme') || 'dark';
+  applyAdminTheme(savedTheme);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initAdminTheme();
+  document.querySelectorAll('.theme-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const isLight = document.body.classList.contains('light-theme');
+      applyAdminTheme(isLight ? 'dark' : 'light');
+    });
+  });
+});
+
+// --- ADMIN MEMBER DASHBOARD INSPECTION FUNCTIONS ---
+
+function bindAdminMemberDashboardEvents() {
+  const select = document.getElementById('adminMemberDashboardSelect');
+  if (select) {
+    select.addEventListener('change', (e) => {
+      renderAdminMemberDashboard(e.target.value);
+    });
+  }
+
+  const closeReportModal = () => {
+    const modal = document.getElementById('adminMemberReportModal');
+    if (modal) modal.style.display = 'none';
+  };
+  document.getElementById('closeAdminMemberReportModal')?.addEventListener('click', closeReportModal);
+  document.getElementById('closeAdminMemberReportBtn')?.addEventListener('click', closeReportModal);
+  
+  const reportModal = document.getElementById('adminMemberReportModal');
+  if (reportModal) {
+    reportModal.addEventListener('click', (e) => {
+      if (e.target === reportModal) closeReportModal();
+    });
+  }
+}
+
+function populateAdminMemberDashboardSelect() {
+  const select = document.getElementById('adminMemberDashboardSelect');
+  if (!select) return;
+  const members = safeGetJSON('kb_team_members', '[]');
+  
+  if (members.length === 0) {
+    select.innerHTML = '<option value="">No members registered</option>';
+    renderAdminMemberDashboard(null);
+    return;
+  }
+
+  const currentValue = select.value;
+  select.innerHTML = members.map(m => `<option value="${m.id}">${m.name} (@${m.login}) — ${m.role || 'Member'}</option>`).join('');
+  
+  if (currentValue && members.some(m => m.id === currentValue)) {
+    select.value = currentValue;
+  } else {
+    select.value = members[0].id;
+  }
+
+  renderAdminMemberDashboard(select.value);
+}
+
+function renderAdminMemberDashboard(memberId) {
+  const container = document.getElementById('adminMemberDashboardContainer');
+  if (!container) return;
+
+  const members = safeGetJSON('kb_team_members', '[]');
+  if (members.length === 0 || !memberId) {
+    container.innerHTML = `
+      <div class="bg-black/60 border border-white/10 rounded-2xl p-8 text-center space-y-3">
+        <i class="fas fa-users-slash text-4xl text-gold-500/40"></i>
+        <h4 class="text-lg font-bold text-gray-300">No Registered Team Members Found</h4>
+        <p class="text-xs text-gray-500 max-w-md mx-auto">Create team member credentials under the "Member Settings" tab to view member dashboards here.</p>
+      </div>`;
+    return;
+  }
+
+  const member = members.find(m => m.id === memberId);
+  if (!member) {
+    container.innerHTML = `<div class="p-6 text-center text-gray-500">Member details not found.</div>`;
+    return;
+  }
+
+  const attendance = safeGetJSON('kb_attendance', '[]');
+  const memberAttendance = attendance.filter(a => a.memberId === memberId).sort((a, b) => b.date.localeCompare(a.date));
+  const shows = safeGetJSON('kb_shows', '[]');
+
+  const presentRecords = memberAttendance.filter(a => a.status === 'Present');
+  const totalIncome = presentRecords.reduce((sum, r) => sum + Number(r.payout !== undefined ? r.payout : (member.payPerShow || 0)), 0);
+  const eventsAttendedCount = presentRecords.filter(r => r.showId || r.notes?.toLowerCase().includes('show') || r.notes?.toLowerCase().includes('event')).length || presentRecords.length;
+  const attendanceRate = memberAttendance.length > 0 ? Math.round((presentRecords.length / memberAttendance.length) * 100) : 0;
+
+  const now = new Date().toISOString().split('T')[0];
+  const upcomingShows = shows.filter(s => s.date >= now).sort((a, b) => a.date.localeCompare(b.date));
+  const nextShow = upcomingShows[0];
+
+  container.innerHTML = `
+    <!-- Header Banner for Member -->
+    <div class="bg-gradient-to-r from-crimson-950 via-zinc-900 to-black p-6 rounded-2xl border border-gold-500/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-xl">
+      <div class="flex items-center gap-4">
+        <div class="h-16 w-16 rounded-full bg-gold-500/10 border-2 border-gold-500 flex items-center justify-center text-gold-500 text-2xl font-bold">
+          <i class="fas fa-user-circle"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-3 flex-wrap">
+            <h3 class="text-2xl font-black text-white">${member.name}</h3>
+            <span class="px-2.5 py-0.5 rounded-full bg-gold-500/20 text-gold-400 text-xs font-bold uppercase tracking-wider border border-gold-500/30">${member.role || 'Member'}</span>
+          </div>
+          <p class="text-xs text-gray-400 mt-1.5 flex items-center gap-4 flex-wrap">
+            <span><i class="fas fa-id-badge text-gold-500 mr-1"></i> ID: <strong class="text-white font-mono">${member.login}</strong></span>
+            <span><i class="fas fa-key text-gold-500 mr-1"></i> Password: <strong class="text-white font-mono">${member.password}</strong></span>
+            <span><i class="fas fa-rupee-sign text-gold-500 mr-1"></i> Base Rate: <strong class="text-gold-400 font-mono">₹${Number(member.payPerShow || 0).toLocaleString('en-IN')} / Show</strong></span>
+          </p>
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <button class="bg-gold-500/20 text-gold-400 border border-gold-500/40 px-4 py-2 rounded-lg text-xs font-bold uppercase hover:bg-gold-500 hover:text-black transition flex items-center gap-1.5" onclick="openMemberReportModal('${member.id}')">
+          <i class="fas fa-file-invoice"></i> Open Report Modal
+        </button>
+      </div>
+    </div>
+
+    <!-- KPI Metrics Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-black/60 border border-gold-500/20 rounded-xl p-5 relative overflow-hidden group hover:border-gold-500/50 transition">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Total Income Earned</p>
+            <h4 class="text-2xl font-black text-gold-400 mt-1">₹${totalIncome.toLocaleString('en-IN')}</h4>
+          </div>
+          <div class="p-3 bg-gold-500/10 rounded-lg text-gold-500">
+            <i class="fas fa-wallet text-xl"></i>
+          </div>
+        </div>
+        <p class="text-[10px] text-gray-500 mt-3">Calculated from attended events</p>
+      </div>
+
+      <div class="bg-black/60 border border-gold-500/20 rounded-xl p-5 relative overflow-hidden group hover:border-gold-500/50 transition">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Events Attended</p>
+            <h4 class="text-2xl font-black text-white mt-1">${eventsAttendedCount}</h4>
+          </div>
+          <div class="p-3 bg-crimson-500/10 rounded-lg text-crimson-400">
+            <i class="fas fa-theater-masks text-xl"></i>
+          </div>
+        </div>
+        <p class="text-[10px] text-gray-500 mt-3">Completed shows & performances</p>
+      </div>
+
+      <div class="bg-black/60 border border-gold-500/20 rounded-xl p-5 relative overflow-hidden group hover:border-gold-500/50 transition">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Attendance Rate</p>
+            <h4 class="text-2xl font-black text-green-400 mt-1">${attendanceRate}%</h4>
+          </div>
+          <div class="p-3 bg-green-500/10 rounded-lg text-green-400">
+            <i class="fas fa-chart-line text-xl"></i>
+          </div>
+        </div>
+        <p class="text-[10px] text-gray-500 mt-3">Present sessions ratio</p>
+      </div>
+
+      <div class="bg-black/60 border border-gold-500/20 rounded-xl p-5 relative overflow-hidden group hover:border-gold-500/50 transition">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Next Scheduled Show</p>
+            <h4 class="text-sm font-bold text-white mt-1 truncate max-w-[140px]">${nextShow ? (nextShow.titleEn || nextShow.title) : 'None'}</h4>
+          </div>
+          <div class="p-3 bg-blue-500/10 rounded-lg text-blue-400">
+            <i class="fas fa-calendar-star text-xl"></i>
+          </div>
+        </div>
+        <p class="text-[10px] text-gray-500 mt-3">${nextShow ? `${nextShow.date} (${nextShow.venueEn || 'Venue TBD'})` : 'No upcoming dates'}</p>
+      </div>
+    </div>
+
+    <!-- Section 1: Attended Events Table -->
+    <div class="space-y-4">
+      <div class="flex justify-between items-center border-b border-white/10 pb-3">
+        <h4 class="text-base font-bold text-gold-500 uppercase tracking-wide flex items-center gap-2">
+          <i class="fas fa-coins text-gold-400"></i> Attended Events & Earned Income
+        </h4>
+        <span class="text-xs text-gray-400">${eventsAttendedCount} Shows</span>
+      </div>
+
+      <div class="overflow-x-auto rounded-xl border border-white/10 bg-black/40">
+        <table class="w-full text-xs text-left">
+          <thead class="bg-zinc-900/90 text-gold-500 uppercase tracking-wider font-bold border-b border-white/10">
+            <tr>
+              <th class="p-3.5">Event / Show</th>
+              <th class="p-3.5">Date</th>
+              <th class="p-3.5">Venue</th>
+              <th class="p-3.5">Status</th>
+              <th class="p-3.5 text-right">Earned Income (₹)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/5 text-gray-300">
+            ${presentRecords.length === 0
+              ? '<tr><td colspan="5" class="p-4 text-center text-gray-500">No attended events recorded yet.</td></tr>'
+              : presentRecords.map(r => {
+                  const linkedShow = shows.find(s => s.id === r.showId);
+                  const showTitle = linkedShow ? (linkedShow.titleEn || linkedShow.title) : (r.notes || 'General Session / Event');
+                  const venue = linkedShow ? (linkedShow.venueEn || 'Main Stage') : 'Kalabhoomi Center';
+                  const payoutAmount = Number(r.payout !== undefined ? r.payout : (member.payPerShow || 0));
+                  return `
+                    <tr class="border-b border-white/5 hover:bg-white/[0.02]">
+                      <td class="p-3.5 font-bold text-white">${showTitle}</td>
+                      <td class="p-3.5 font-mono text-gray-400">${r.date}</td>
+                      <td class="p-3.5 text-gray-400">${venue}</td>
+                      <td class="p-3.5"><span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-green-950 text-green-400 border border-green-500/30">Attended</span></td>
+                      <td class="p-3.5 text-right font-mono font-bold text-gold-400">₹${payoutAmount.toLocaleString('en-IN')}</td>
+                    </tr>`;
+                }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 2: Full Attendance History -->
+    <div class="space-y-4">
+      <div class="flex justify-between items-center border-b border-white/10 pb-3">
+        <h4 class="text-base font-bold text-gold-500 uppercase tracking-wide flex items-center gap-2">
+          <i class="fas fa-clipboard-user text-gold-400"></i> Complete Attendance History
+        </h4>
+      </div>
+
+      <div class="overflow-x-auto rounded-xl border border-white/10 bg-black/40">
+        <table class="w-full text-xs text-left">
+          <thead class="bg-zinc-900/90 text-gold-500 uppercase tracking-wider font-bold border-b border-white/10">
+            <tr>
+              <th class="p-3.5">Date</th>
+              <th class="p-3.5">Linked Event / Type</th>
+              <th class="p-3.5">Attendance Status</th>
+              <th class="p-3.5">Notes</th>
+              <th class="p-3.5 text-right">Payout (₹)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/5 text-gray-300">
+            ${memberAttendance.length === 0
+              ? '<tr><td colspan="5" class="p-4 text-center text-gray-500">No attendance records found.</td></tr>'
+              : memberAttendance.map(r => {
+                  const linkedShow = shows.find(s => s.id === r.showId);
+                  const showTitle = linkedShow ? (linkedShow.titleEn || linkedShow.title) : (r.notes || 'Regular Attendance');
+                  const payoutAmount = r.status === 'Present' ? Number(r.payout !== undefined ? r.payout : (member.payPerShow || 0)) : 0;
+                  return `
+                    <tr class="border-b border-white/5 hover:bg-white/[0.02]">
+                      <td class="p-3.5 font-mono text-gray-300">${r.date}</td>
+                      <td class="p-3.5 text-gray-300 font-medium">${showTitle}</td>
+                      <td class="p-3.5"><span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase ${r.status === 'Present' ? 'bg-green-950 text-green-400 border border-green-500/30' : 'bg-red-950 text-red-400 border border-red-500/30'}">${r.status}</span></td>
+                      <td class="p-3.5 text-gray-400">${r.notes || '—'}</td>
+                      <td class="p-3.5 text-right font-mono font-bold ${payoutAmount > 0 ? 'text-gold-400' : 'text-gray-500'}">₹${payoutAmount.toLocaleString('en-IN')}</td>
+                    </tr>`;
+                }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+window.openMemberReportModal = function(memberId) {
+  const modal = document.getElementById('adminMemberReportModal');
+  const reportName = document.getElementById('reportMemberName');
+  const reportRole = document.getElementById('reportMemberRole');
+  const reportContent = document.getElementById('adminMemberReportContent');
+  if (!modal || !reportContent) return;
+
+  const members = safeGetJSON('kb_team_members', '[]');
+  const member = members.find(m => m.id === memberId);
+  if (!member) {
+    alert('Member details not found.');
+    return;
+  }
+
+  if (reportName) reportName.textContent = `${member.name} — Performance & Payout Report`;
+  if (reportRole) reportRole.textContent = `Role: ${member.role || 'Team Member'} | Username ID: ${member.login} | Base Rate: ₹${Number(member.payPerShow || 0).toLocaleString('en-IN')}/Show`;
+
+  const attendance = safeGetJSON('kb_attendance', '[]');
+  const memberAttendance = attendance.filter(a => a.memberId === memberId).sort((a, b) => b.date.localeCompare(a.date));
+  const shows = safeGetJSON('kb_shows', '[]');
+
+  const presentRecords = memberAttendance.filter(a => a.status === 'Present');
+  const totalIncome = presentRecords.reduce((sum, r) => sum + Number(r.payout !== undefined ? r.payout : (member.payPerShow || 0)), 0);
+  const eventsAttendedCount = presentRecords.filter(r => r.showId || r.notes?.toLowerCase().includes('show') || r.notes?.toLowerCase().includes('event')).length || presentRecords.length;
+  const attendanceRate = memberAttendance.length > 0 ? Math.round((presentRecords.length / memberAttendance.length) * 100) : 0;
+
+  const now = new Date().toISOString().split('T')[0];
+  const upcomingShows = shows.filter(s => s.date >= now).sort((a, b) => a.date.localeCompare(b.date));
+  const nextShow = upcomingShows[0];
+
+  reportContent.innerHTML = `
+    <!-- KPI Overview Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-black/60 border border-gold-500/20 rounded-xl p-4">
+        <p class="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Total Earned Payout</p>
+        <h4 class="text-xl font-black text-gold-400 mt-1">₹${totalIncome.toLocaleString('en-IN')}</h4>
+        <p class="text-[9px] text-gray-500 mt-1">Calculated from attended sessions</p>
+      </div>
+
+      <div class="bg-black/60 border border-gold-500/20 rounded-xl p-4">
+        <p class="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Events Attended</p>
+        <h4 class="text-xl font-black text-white mt-1">${eventsAttendedCount}</h4>
+        <p class="text-[9px] text-gray-500 mt-1">Shows & drama performances</p>
+      </div>
+
+      <div class="bg-black/60 border border-gold-500/20 rounded-xl p-4">
+        <p class="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Attendance Rate</p>
+        <h4 class="text-xl font-black text-green-400 mt-1">${attendanceRate}%</h4>
+        <p class="text-[9px] text-gray-500 mt-1">Present vs marked records</p>
+      </div>
+
+      <div class="bg-black/60 border border-gold-500/20 rounded-xl p-4">
+        <p class="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Next Scheduled Show</p>
+        <h4 class="text-xs font-bold text-white mt-1 truncate">${nextShow ? (nextShow.titleEn || nextShow.title) : 'None'}</h4>
+        <p class="text-[9px] text-gray-500 mt-1">${nextShow ? nextShow.date : 'No upcoming dates'}</p>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="flex justify-between items-center bg-zinc-900/60 p-3 rounded-lg border border-white/5">
+      <span class="text-xs text-gray-300">Quick Actions:</span>
+      <div class="flex gap-2">
+        <button class="bg-gold-500/20 text-gold-400 border border-gold-500/40 px-3 py-1.5 rounded text-xs font-bold uppercase hover:bg-gold-500 hover:text-black transition" onclick="switchToAdminMemberTab('${member.id}')">
+          <i class="fas fa-external-link-alt mr-1"></i>Open in Admin Member View Tab
+        </button>
+        <button class="outline-btn px-3 py-1.5 rounded text-xs font-bold uppercase" onclick="window.print()">
+          <i class="fas fa-print mr-1"></i>Print Report
+        </button>
+      </div>
+    </div>
+
+    <!-- Attended Events Table -->
+    <div class="space-y-2">
+      <h5 class="text-xs font-bold text-gold-500 uppercase tracking-wide flex items-center gap-1.5">
+        <i class="fas fa-coins"></i> Attended Shows & Earned Payouts
+      </h5>
+      <div class="overflow-x-auto rounded-lg border border-white/10 bg-black/40">
+        <table class="w-full text-xs text-left">
+          <thead class="bg-zinc-900 text-gold-500 uppercase font-bold border-b border-white/10">
+            <tr>
+              <th class="p-2.5">Event / Show</th>
+              <th class="p-2.5">Date</th>
+              <th class="p-2.5">Venue</th>
+              <th class="p-2.5">Status</th>
+              <th class="p-2.5 text-right">Earned (₹)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/5 text-gray-300">
+            ${presentRecords.length === 0 ? '<tr><td colspan="5" class="p-3 text-center text-gray-500">No attended events yet.</td></tr>' :
+              presentRecords.map(r => {
+                const linkedShow = shows.find(s => s.id === r.showId);
+                const showTitle = linkedShow ? (linkedShow.titleEn || linkedShow.title) : (r.notes || 'General Session');
+                const venue = linkedShow ? (linkedShow.venueEn || 'Main Stage') : 'Kalabhoomi Center';
+                const payoutAmount = Number(r.payout !== undefined ? r.payout : (member.payPerShow || 0));
+                return `
+                  <tr class="border-b border-white/5">
+                    <td class="p-2.5 font-bold text-white">${showTitle}</td>
+                    <td class="p-2.5 font-mono text-gray-400">${r.date}</td>
+                    <td class="p-2.5 text-gray-400">${venue}</td>
+                    <td class="p-2.5"><span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase bg-green-950 text-green-400 border border-green-500/30">Attended</span></td>
+                    <td class="p-2.5 text-right font-mono font-bold text-gold-400">₹${payoutAmount.toLocaleString('en-IN')}</td>
+                  </tr>`;
+              }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Complete Attendance History -->
+    <div class="space-y-2">
+      <h5 class="text-xs font-bold text-gold-500 uppercase tracking-wide flex items-center gap-1.5">
+        <i class="fas fa-clipboard-user"></i> Full Attendance Log
+      </h5>
+      <div class="overflow-x-auto rounded-lg border border-white/10 bg-black/40">
+        <table class="w-full text-xs text-left">
+          <thead class="bg-zinc-900 text-gold-500 uppercase font-bold border-b border-white/10">
+            <tr>
+              <th class="p-2.5">Date</th>
+              <th class="p-2.5">Event / Notes</th>
+              <th class="p-2.5">Status</th>
+              <th class="p-2.5 text-right">Payout (₹)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/5 text-gray-300">
+            ${memberAttendance.length === 0 ? '<tr><td colspan="4" class="p-3 text-center text-gray-500">No attendance records found.</td></tr>' :
+              memberAttendance.map(r => {
+                const linkedShow = shows.find(s => s.id === r.showId);
+                const showTitle = linkedShow ? (linkedShow.titleEn || linkedShow.title) : (r.notes || 'Regular Attendance');
+                const payoutAmount = r.status === 'Present' ? Number(r.payout !== undefined ? r.payout : (member.payPerShow || 0)) : 0;
+                return `
+                  <tr class="border-b border-white/5">
+                    <td class="p-2.5 font-mono text-gray-300">${r.date}</td>
+                    <td class="p-2.5 text-gray-300">${showTitle}</td>
+                    <td class="p-2.5"><span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase ${r.status === 'Present' ? 'bg-green-950 text-green-400 border border-green-500/30' : 'bg-red-950 text-red-400 border border-red-500/30'}">${r.status}</span></td>
+                    <td class="p-2.5 text-right font-mono font-bold ${payoutAmount > 0 ? 'text-gold-400' : 'text-gray-500'}">₹${payoutAmount.toLocaleString('en-IN')}</td>
+                  </tr>`;
+              }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+  modal.style.display = 'flex';
+};
+
+window.switchToAdminMemberTab = function(memberId) {
+  const modal = document.getElementById('adminMemberReportModal');
+  if (modal) modal.style.display = 'none';
+  
+  document.querySelector('.admin-tab-btn.active')?.classList.remove('active');
+  const tabBtn = document.querySelector('.admin-tab-btn[data-tab="tabMemberDashboard"]');
+  if (tabBtn) tabBtn.classList.add('active');
+
+  document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.add('hidden'));
+  const tabContent = document.getElementById('tabMemberDashboard');
+  if (tabContent) tabContent.classList.remove('hidden');
+
+  const select = document.getElementById('adminMemberDashboardSelect');
+  if (select) {
+    select.value = memberId;
+    renderAdminMemberDashboard(memberId);
+  }
+};

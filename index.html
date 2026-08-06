@@ -65,23 +65,85 @@
       --glow: 0 0 15px rgba(212, 175, 55, 0.25);
     }
     
+    
     body.light-theme {
-      --primary: #fcfbf7;
-      --secondary: #f3f0e6;
+      --primary: #f8f6f0;
+      --secondary: #eee9dc;
       --accent: #7a0000;
       --accent-rgb: 122, 0, 0;
       --highlight: #b08d2b;
       --highlight-rgb: 176, 141, 43;
       --light-text: #1a1a1a;
-      --muted-text: #5e5a52;
-      --card-bg: rgba(255, 255, 255, 0.85);
-      --card-border: rgba(122, 0, 0, 0.15);
-      --gold-gradient: linear-gradient(135deg, #b08d2b 0%, #94711c 50%, #6e4e0c 100%);
-      --crimson-gradient: linear-gradient(135deg, #7a0000 0%, #4a0000 100%);
+      --muted-text: #4a4a4a;
+      --card-bg: rgba(255, 255, 255, 0.92);
+      --card-border: rgba(122, 0, 0, 0.2);
+      --gold-gradient: linear-gradient(135deg, #d4af37 0%, #b88c27 50%, #946a1d 100%);
+      --crimson-gradient: linear-gradient(135deg, #8b0000 0%, #5e0000 100%);
       --glow: 0 0 15px rgba(122, 0, 0, 0.15);
-      background-image: radial-gradient(circle at 50% 20%, rgba(122, 0, 0, 0.04) 0%, transparent 60%),
-                        radial-gradient(circle at 10% 80%, rgba(176, 141, 43, 0.03) 0%, transparent 50%);
+      background-color: #f8f6f0 !important;
+      color: #1a1a1a !important;
     }
+    body.light-theme .glass-card {
+      background: rgba(255, 255, 255, 0.92) !important;
+      border-color: rgba(139, 0, 0, 0.25) !important;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+      color: #1a1a1a !important;
+    }
+    body.light-theme .text-white {
+      color: #1a1a1a !important;
+    }
+    body.light-theme .text-gray-300,
+    body.light-theme .text-gray-400 {
+      color: #444444 !important;
+    }
+    body.light-theme .text-gray-500 {
+      color: #666666 !important;
+    }
+    body.light-theme input,
+    body.light-theme select,
+    body.light-theme textarea {
+      background-color: #ffffff !important;
+      color: #1a1a1a !important;
+      border-color: rgba(139, 0, 0, 0.3) !important;
+    }
+    body.light-theme nav.navigation {
+      background: rgba(248, 246, 240, 0.96) !important;
+      border-bottom-color: rgba(139, 0, 0, 0.2) !important;
+    }
+    body.light-theme .nav-menu {
+      background: rgba(248, 246, 240, 0.98) !important;
+      border-bottom-color: rgba(139, 0, 0, 0.25) !important;
+    }
+    body.light-theme .nav-link {
+      color: #222222 !important;
+    }
+    body.light-theme .nav-link:hover {
+      color: #8b0000 !important;
+    }
+    body.light-theme .theme-toggle,
+    body.light-theme .lang-toggle {
+      background-color: rgba(255, 255, 255, 0.8) !important;
+      border-color: #b88c27 !important;
+    }
+    body.light-theme .mobile-menu-btn {
+      color: #1a1a1a !important;
+    }
+    body.light-theme .bg-black,
+    body.light-theme .bg-\[\#080808\],
+    body.light-theme .bg-\[\#121212\],
+    body.light-theme .bg-\[\#1c1c1c\],
+    body.light-theme .bg-\[\#151515\] {
+      background-color: #ffffff !important;
+      color: #1a1a1a !important;
+    }
+    body.light-theme .bg-black\/60,
+    body.light-theme .bg-black\/40,
+    body.light-theme .bg-black\/80,
+    body.light-theme .bg-black\/95 {
+      background-color: rgba(245, 243, 235, 0.95) !important;
+      color: #1a1a1a !important;
+    }
+
     
     body {
       font-family: 'Outfit', sans-serif;
@@ -336,26 +398,44 @@
         <a href="#contact" class="nav-link text-sm uppercase tracking-wider" data-translate="nav_contact">Contact</a>
       </div>
       
-      <div class="flex items-center gap-4">
-        <button class="theme-toggle p-2 rounded-full border border-gold-500 hover:bg-gold-500 hover:text-black transition-all">
-          <i class="fas fa-sun text-sm"></i>
+      <div class="flex items-center gap-3">
+        <!-- Option 1: Theme Toggle (Vertical Oval Capsule with Gold Border) -->
+        <button class="theme-toggle relative group w-11 h-14 md:w-12 md:h-14 rounded-full border-2 border-gold-500 hover:border-gold-300 bg-black/50 hover:bg-gold-500/20 active:scale-95 transition-all duration-300 flex items-center justify-center shadow-lg cursor-pointer" title="Toggle Light / Dark Theme" aria-label="Toggle Theme">
+          <i class="fas fa-sun text-gold-400 group-hover:text-gold-200 text-base md:text-lg transition-transform duration-300 group-hover:rotate-45"></i>
         </button>
-        <button class="lang-toggle p-2 rounded-full border border-gold-500 hover:bg-gold-500 hover:text-black transition-all">
-          <i class="fas fa-language text-sm"></i>
+
+        <!-- Option 2: Language Toggle (Vertical Oval Capsule with Gold Border) -->
+        <button class="lang-toggle relative group w-11 h-14 md:w-13 md:h-14 rounded-full border-2 border-gold-500 hover:border-gold-300 bg-black/50 hover:bg-gold-500/20 active:scale-95 transition-all duration-300 flex flex-col items-center justify-center shadow-lg cursor-pointer" title="Switch Language (English / मराठी)" aria-label="Switch Language">
+          <i class="fas fa-language text-gold-400 group-hover:text-gold-200 text-sm md:text-base leading-none"></i>
+          <span class="text-[9px] font-extrabold text-gold-400 group-hover:text-gold-200 uppercase tracking-tighter leading-none mt-0.5 lang-badge">EN</span>
         </button>
-        <button class="mobile-menu-btn lg:hidden text-white p-2">
-          <i class="fas fa-bars text-xl"></i>
+
+        <!-- Option 3: Mobile Hamburger Menu (3 Bars with Morph/Close Effect) -->
+        <button class="mobile-menu-btn lg:hidden relative w-10 h-10 flex items-center justify-center text-white hover:text-gold-500 focus:outline-none transition-colors cursor-pointer" title="Toggle Navigation Menu" aria-label="Toggle Menu">
+          <i class="fas fa-bars text-2xl transition-transform duration-300"></i>
         </button>
       </div>
     </div>
     
-    <!-- Mobile Menu -->
-    <div class="nav-menu lg:hidden hidden flex-col items-center bg-black bg-opacity-95 border-b border-gold-500 w-full py-4 space-y-4">
-      <a href="#home" class="nav-link text-sm uppercase tracking-wider py-2" data-translate="nav_home">Home</a>
-      <a href="#shows" class="nav-link text-sm uppercase tracking-wider py-2" data-translate="nav_shows">Shows</a>
-      <a href="#booking" class="nav-link text-sm uppercase tracking-wider py-2" data-translate="nav_bookings">Bookings</a>
-      <a href="#gallery" class="nav-link text-sm uppercase tracking-wider py-2" data-translate="nav_gallery">Gallery</a>
-      <a href="#contact" class="nav-link text-sm uppercase tracking-wider py-2" data-translate="nav_contact">Contact</a>
+    <!-- Mobile Menu Drawer -->
+    <div class="nav-menu lg:hidden hidden flex-col items-center bg-black/95 backdrop-blur-xl border-b border-gold-500/40 w-full py-6 space-y-4 shadow-2xl transition-all duration-300 animate-fadeIn">
+      <a href="#home" class="nav-link text-sm uppercase tracking-widest font-bold py-2.5 px-8 rounded-full hover:bg-gold-500/10 hover:text-gold-500 transition-all" data-translate="nav_home">Home</a>
+      <a href="#shows" class="nav-link text-sm uppercase tracking-widest font-bold py-2.5 px-8 rounded-full hover:bg-gold-500/10 hover:text-gold-500 transition-all" data-translate="nav_shows">Shows</a>
+      <a href="#booking" class="nav-link text-sm uppercase tracking-widest font-bold py-2.5 px-8 rounded-full hover:bg-gold-500/10 hover:text-gold-500 transition-all" data-translate="nav_bookings">Bookings</a>
+      <a href="#gallery" class="nav-link text-sm uppercase tracking-widest font-bold py-2.5 px-8 rounded-full hover:bg-gold-500/10 hover:text-gold-500 transition-all" data-translate="nav_gallery">Gallery</a>
+      <a href="#contact" class="nav-link text-sm uppercase tracking-widest font-bold py-2.5 px-8 rounded-full hover:bg-gold-500/10 hover:text-gold-500 transition-all" data-translate="nav_contact">Contact</a>
+      
+      <!-- Quick mobile toggles row inside menu drawer -->
+      <div class="pt-4 border-t border-white/10 w-4/5 flex justify-center items-center gap-4">
+        <button class="theme-toggle flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gold-400 py-2 px-4 rounded-full border border-gold-500/50 bg-gold-500/10 hover:bg-gold-500/20 transition">
+          <i class="fas fa-sun text-sm"></i>
+          <span class="theme-label-text">Theme</span>
+        </button>
+        <button class="lang-toggle flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gold-400 py-2 px-4 rounded-full border border-gold-500/50 bg-gold-500/10 hover:bg-gold-500/20 transition">
+          <i class="fas fa-language text-sm"></i>
+          <span class="lang-label-text">मराठी / EN</span>
+        </button>
+      </div>
     </div>
   </nav>
 
@@ -406,34 +486,52 @@
 
   <!-- Hero Section -->
   <section class="relative min-h-screen flex items-center justify-center overflow-hidden" id="home">
-    <div class="video-container absolute inset-0 z-1 w-full h-full">
-      <video id="heroVideo" autoplay muted loop playsinline preload="auto" class="w-full h-full object-cover brightness-[0.35] contrast-[1.1]">
+    <div class="video-container absolute inset-0 z-1 w-full h-full bg-[#080808] bg-cover bg-center" style="background-image: radial-gradient(circle at 50% 40%, rgba(139, 0, 0, 0.4) 0%, rgba(8, 8, 8, 0.95) 80%), url('assets/gallery/performance_singing_male.png');">
+      <video id="heroVideo" autoplay muted loop playsinline preload="auto" poster="assets/gallery/performance_singing_male.png" class="w-full h-full object-cover brightness-[0.38] contrast-[1.1] transition-opacity duration-700 opacity-90">
         <source src="assets/hero.mp4" type="video/mp4">
       </video>
       <div class="hero-video-fallback absolute inset-0 bg-gradient-to-b from-transparent to-[#080808]" id="heroVideoFallback" style="display:none;"></div>
       <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#080808]"></div>
     </div>
     
-    <div class="relative z-10 text-center max-w-4xl px-4 flex flex-col items-center justify-center mt-12">
-      <div class="mb-6 animate-pulse">
-        <img src="assets/logo.png" alt="Kalabhoomi logo" class="w-24 h-24 object-contain rounded-full bg-white bg-opacity-95 p-2 border-2 border-gold-500 shadow-2xl">
+    <div class="relative z-10 text-center max-w-4xl px-4 sm:px-6 flex flex-col items-center justify-center mt-12">
+      <div class="mb-4 sm:mb-6 animate-pulse">
+        <img src="assets/logo.png" alt="Kalabhoomi logo" class="w-20 h-20 sm:w-24 sm:h-24 object-contain rounded-full bg-white bg-opacity-95 p-2 border-2 border-gold-500 shadow-2xl">
       </div>
-      <h1 class="text-4xl md:text-7xl font-extrabold mb-4 tracking-tight leading-tight text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)]">
+      <h1 class="text-3xl sm:text-5xl md:text-7xl font-extrabold mb-3 sm:mb-4 tracking-tight leading-tight text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)]">
         Kalabhoomi Entertainment Mandal
       </h1>
-      <p class="text-xl md:text-3xl mb-8 tracking-widest text-gold-500 font-medium marathi-font drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+      <p class="text-lg sm:text-2xl md:text-3xl mb-6 sm:mb-8 tracking-widest text-gold-500 font-medium marathi-font drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
         कला हीच आमची ओळख
       </p>
-      <div class="flex flex-col sm:flex-row gap-4">
-        <button class="cta-btn px-8 py-3.5 rounded-full text-sm font-bold shadow-lg" onclick="document.getElementById('shows').scrollIntoView({behavior: 'smooth'})" data-translate="explore_shows">
+      <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto px-4 sm:px-0 max-w-xs sm:max-w-none">
+        <button class="cta-btn w-full sm:w-auto px-8 py-3.5 rounded-full text-xs sm:text-sm font-bold shadow-lg" onclick="document.getElementById('shows').scrollIntoView({behavior: 'smooth'})" data-translate="explore_shows">
           Explore Shows
         </button>
-        <button class="outline-btn px-8 py-3.5 rounded-full text-sm font-semibold" onclick="document.getElementById('booking').scrollIntoView({behavior: 'smooth'})" data-translate="book_tickets">
+        <button class="outline-btn w-full sm:w-auto px-8 py-3.5 rounded-full text-xs sm:text-sm font-semibold" onclick="document.getElementById('booking').scrollIntoView({behavior: 'smooth'})" data-translate="book_tickets">
           Book Tickets
         </button>
       </div>
     </div>
   </section>
+
+  <script>
+    (function initFastHeroVideo() {
+      const v = document.getElementById('heroVideo');
+      if (!v) return;
+      v.muted = true;
+      const tryPlay = () => {
+        const p = v.play();
+        if (p !== undefined) {
+          p.catch(() => {
+            document.addEventListener('touchstart', () => v.play(), { once: true });
+            document.addEventListener('click', () => v.play(), { once: true });
+          });
+        }
+      };
+      if (v.readyState >= 2) { tryPlay(); } else { v.addEventListener('canplay', tryPlay, { once: true }); tryPlay(); }
+    })();
+  </script>
 
   <!-- Traditional Divider -->
   <div class="traditional-divider"><i class="fas fa-theater-masks"></i></div>
@@ -498,9 +596,14 @@
             <span class="flex items-center gap-1.5"><span class="w-3.5 h-3.5 rounded-t-md bg-zinc-800 border border-zinc-700 block flex items-center justify-center text-[8px] text-zinc-500"><i class="fas fa-ban"></i></span>Reserved</span>
           </div>
           
+          <!-- Mobile Scroll Tip -->
+          <div class="block sm:hidden text-[10px] text-gold-400 text-center font-bold uppercase tracking-wider mb-2">
+            <i class="fas fa-arrows-left-right mr-1"></i> Swipe horizontally to view full stage seating
+          </div>
+
           <!-- Grid representing 120 seats + aisle -->
-          <div class="max-w-[550px] mx-auto overflow-x-auto">
-            <div id="seatingGrid" class="text-center">
+          <div class="w-full overflow-x-auto pb-4 touch-pan-x">
+            <div id="seatingGrid" class="text-center min-w-[480px] mx-auto">
               <!-- Grid elements rendered dynamically by JS -->
             </div>
           </div>
@@ -571,6 +674,33 @@
       <!-- Grid container -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="galleryGrid">
         <!-- Rendered dynamically by script -->
+      </div>
+
+      <!-- Live Instagram Feed Section (@kalabhoomi_official) -->
+      <div class="mt-16 bg-gradient-to-r from-pink-950/30 via-purple-950/20 to-black border border-pink-500/30 rounded-3xl p-6 md:p-8 space-y-6 shadow-2xl relative overflow-hidden">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4 border-b border-white/10 pb-6">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-yellow-500 via-pink-500 to-purple-600 flex items-center justify-center text-white text-2xl shadow-xl ring-2 ring-gold-500/50">
+              <i class="fab fa-instagram"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="text-xl font-extrabold text-white">@kalabhoomi_official</h3>
+                <span class="bg-gradient-to-r from-pink-600 to-purple-600 text-white text-[9px] font-extrabold uppercase px-2.5 py-0.5 rounded-full tracking-widest animate-pulse">Live Stream</span>
+              </div>
+              <p class="text-xs text-gray-400 mt-0.5">Follow our official Instagram handle for daily updates, backstage clips & live show announcements.</p>
+            </div>
+          </div>
+          
+          <a href="https://www.instagram.com/kalabhoomi_official?igsh=MTdreTZvazN1dzF6dA==" target="_blank" rel="noopener noreferrer" class="bg-gradient-to-r from-pink-600 via-purple-600 to-amber-500 hover:from-pink-500 hover:to-amber-400 text-white font-bold text-xs uppercase tracking-wider px-6 py-3 rounded-full shadow-lg transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2">
+            <i class="fab fa-instagram text-base"></i> Follow on Instagram
+          </a>
+        </div>
+
+        <!-- Featured Embedded Instagram Posts Stream -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="instaStreamContainer">
+          <!-- Populated dynamically by script -->
+        </div>
       </div>
     </div>
   </section>
@@ -812,9 +942,113 @@
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-sync.js"></script>
+  <script src="backend-service.js?v=5"></script>
   <script id="app-script">
-    // Multilingual Translation System
+        // Multilingual Translation System
+    let currentLang = localStorage.getItem('kb_lang') || 'en';
+    let currentTheme = localStorage.getItem('kb_theme') || 'dark';
+
+    // Toast notification popup helper
+    function showToast(message, icon = 'info-circle') {
+      let container = document.getElementById('toastContainer');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'toastContainer';
+        container.className = 'fixed bottom-20 left-1/2 -translate-x-1/2 z-[9999] pointer-events-none flex flex-col items-center gap-2';
+        document.body.appendChild(container);
+      }
+      
+      const toast = document.createElement('div');
+      toast.className = 'bg-black/90 text-white border border-gold-500/80 px-5 py-2.5 rounded-full shadow-2xl backdrop-blur-md text-xs md:text-sm font-semibold flex items-center gap-2.5 transition-all duration-300 transform translate-y-2 opacity-0';
+      toast.innerHTML = `<i class="fas fa-${icon} text-gold-400 text-sm"></i><span>${message}</span>`;
+      
+      container.appendChild(toast);
+      
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      });
+      
+      setTimeout(() => {
+        toast.classList.add('translate-y-2', 'opacity-0');
+        setTimeout(() => toast.remove(), 300);
+      }, 2200);
+    }
+
+    function updateLanguage(lang, userTriggered = false) {
+      currentLang = lang || 'en';
+      localStorage.setItem('kb_lang', currentLang);
+      
+      document.querySelectorAll('[data-translate]').forEach(el => {
+        const key = el.getAttribute('data-translate');
+        if (translations[currentLang] && translations[currentLang][key]) {
+          el.textContent = translations[currentLang][key];
+        }
+      });
+
+      if (typeof renderShows === 'function') renderShows();
+      if (typeof renderSeatingGrid === 'function') renderSeatingGrid();
+      if (typeof renderFaqs === 'function') renderFaqs();
+      if (typeof applySystemSettings === 'function') applySystemSettings();
+      updateLanguageToggleIcon();
+
+      if (userTriggered) {
+        const msg = currentLang === 'mr' ? 'भाषा: मराठी बदलली 🌐' : 'Language: English 🌐';
+        showToast(msg, 'globe');
+      }
+    }
+
+    function updateLanguageToggleIcon() {
+      document.querySelectorAll('.lang-toggle').forEach(btn => {
+        const badge = btn.querySelector('.lang-badge');
+        if (badge) {
+          badge.textContent = currentLang === 'en' ? 'EN' : 'मराठी';
+        }
+        const textLabel = btn.querySelector('.lang-label-text');
+        if (textLabel) {
+          textLabel.textContent = currentLang === 'en' ? 'मराठी' : 'EN';
+        }
+      });
+    }
+
+    function applyTheme(theme, userTriggered = false) {
+      currentTheme = theme || 'dark';
+      const body = document.body;
+      if (currentTheme === 'light') {
+        body.classList.add('light-theme');
+      } else {
+        body.classList.remove('light-theme');
+      }
+
+      document.querySelectorAll('.theme-toggle').forEach(btn => {
+        const icon = btn.querySelector('i');
+        if (icon) {
+          if (currentTheme === 'light') {
+            icon.className = 'fas fa-moon text-amber-400 text-base md:text-lg transition-transform duration-300';
+          } else {
+            icon.className = 'fas fa-sun text-gold-400 group-hover:text-gold-200 text-base md:text-lg transition-transform duration-300 group-hover:rotate-45';
+          }
+        }
+        const textLabel = btn.querySelector('.theme-label-text');
+        if (textLabel) {
+          textLabel.textContent = currentTheme === 'light' ? 'Dark Mode' : 'Light Mode';
+        }
+      });
+
+      localStorage.setItem('kb_theme', currentTheme);
+      if (typeof renderShows === 'function') renderShows();
+      if (typeof renderSeatingGrid === 'function') renderSeatingGrid();
+
+      if (userTriggered) {
+        const msg = currentTheme === 'light' ? 'Switched to Light Mode ☀️' : 'Switched to Dark Mode 🌙';
+        showToast(msg, currentTheme === 'light' ? 'sun' : 'moon');
+      }
+    }
+
+    function initTheme() {
+      const savedTheme = localStorage.getItem('kb_theme') || 'dark';
+      applyTheme(savedTheme, false);
+    }
+
     const translations = {
       en: {
         nav_home: "Home",
@@ -1064,6 +1298,48 @@
       const dt = new Date(dateStr);
       const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
       return dt.toLocaleDateString(lang === 'mr' ? 'mr-IN' : 'en-US', options);
+    }
+
+    // Featured Show Countdown Timer
+    let countdownInterval = null;
+
+    function startFeaturedShowCountdown(targetDateStr) {
+      if (countdownInterval) clearInterval(countdownInterval);
+      const targetTime = new Date(targetDateStr).getTime();
+      
+      const updateClock = () => {
+        const now = new Date().getTime();
+        const diff = targetTime - now;
+
+        const daysEl = document.getElementById('cdDays');
+        const hoursEl = document.getElementById('cdHours');
+        const minsEl = document.getElementById('cdMins');
+        const secsEl = document.getElementById('cdSecs');
+
+        if (!daysEl || !hoursEl || !minsEl || !secsEl) return;
+
+        if (diff <= 0) {
+          daysEl.textContent = '00';
+          hoursEl.textContent = '00';
+          minsEl.textContent = '00';
+          secsEl.textContent = '00';
+          if (countdownInterval) clearInterval(countdownInterval);
+          return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const mins = Math.floor((diff % (1000 * 60)) / (1000 * 60));
+        const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+        daysEl.textContent = String(days).padStart(2, '0');
+        hoursEl.textContent = String(hours).padStart(2, '0');
+        minsEl.textContent = String(mins).padStart(2, '0');
+        secsEl.textContent = String(secs).padStart(2, '0');
+      };
+
+      updateClock();
+      countdownInterval = setInterval(updateClock, 1000);
     }
 
     // Dynamic Render Shows
@@ -1350,35 +1626,111 @@
     function renderGallery(filter = 'all') {
       const galleryItems = JSON.parse(localStorage.getItem('kb_gallery')) || [];
       const grid = document.getElementById('galleryGrid');
-      if (!grid) return;
-      grid.innerHTML = '';
-      
-      const filtered = filter === 'all' ? galleryItems : galleryItems.filter(i => i.category === filter);
-      
-      filtered.forEach((item, index) => {
-        const tile = document.createElement('div');
-        tile.className = 'gallery-item overflow-hidden rounded-2xl relative cursor-pointer border border-white border-opacity-5 h-64 group shadow-lg';
-        
-        const isVideo = item.url.endsWith('.mp4');
-        const playIcon = isVideo ? '<div class="absolute inset-0 flex items-center justify-center z-10"><div class="h-12 w-12 rounded-full bg-black bg-opacity-65 flex items-center justify-center border border-white border-opacity-20 group-hover:scale-110 transition duration-300"><i class="fas fa-play text-white text-sm ml-0.5"></i></div></div>' : '';
-        
-        const mediaElement = (isVideo && !item.thumbnail) 
-          ? `<video src="${item.url}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" muted loop playsinline onmouseover="this.play()" onmouseout="this.pause()"></video>`
-          : `<img src="${item.thumbnail || item.url}" alt="${item.title}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">`;
+      if (grid) {
+        grid.innerHTML = '';
+        const filtered = filter === 'all' ? galleryItems : galleryItems.filter(i => i.category === filter);
 
-        tile.innerHTML = `
-          ${mediaElement}
-          ${playIcon}
-          <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6 z-20">
-            <div>
-              <span class="text-[9px] uppercase tracking-widest font-extrabold text-gold-500">${item.category}</span>
-              <h4 class="text-sm font-bold text-white mt-1">${item.title}</h4>
+        filtered.forEach((item, index) => {
+          const tile = document.createElement('div');
+          tile.className = 'gallery-item overflow-hidden rounded-2xl relative cursor-pointer border border-white border-opacity-5 h-64 group shadow-lg';
+
+          const isInsta = item.isInsta || (item.url && item.url.includes('instagram.com'));
+          const isVideo = !isInsta && item.url && item.url.endsWith('.mp4');
+          const playIcon = isVideo ? '<div class="absolute inset-0 flex items-center justify-center z-10"><div class="h-12 w-12 rounded-full bg-black bg-opacity-65 flex items-center justify-center border border-white border-opacity-20 group-hover:scale-110 transition duration-300"><i class="fas fa-play text-white text-sm ml-0.5"></i></div></div>' : '';
+
+          const badge = isInsta 
+            ? '<span class="bg-gradient-to-r from-pink-600 to-purple-600 text-white text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full tracking-wider inline-flex items-center gap-1 shadow-md mb-1"><i class="fab fa-instagram"></i> Instagram Post</span>' 
+            : `<span class="text-[9px] uppercase tracking-widest font-extrabold text-gold-500">${item.category}</span>`;
+
+          const mediaElement = isInsta
+            ? `<img src="${item.thumbnail || 'assets/gallery/image_1.jpg'}" alt="${item.title}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">`
+            : ((isVideo && !item.thumbnail) 
+                ? `<video src="${item.url}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" muted loop playsinline onmouseover="this.play()" onmouseout="this.pause()"></video>`
+                : `<img src="${item.thumbnail || item.url}" alt="${item.title}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">`);
+
+          tile.innerHTML = `
+            ${mediaElement}
+            ${playIcon}
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6 z-20">
+              <div>
+                ${badge}
+                <h4 class="text-sm font-bold text-white leading-snug">${item.title}</h4>
+              </div>
+            </div>
+          `;
+
+          tile.addEventListener('click', () => openGalleryLightbox(filtered, index));
+          grid.appendChild(tile);
+        });
+      }
+
+      renderInstaLiveStream(galleryItems);
+    }
+
+    function renderInstaLiveStream(galleryItems) {
+      const streamContainer = document.getElementById('instaStreamContainer');
+      if (!streamContainer) return;
+      streamContainer.innerHTML = '';
+
+      let instaPosts = galleryItems.filter(i => i.isInsta || (i.url && i.url.includes('instagram.com')));
+
+      if (instaPosts.length === 0) {
+        instaPosts = [
+          {
+            id: 'insta-default-1',
+            title: 'Sangeet Saubhadra Rehearsal & Backstage Moments',
+            shortcode: 'C_default_1',
+            url: 'https://www.instagram.com/kalabhoomi_official/',
+            thumbnail: 'assets/gallery/image_1.jpg'
+          },
+          {
+            id: 'insta-default-2',
+            title: 'Natya Sangeet Concert Solo Performance Highlights',
+            shortcode: 'C_default_2',
+            url: 'https://www.instagram.com/kalabhoomi_official/',
+            thumbnail: 'assets/gallery/image_2.jpg'
+          },
+          {
+            id: 'insta-default-3',
+            title: 'Group Musical Practice Session - Ravindra Natya Mandir',
+            shortcode: 'C_default_3',
+            url: 'https://www.instagram.com/kalabhoomi_official/',
+            thumbnail: 'assets/gallery/performance_singing_male.png'
+          }
+        ];
+      }
+
+      instaPosts.slice(0, 3).forEach(post => {
+        const card = document.createElement('div');
+        card.className = 'glass-card rounded-2xl p-5 border border-pink-500/20 bg-black/60 flex flex-col justify-between space-y-4 hover:border-pink-500/50 transition-all duration-300 shadow-xl group';
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between border-b border-white/10 pb-3">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-yellow-500 via-pink-500 to-purple-600 p-0.5 shadow-md">
+                <img src="assets/logo.png" class="w-full h-full object-cover rounded-full bg-black">
+              </div>
+              <div>
+                <h5 class="text-xs font-bold text-white leading-none">@kalabhoomi_official</h5>
+                <span class="text-[9px] text-pink-400 font-semibold">Instagram Official</span>
+              </div>
+            </div>
+            <i class="fab fa-instagram text-pink-400 text-base group-hover:scale-110 transition"></i>
+          </div>
+
+          <div class="relative h-44 rounded-xl overflow-hidden border border-white/10 group-hover:shadow-lg transition">
+            <img src="${post.thumbnail || 'assets/gallery/image_1.jpg'}" alt="${post.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-end p-3">
+              <p class="text-xs text-white font-semibold line-clamp-2">${post.title}</p>
             </div>
           </div>
+
+          <a href="${post.instaUrl || post.url || 'https://www.instagram.com/kalabhoomi_official/'}" target="_blank" rel="noopener noreferrer" class="w-full py-2 bg-gradient-to-r from-pink-600/80 to-purple-600/80 hover:from-pink-500 hover:to-purple-500 text-white font-bold text-xs uppercase tracking-wider rounded-lg text-center transition flex items-center justify-center gap-2 shadow-md">
+            <span>View on Instagram</span>
+            <i class="fas fa-external-link-alt text-[10px]"></i>
+          </a>
         `;
-        
-        tile.addEventListener('click', () => openGalleryLightbox(filtered, index));
-        grid.appendChild(tile);
+        streamContainer.appendChild(card);
       });
     }
 
@@ -1500,43 +1852,37 @@
 
     // Global Event Listeners Setup
     document.addEventListener('DOMContentLoaded', async () => {
-      await syncFromSupabase();
+      if (typeof syncFromSupabase === 'function') {
+        try { await syncFromSupabase(); } catch(e) { console.warn('Supabase sync warning:', e); }
+      }
       seedDatabase();
+
+      // Apply initial theme & language
+      initTheme();
+      updateLanguage(currentLang);
+
       // Init elements
       renderShows();
       renderSeatingGrid();
       renderGallery('all');
       renderFaqs();
-      
+
       // Language trigger
-      document.querySelector('.lang-toggle').addEventListener('click', () => {
-        const newLang = currentLang === 'en' ? 'mr' : 'en';
-        updateLanguage(newLang);
-        updateLanguageToggleIcon();
-        renderSeatingGrid();
-        renderFaqs();
+      document.querySelectorAll('.lang-toggle').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const newLang = currentLang === 'en' ? 'mr' : 'en';
+          updateLanguage(newLang, true);
+        });
       });
 
-      function updateLanguageToggleIcon() {
-        const icon = document.querySelector('.lang-toggle i');
-        icon.className = currentLang === 'en' ? 'fas fa-language text-sm' : 'fas fa-globe text-sm';
-      }
-      updateLanguageToggleIcon();
-
       // Theme toggle
-      document.querySelector('.theme-toggle').addEventListener('click', () => {
-        const body = document.body;
-        const icon = document.querySelector('.theme-toggle i');
-        
-        if (body.classList.contains('light-theme')) {
-          body.classList.remove('light-theme');
-          icon.className = 'fas fa-sun text-sm';
-        } else {
-          body.classList.add('light-theme');
-          icon.className = 'fas fa-moon text-sm';
-        }
-        renderShows();
-        renderSeatingGrid();
+      document.querySelectorAll('.theme-toggle').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const isLight = document.body.classList.contains('light-theme');
+          applyTheme(isLight ? 'dark' : 'light', true);
+        });
       });
 
       // Show selector changed
@@ -1677,9 +2023,46 @@
       const mobileBtn = document.querySelector('.mobile-menu-btn');
       const mobileMenu = document.querySelector('.nav-menu');
       
-      mobileBtn.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
-      });
+      if (mobileBtn && mobileMenu) {
+        const closeMobileMenu = () => {
+          mobileMenu.classList.add('hidden');
+          mobileMenu.classList.remove('flex');
+          const icon = mobileBtn.querySelector('i');
+          if (icon) {
+            icon.className = 'fas fa-bars text-2xl transition-transform duration-300';
+          }
+        };
+
+        mobileBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const isHidden = mobileMenu.classList.contains('hidden');
+          const icon = mobileBtn.querySelector('i');
+          
+          if (isHidden) {
+            mobileMenu.classList.remove('hidden');
+            mobileMenu.classList.add('flex');
+            if (icon) {
+              icon.className = 'fas fa-times text-2xl text-gold-400 rotate-90 transition-transform duration-300';
+            }
+          } else {
+            closeMobileMenu();
+          }
+        });
+
+        // Close mobile drawer when clicking any navigation link
+        mobileMenu.querySelectorAll('a').forEach(link => {
+          link.addEventListener('click', () => {
+            closeMobileMenu();
+          });
+        });
+
+        // Close mobile drawer when clicking outside nav
+        document.addEventListener('click', (e) => {
+          if (!mobileMenu.contains(e.target) && !mobileBtn.contains(e.target) && !mobileMenu.classList.contains('hidden')) {
+            closeMobileMenu();
+          }
+        });
+      }
 
       // Audio Ambient controls
       const playBtn = document.getElementById('audioPlayBtn');
